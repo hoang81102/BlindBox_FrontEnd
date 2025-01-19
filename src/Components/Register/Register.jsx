@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Register.scss"; // Changed to Register.scss
+import "./Register.scss";
 import { MdEmail, MdPerson, MdPhone, MdLocationOn } from "react-icons/md";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
