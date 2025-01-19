@@ -1,0 +1,198 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(95vh - 95px);
+  background-color: #f5f5f5;
+  padding: 40px;
+
+  .login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #fff;
+
+    .login-left-section {
+      flex: 1;
+      position: relative;
+
+      .login-background-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .login-right-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: auto;
+      background-color: #fff;
+
+      .login-logo-wrapper {
+        margin-bottom: 20px;
+
+        .login-logo {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+      }
+
+      .login-title {
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        font-family: "Baloo", cursive;
+      }
+
+      .login-form-wrapper {
+        width: 100%;
+        max-width: 400px;
+
+        .login-input-box {
+          position: relative;
+          margin-bottom: 20px;
+          min-height: 60px;
+
+          input {
+            width: 80%;
+            padding: 10px 40px 10px 40px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border 0.3s ease, padding 0.3s ease;
+
+            &.login-input-invalid {
+              border-color: red;
+            }
+
+            &.login-input-valid {
+              border-color: green;
+            }
+
+            &:focus {
+              border-color: #007bff;
+            }
+          }
+
+          .login-input-icon {
+            position: absolute;
+            top: 30%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none;
+            transition: top 0.3s ease;
+            width: 20px;
+            height: 25px;
+          }
+
+          .login-error-message {
+            font-size: 15px;
+
+            color: red;
+            position: absolute;
+            left: 0;
+            margin: 0;
+            pointer-events: none;
+          }
+          .login-login-toggle {
+            position: absolute;
+            top: 32%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #aaa;
+          }
+
+          .login-password-toggle {
+            position: absolute;
+            top: 35%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #aaa;
+            cursor: pointer;
+
+            &:hover {
+              color: #fe82a3;
+            }
+          }
+        }
+
+        .login-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+
+          .login-remember-me {
+            font-size: 17px;
+          }
+
+          .login-forgot-password-link {
+            color: #ff96b2;
+            cursor: pointer;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .login-submit-button {
+          width: 100%;
+          padding: 12px;
+          font-size: 16px;
+          border: none;
+          border-radius: 5px;
+          background-color: #ffc7d6;
+          color: #fff;
+          cursor: pointer;
+
+          &.login-active-button {
+            background-color: #ff96b2;
+            color: rgb(255, 255, 255);
+          }
+
+          &:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+          }
+
+          .login-spinner-container {
+            display: flex;
+            align-items: center;
+
+            .login-spinner {
+              margin-right: 5px;
+              border: 2px solid #fff;
+              border-top: 2px solid #ffc7d6;
+              border-radius: 50%;
+              width: 16px;
+              height: 16px;
+              animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
