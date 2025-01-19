@@ -1,19 +1,27 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Login.scss";
-import { MdEmail } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import "./Register.scss"; // Changed to Register.scss
+import { MdEmail, MdPerson, MdPhone, MdLocationOn } from "react-icons/md";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
-import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
+import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
-import loginVideo from "../../Assets/Video/LabubuVideo.mp4";
+import registerVideo from "../../Assets/Video/Labubu_video.mp4";
 import { toast } from "react-toastify";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [addressError, setAddressError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,6 +32,16 @@ const Register = () => {
 
   const validatePassword = (password) => {
     return password.length >= 6;
+  };
+
+  const validateFullName = (name) => {
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    return nameRegex.test(name);
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
   };
 
   const handleEmailChange = (event) => {
@@ -40,88 +58,193 @@ const Register = () => {
     );
   };
 
-  const handleRegisterRedirect = (event) => {
-    event.preventDefault();
-    navigate("/register");
+  const handleFullNameChange = (event) => {
+    const value = event.target.value;
+    setFullName(value);
+    setNameError(
+      validateFullName(value)
+        ? ""
+        : "Name should not contain special characters"
+    );
   };
 
-  const handleForgotPasswordRedirect = () => {
-    navigate("/forgot-password");
+  const handlePhoneChange = (event) => {
+    const value = event.target.value;
+    setPhone(value);
+    setPhoneError(validatePhone(value) ? "" : "Phone number must be 10 digits");
   };
 
-  const handleLogin = async () => {
+  const handleAddressChange = (event) => {
+    const value = event.target.value;
+    setAddress(value);
+    setAddressError(value ? "" : "Address is required");
+  };
+
+  const handleRegister = async () => {
     setIsLoading(true);
-    if (!email || !password) {
+    if (
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !fullName ||
+      !phone ||
+      !address
+    ) {
       setIsLoading(false);
-      toast.error("Email/Password is required!");
+      toast.error("All fields are required!");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setIsLoading(false);
+      setConfirmPasswordError("Passwords do not match");
       return;
     }
 
     const fakeResponse = { status: "ok", data: "fakeToken" };
     if (fakeResponse && fakeResponse.data && fakeResponse.status === "ok") {
-      toast.success("Login successful");
+      toast.success("Registration successful");
       navigate("/dashboard");
     } else {
-      toast.error("Wrong email or password");
+      toast.error("Registration failed");
     }
     setIsLoading(false);
   };
 
   return (
-    <div className="login-page">
-      <div className="login-wrapper">
-        <div className="login-container">
-          <div className="login-left-section">
+    <div className="register-page">
+      <div className="register-wrapper">
+        <div className="register-container">
+          <div className="register-left-section">
             <video
-              src={loginVideo}
+              src={registerVideo}
               autoPlay
               muted
               loop
-              className="login-background-video"
+              className="register-background-video"
             ></video>
           </div>
-          <div className="login-right-section">
-            <div className="login-logo-wrapper">
-              <img src={logoImage} alt="Labubu Logo" className="login-logo" />
+          <div className="register-right-section">
+            <div className="register-logo-wrapper">
+              <img
+                src={logoImage}
+                alt="Labubu Logo"
+                className="register-logo"
+              />
             </div>
-            <h1 className="login-title">WELCOME BACK</h1>
-            <div className="login-form-wrapper">
+            <h1 className="register-title">REGISTER</h1>
+            <div className="register-form-wrapper">
               <div
-                className={`login-input-box ${emailError ? "with-error" : ""}`}
+                className={`register-input-box ${
+                  emailError ? "with-error" : ""
+                }`}
               >
                 <input
                   type="text"
                   placeholder="Email"
                   value={email}
                   onChange={handleEmailChange}
-                  className={`login-input ${
+                  className={`register-input ${
                     emailError
-                      ? "login-input-invalid"
+                      ? "register-input-invalid"
                       : email
-                      ? "login-input-valid"
+                      ? "register-input-valid"
                       : ""
                   }`}
                 />
                 <img
                   src={LabubuIcon}
                   alt="Labubu Icon"
-                  className="login-input-icon"
+                  className="register-input-icon"
                 />
-
-                <MdEmail className="login-login-toggle" />
+                <MdEmail className="register-toggle" />
                 {emailError && (
-                  <p className="login-error-message">{emailError}</p>
+                  <p className="register-error-message">{emailError}</p>
                 )}
               </div>
 
-              <div className="login-input-box">
+              <div className="register-input-box">
                 <img
                   src={LabubuIcon}
                   alt="Labubu Icon"
-                  className="login-input-icon"
+                  className="register-input-icon"
+                />
+                <MdPerson className="register-toggle" />
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={handleFullNameChange}
+                  className={`register-input ${
+                    nameError
+                      ? "register-input-invalid"
+                      : fullName
+                      ? "register-input-valid"
+                      : ""
+                  }`}
+                />
+                {nameError && (
+                  <p className="register-error-message">{nameError}</p>
+                )}
+              </div>
+
+              <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon"
+                />
+                <MdPhone className="register-toggle" />
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  className={`register-input ${
+                    phoneError
+                      ? "register-input-invalid"
+                      : phone
+                      ? "register-input-valid"
+                      : ""
+                  }`}
+                />
+                {phoneError && (
+                  <p className="register-error-message">{phoneError}</p>
+                )}
+              </div>
+
+              <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon2"
+                />
+                <MdLocationOn className="register-locate-toggle" />
+                <textarea
+                  placeholder="Address"
+                  value={address}
+                  onChange={handleAddressChange}
+                  className={`register-input ${
+                    addressError
+                      ? "register-input-invalid"
+                      : address
+                      ? "register-input-valid"
+                      : ""
+                  }`}
+                />
+                {addressError && (
+                  <p className="register-error-message">{addressError}</p>
+                )}
+              </div>
+
+              <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon"
                 />
                 <i
-                  className="login-password-toggle"
+                  className="register-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <MdVisibility /> : <MdVisibilityOff />}
@@ -133,41 +256,76 @@ const Register = () => {
                   onChange={handlePasswordChange}
                   className={
                     passwordError
-                      ? "login-input-invalid"
+                      ? "register-input-invalid"
                       : password
-                      ? "login-input-valid"
+                      ? "register-input-valid"
                       : ""
                   }
                 />
                 {passwordError && (
-                  <p className="login-error-message">{passwordError}</p>
+                  <p className="register-error-message">{passwordError}</p>
                 )}
               </div>
-              <div className="login-actions">
-                <label className="login-remember-me">
+              <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon"
+                />
+                <i
+                  className="register-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <MdVisibility /> : <MdVisibilityOff />}
+                </i>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setConfirmPasswordError(
+                      e.target.value === password
+                        ? ""
+                        : "Passwords do not match"
+                    );
+                  }}
+                  className={
+                    confirmPasswordError
+                      ? "register-input-invalid"
+                      : confirmPassword
+                      ? "register-input-valid"
+                      : ""
+                  }
+                />
+                {confirmPasswordError && (
+                  <p className="register-error-message">
+                    {confirmPasswordError}
+                  </p>
+                )}
+              </div>
+
+              <div className="register-actions">
+                <label className="register-remember-me">
                   <input type="checkbox" /> Remember me
                 </label>
-                <p
-                  className="login-forgot-password-link"
-                  onClick={handleForgotPasswordRedirect}
-                >
-                  Forgot password?
-                </p>
               </div>
               <button
                 type="submit"
-                className={`login-submit-button ${
-                  email && password ? "login-active-button" : ""
+                className={`register-submit-button ${
+                  email && password && fullName && phone && address
+                    ? "register-active-button"
+                    : ""
                 }`}
-                onClick={handleLogin}
+                onClick={handleRegister}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <span className="login-spinner-container">
-                    <i className="login-spinner"></i> Logging in...
+                  <span className="register-spinner-container">
+                    <i className="register-spinner"></i> Registering...
                   </span>
                 ) : (
-                  "Login"
+                  "Register"
                 )}
               </button>
             </div>
