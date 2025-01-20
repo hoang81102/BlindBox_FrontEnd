@@ -7,6 +7,7 @@ const CustomerLayout = ({ children }) => {
       <Header />
       <main>{children}</main>
       <Footer />
+      {/* <div></div>  testt lát xoá */}
     </div>
   );
 };
