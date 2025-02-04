@@ -7,6 +7,10 @@ import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import loginVideo from "../../Assets/Video/LabubuVideo.mp4";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { loginUser } from "../../Services/ApiController";
+import ToastManager from "../../Services/ToastManager";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -50,21 +54,34 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
-    setIsLoading(true);
     if (!email || !password) {
-      setIsLoading(false);
-      toast.error("Email/Password is required!");
+      ToastManager.showError("Email/Password is required!");
       return;
     }
 
-    const fakeResponse = { status: "ok", data: "fakeToken" };
-    if (fakeResponse && fakeResponse.data && fakeResponse.status === "ok") {
-      toast.success("Login successful");
-      navigate("/dashboard");
-    } else {
-      toast.error("Wrong email or password");
+    setIsLoading(true);
+    try {
+      const response = await loginUser(email, password);
+      if (response?.token) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("username", response.user.username);
+        ToastManager.showSuccess("Login successful");
+        navigate("/");
+      } else {
+        ToastManager.showError("Invalid login response: Token not found");
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      ToastManager.showError(
+        error.response?.data?.message || "Wrong email or password"
+      );
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  const isFormValid = () => {
+    return validateEmail(email) && validatePassword(password);
   };
 
   return (
@@ -107,7 +124,6 @@ const Login = () => {
                   alt="Labubu Icon"
                   className="login-input-icon"
                 />
-
                 <MdEmail className="login-login-toggle" />
                 {emailError && (
                   <p className="login-error-message">{emailError}</p>
@@ -157,10 +173,10 @@ const Login = () => {
               <button
                 type="submit"
                 className={`login-submit-button ${
-                  email && password ? "login-active-button" : ""
+                  isFormValid() ? "login-active-button" : ""
                 }`}
                 onClick={handleLogin}
-                disabled={isLoading}
+                disabled={!isFormValid() || isLoading}
               >
                 {isLoading ? (
                   <span className="login-spinner-container">

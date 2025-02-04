@@ -5,7 +5,6 @@ const Homepage = () => {
     <section className="banner">
       <h1>Welcome to Labubu Shop!</h1>
       <p>Your favorite place for all things Labubu!</p>
-      <button>Đăng nhập</button>
     </section>
   );
 };
