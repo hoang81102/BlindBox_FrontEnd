@@ -11,6 +11,7 @@ import axios from "axios";
 import { loginUser } from "../../Services/ApiController";
 import ToastManager from "../../Services/ToastManager";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -62,9 +63,12 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await loginUser(email, password);
-      if (response?.token) {
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("username", response.user.username);
+      console.log(response?.token);
+      const token = response?.token;
+      const decodedToken = jwtDecode(token);
+      if (decodedToken) {
+        localStorage.setItem("username", decodedToken.Username);
+        localStorage.setItem("role", decodedToken.Role);
         ToastManager.showSuccess("Login successful");
         navigate("/");
       } else {
