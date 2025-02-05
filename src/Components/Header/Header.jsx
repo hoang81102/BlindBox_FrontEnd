@@ -23,34 +23,21 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");
-    if (token && username) {
+    if (role && username) {
       setUser({ username });
     }
   }, [location]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     localStorage.removeItem("username");
     setUser(null);
     navigate("/login");
   };
 
   return (
-<<<<<<< HEAD
-    <Navbar expand="lg" className="custom-navbar ">
-      <Container>
-        <div className="main-header">
-          <Navbar.Brand href="/">
-            <div className="logo-container">
-              <img
-                src={LabubuLogo}
-                width="50"
-                height="50"
-                className="d-inline-block align-top"
-                alt="Logo"
-=======
     <Navbar expand="lg" className="custom-navbar">
       <Container className="d-flex flex-column">
         {/* 🟢 Hàng 1: Logo - Tìm kiếm - Thông tin user */}
@@ -67,7 +54,6 @@ const Header = () => {
                 type="text"
                 placeholder="Search products..."
                 className="search-input"
->>>>>>> QuangDo_FE
               />
               <Button className="search-button">Search</Button>
             </Form>
@@ -125,34 +111,6 @@ const Header = () => {
               <NavLink to="/" className="nav-item">
                 Home
               </NavLink>
-<<<<<<< HEAD
-            </div>
-          </div>
-        </div>
-
-        <Navbar.Collapse id="basic-navbar-nav" className="nav-section">
-          <Nav className="navbar-nav">
-            <NavLink to="/" className="nav-item">
-              Home
-            </NavLink>
-            <NavLink to="/about" className="nav-item">
-              About
-            </NavLink>
-            <NavLink to="/shop" className="nav-item">
-              Shop
-            </NavLink>
-            <NavLink to="/contact" className="nav-item ">
-              Contact
-            </NavLink>
-            <NavLink to="/product" className="nav-item">
-              Product
-            </NavLink>
-            <NavLink to="/news" className="nav-item">
-              News
-            </NavLink>
-          </Nav>
-        </Navbar.Collapse>
-=======
               <NavLink to="/about" className="nav-item">
                 About
               </NavLink>
@@ -171,7 +129,6 @@ const Header = () => {
             </Nav>
           </Col>
         </Row>
->>>>>>> QuangDo_FE
       </Container>
     </Navbar>
   );
