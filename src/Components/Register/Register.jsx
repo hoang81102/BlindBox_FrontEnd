@@ -6,7 +6,9 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import registerVideo from "../../Assets/Video/Labubu_video.mp4";
+import { registerUser } from "../../Services/ApiController";
 import { toast } from "react-toastify";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -34,9 +36,9 @@ const Register = () => {
     return password.length >= 6;
   };
 
-  const validateFullName = (name) => {
+  const validateFullName = (fullName) => {
     const nameRegex = /^[a-zA-Z\s]+$/;
-    return nameRegex.test(name);
+    return nameRegex.test(fullName);
   };
 
   const validatePhone = (phone) => {
@@ -55,6 +57,15 @@ const Register = () => {
     setPassword(value);
     setPasswordError(
       validatePassword(value) ? "" : "Password must be at least 6 characters"
+    );
+  };
+
+  const isFormValid = () => {
+    return (
+      validateEmail(email) &&
+      validatePassword(password) &&
+      validateFullName(fullName) &&
+      validatePhone(phone)
     );
   };
 
@@ -82,14 +93,8 @@ const Register = () => {
 
   const handleRegister = async () => {
     setIsLoading(true);
-    if (
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !fullName ||
-      !phone ||
-      !address
-    ) {
+
+    if (!email || !password || !confirmPassword || !fullName || !phone) {
       setIsLoading(false);
       toast.error("All fields are required!");
       return;
@@ -101,12 +106,12 @@ const Register = () => {
       return;
     }
 
-    const fakeResponse = { status: "ok", data: "fakeToken" };
-    if (fakeResponse && fakeResponse.data && fakeResponse.status === "ok") {
+    try {
+      const response = await registerUser(email, password, fullName, phone);
       toast.success("Registration successful");
-      navigate("/dashboard");
-    } else {
-      toast.error("Registration failed");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error || "Registration failed");
     }
     setIsLoading(false);
   };
@@ -310,15 +315,14 @@ const Register = () => {
                   <input type="checkbox" /> Remember me
                 </label>
               </div>
+
               <button
                 type="submit"
                 className={`register-submit-button ${
-                  email && password && fullName && phone && address
-                    ? "register-active-button"
-                    : ""
+                  isFormValid() ? "register-active-button" : ""
                 }`}
                 onClick={handleRegister}
-                disabled={isLoading}
+                disabled={!isFormValid() || isLoading}
               >
                 {isLoading ? (
                   <span className="register-spinner-container">
