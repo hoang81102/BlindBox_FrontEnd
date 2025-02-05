@@ -21,7 +21,7 @@ const Header = () => {
   const user = null;
 
   return (
-    <Navbar expand="lg" className="custom-navbar">
+    <Navbar expand="lg" className="custom-navbar ">
       <Container>
         <div className="main-header">
           <Navbar.Brand href="/">
@@ -83,7 +83,7 @@ const Header = () => {
             <NavLink to="/shop" className="nav-item">
               Shop
             </NavLink>
-            <NavLink to="/contact" className="nav-item">
+            <NavLink to="/contact" className="nav-item ">
               Contact
             </NavLink>
             <NavLink to="/product" className="nav-item">

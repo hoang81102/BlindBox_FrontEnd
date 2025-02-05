@@ -3,6 +3,8 @@ import { ToastContainer } from "react-toastify";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 function App() {
   return (
