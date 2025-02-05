@@ -1,10 +1,7 @@
 <<<<<<< HEAD
-=======
-<<<<<<< HEAD
 # BlindBox_FrontEnd
 https://github.com/hoang81102/BlindBox_BackEnd
 =======
->>>>>>> origin/main
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
