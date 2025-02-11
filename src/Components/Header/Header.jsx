@@ -11,16 +11,16 @@ import {
   Button,
 } from "react-bootstrap";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import LabubuLogo from "../../Assets/Image/Labubu_Logo.jpg";
-import LabubuIconWelcome from "../../Assets/Image/Labubu_icon_welcome.avif";
 import { FaShoppingCart } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
+import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
 import "./Header.scss";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [scrolling, setScrolling] = useState(false);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -30,6 +30,15 @@ const Header = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolling(window.scrollY > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
@@ -38,42 +47,35 @@ const Header = () => {
   };
 
   return (
-    <Navbar expand="lg" className="custom-navbar">
+    <Navbar
+      expand="lg"
+      className={`custom-navbar ${scrolling ? "scrolled" : ""}`}
+    >
       <Container className="d-flex flex-column">
-        {/* 🟢 Hàng 1: Logo - Tìm kiếm - Thông tin user */}
-        <Row className="align-items-center top-header">
-          <Col xs={2} md={2} className="d-flex justify-content-start">
-            <Navbar.Brand href="/">
-              <img src={LabubuLogo} className="logo-image" alt="Logo" />
-            </Navbar.Brand>
+        {/* 🟢 Hàng 1: Logo - Hotline - Thông tin user */}
+        <Row
+          className={`align-items-center top-header ${
+            scrolling ? "hidden" : ""
+          }`}
+        >
+          <Col xs={3} md={3} className="d-flex justify-content-start">
+            <div className="hotline">Hotline: 1800-123-456</div>
           </Col>
 
           <Col xs={6} md={6} className="d-flex justify-content-center">
-            <Form className="search-form d-flex">
-              <FormControl
-                type="text"
-                placeholder="Search products..."
-                className="search-input"
-              />
-              <Button className="search-button">Search</Button>
-            </Form>
+            <Navbar.Brand href="/">
+              <img src={LogoSystem} className="logo-image" alt="Logo" />
+            </Navbar.Brand>
           </Col>
 
           <Col
-            xs={4}
-            md={4}
+            xs={3}
+            md={3}
             className="d-flex justify-content-end auth-cart-section"
           >
             {user ? (
               <>
-                <span className="welcome-text">
-                  <img
-                    src={LabubuIconWelcome}
-                    alt="Welcome"
-                    className="welcome-icon"
-                  />
-                  {user.username}
-                </span>
+                <span className="welcome-text">{user.username}</span>
                 <NavLink to="/cart" className="cart-link">
                   <FaShoppingCart />
                 </NavLink>
@@ -104,8 +106,8 @@ const Header = () => {
           </Col>
         </Row>
 
-        {/* 🔵 Hàng 2: Navigation Menu */}
-        <Row className="bottom-header">
+        {/* 🔵 Hàng 2: Navigation Menu + Search */}
+        <Row className={`bottom-header ${scrolling ? "fixed-nav" : ""}`}>
           <Col className="d-flex justify-content-center">
             <Nav className="navbar-nav">
               <NavLink to="/" className="nav-item">
@@ -114,19 +116,49 @@ const Header = () => {
               <NavLink to="/about" className="nav-item">
                 About
               </NavLink>
-              <NavLink to="/shop" className="nav-item">
-                Shop
-              </NavLink>
+              <NavDropdown
+                title="Shop"
+                id="shop-dropdown"
+                className="nav-dropdown"
+              >
+                <NavDropdown.Item href="/shop/category1">
+                  Category 1
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/shop/category2">
+                  Category 2
+                </NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown
+                title="Product"
+                id="product-dropdown"
+                className="nav-dropdown"
+              >
+                <NavDropdown.Item href="/product/new">
+                  New Arrivals
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/product/best-sellers">
+                  Best Sellers
+                </NavDropdown.Item>
+              </NavDropdown>
               <NavLink to="/contact" className="nav-item">
                 Contact
-              </NavLink>
-              <NavLink to="/product" className="nav-item">
-                Product
               </NavLink>
               <NavLink to="/news" className="nav-item">
                 News
               </NavLink>
             </Nav>
+          </Col>
+
+          {/* 🟡 Ô tìm kiếm mới */}
+          <Col className="search-container">
+            <Form className="search-form d-flex">
+              <FormControl
+                type="text"
+                placeholder="Search products..."
+                className="search-input"
+              />
+              <Button className="search-button">Search</Button>
+            </Form>
           </Col>
         </Row>
       </Container>

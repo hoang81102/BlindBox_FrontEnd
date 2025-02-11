@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { MdEmail } from "react-icons/md";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {
+  MdVisibility,
+  MdVisibilityOff,
+  MdDarkMode,
+  MdLightMode,
+} from "react-icons/md";
 import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
-import loginVideo from "../../Assets/Video/LabubuVideo.mp4";
+import loginVideo from "../../Assets/Video/LoginVideo.mp4";
+import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
+import leftEye from "../../Assets/Image/Labubu_lefteye(nhắm).png";
+import rightEye from "../../Assets/Image/Labubu_righteye(nhắm).png";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { loginUser } from "../../Services/ApiController";
 import ToastManager from "../../Services/ToastManager";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { jwtDecode } from "jwt-decode";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,8 +28,14 @@ const Login = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
-
+  const videoRef = useRef(null);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 2.0;
+    }
+  }, []);
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(String(email).toLowerCase());
@@ -54,6 +68,11 @@ const Login = () => {
     navigate("/forgot-password");
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle("dark-mode");
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
       ToastManager.showError("Email/Password is required!");
@@ -67,7 +86,7 @@ const Login = () => {
       const token = response?.token;
       const decodedToken = jwtDecode(token);
       if (decodedToken) {
-        localStorage.setItem("username", decodedToken.Username);
+        localStorage.setItem("username", response.user.name);
         localStorage.setItem("role", decodedToken.Role);
         ToastManager.showSuccess("Login successful");
         navigate("/");
@@ -89,11 +108,21 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className={`login-page ${darkMode ? "dark-mode" : ""}`}>
+      <div className="dark-mode-toggle" onClick={toggleDarkMode}>
+        {darkMode ? <MdLightMode size={30} /> : <MdDarkMode size={30} />}
+      </div>
+      <div className="home-logo-wrapper">
+        <div className="home-logo" onClick={() => navigate("/")}>
+          <img src={LogoSystem}></img>
+        </div>
+        <span className="home-title">Mystic BlindBox</span>
+      </div>
       <div className="login-wrapper">
         <div className="login-container">
           <div className="login-left-section">
             <video
+              ref={videoRef}
               src={loginVideo}
               autoPlay
               muted
@@ -103,7 +132,23 @@ const Login = () => {
           </div>
           <div className="login-right-section">
             <div className="login-logo-wrapper">
-              <img src={logoImage} alt="Labubu Logo" className="login-logo" />
+              <div
+                className={`labubu-wrapper ${
+                  showPassword ? "show-password" : ""
+                }`}
+              >
+                <img src={logoImage} alt="Labubu Logo" className="login-logo" />
+                <img
+                  src={leftEye}
+                  alt="Left Eye"
+                  className="labubu-eye left-eye"
+                />
+                <img
+                  src={rightEye}
+                  alt="Right Eye"
+                  className="labubu-eye right-eye"
+                />
+              </div>
             </div>
             <h1 className="login-title">WELCOME BACK</h1>
             <div className="login-form-wrapper">
@@ -163,6 +208,7 @@ const Login = () => {
                   <p className="login-error-message">{passwordError}</p>
                 )}
               </div>
+
               <div className="login-actions">
                 <label className="login-remember-me">
                   <input type="checkbox" /> Remember me
@@ -174,6 +220,7 @@ const Login = () => {
                   Forgot password?
                 </p>
               </div>
+
               <button
                 type="submit"
                 className={`login-submit-button ${
@@ -190,6 +237,31 @@ const Login = () => {
                   "Login"
                 )}
               </button>
+
+              {/* Thanh chia */}
+              <div className="login-divider">OR LOGIN WITH</div>
+
+              {/* Đăng nhập bằng Google & Facebook */}
+              <div className="login-social">
+                <button className="login-social-button google">
+                  <FaGoogle className="social-icon google" /> Google
+                </button>
+                <button className="login-social-button facebook">
+                  <FaFacebook className="social-icon facebook" /> Facebook
+                </button>
+              </div>
+
+              <div className="login-register-redirect">
+                <p>
+                  Don't have an account?{" "}
+                  <span
+                    className="login-register-link"
+                    onClick={() => navigate("/register")}
+                  >
+                    Register here
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
