@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import "./HomePage.scss";
 import {
   Container,
@@ -9,6 +9,9 @@ import {
   ListGroup,
   Form,
 } from "react-bootstrap";
+import Countdown from "react-countdown";
+import ReactPaginate from "react-paginate";
+
 import labubuImg from "../../Assets/Image/Labubu_icon.png";
 import LabubuVideo from "../../Assets/Video/LoginVideo.mp4";
 import LabubuLogo from "../../Assets/Image/Labubu_Logo.jpg";
@@ -18,16 +21,42 @@ import LabubuSlider3 from "../../Assets/Image/Labubu3_ImageSlider.jpg";
 import LabubuSlider4 from "../../Assets/Image/Labubu4_ImageSlider.jpg";
 import LabubuSlider5 from "../../Assets/Image/Labubu5_ImageSlider.jpg";
 import BlindBoxCollection1 from "../../Assets/Image/BlindBoxCollection.avif";
-import BlindBoxCollectio2 from "../../Assets/Image/PopMart-Dream-Home.jpg";
+import BlindBoxCollection2 from "../../Assets/Image/BlindBoxCollection2.jpg";
+import BlindBoxCollection3 from "../../Assets/Image/BlindBoxCollection3.jpg";
+import BlindBoxCollectio4 from "../../Assets/Image/BlindBoxCollection4.jpg";
+import BlindBoxCollection5 from "../../Assets/Image/BlindBoxCollection5.jpg";
+import BlindBoxCollection6 from "../../Assets/Image/BlindBoxCollection6.jpg";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-const bannerImages = [BlindBoxCollection1, BlindBoxCollectio2];
-
+const bannerImages = [
+  BlindBoxCollection1,
+  BlindBoxCollection2,
+  BlindBoxCollection3,
+  BlindBoxCollectio4,
+  BlindBoxCollection5,
+  BlindBoxCollection6,
+];
 const HomePage = () => {
+  const itemsPerPage = 6;
+  const [currentPage, setCurrentPage] = useState(0);
+  const totalProducts = 30;
+  const productList = [...Array(totalProducts)].map((_, idx) => ({
+    id: idx + 1,
+    name: `Product ${idx + 1}`,
+    price: (19.99 + idx * 5).toFixed(2),
+    image: labubuImg,
+  }));
+
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  const offset = currentPage * itemsPerPage;
+  const currentProducts = productList.slice(offset, offset + itemsPerPage);
   return (
     <div className="homepage">
       {/* Banner - Full Width */}
@@ -181,29 +210,89 @@ const HomePage = () => {
             </Row>
           </section>
 
-          {/* Featured Products */}
+          {/* Featured Products with Pagination */}
           <Container className="featured-products">
             <h2 className="text-center">Featured Products</h2>
             <Row>
-              {[...Array(9)].map((_, idx) => (
+              {currentProducts.map((product) => (
                 <Col
                   md={4}
                   className="product-card hover-effect colorful-card"
-                  key={idx}
+                  key={product.id}
                 >
                   <img
                     className="product-image w-50"
-                    src={labubuImg}
-                    alt="Product"
+                    src={product.image}
+                    alt={product.name}
                   />
-                  <h3>Product {idx + 1}</h3>
-                  <p>${(19.99 + idx * 5).toFixed(2)}</p>
+                  <h3>{product.name}</h3>
+                  <p>${product.price}</p>
                   <Button variant="success" className="glow-effect">
                     Add to Cart
                   </Button>
                 </Col>
               ))}
             </Row>
+
+            {/* Pagination Controls */}
+            <ReactPaginate
+              previousLabel={"← Previous"}
+              nextLabel={"Next →"}
+              breakLabel={"..."}
+              pageCount={Math.ceil(totalProducts / itemsPerPage)}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              previousClassName={"prev-button"}
+              nextClassName={"next-button"}
+            />
+          </Container>
+
+          {/* Flash Sale Section */}
+          <Container className="flash-sale text-center">
+            <h2>Flash Sale</h2>
+            <Countdown
+              date={Date.now() + 1000 * 60 * 60 * 24}
+              className="countdown-timer"
+            />
+            <Row>
+              {[...Array(4)].map((_, idx) => (
+                <Col md={3} className="flash-sale-card" key={idx}>
+                  <img
+                    className="product-image"
+                    src={labubuImg}
+                    alt="Product"
+                  />
+                  <h3>Flash Deal {idx + 1}</h3>
+                  <p>${(9.99 + idx * 5).toFixed(2)}</p>
+                  <Button variant="danger" className="danger-effect">
+                    Buy Now
+                  </Button>
+                </Col>
+              ))}
+            </Row>
+          </Container>
+
+          {/* Customer Reviews Section */}
+          <Container className="customer-reviews text-center">
+            <h2>Customer Reviews</h2>
+            <Carousel
+              interval={4000}
+              pause={false}
+              className="reviews-carousel"
+            >
+              {[...Array(5)].map((_, idx) => (
+                <Carousel.Item key={idx}>
+                  <div className="review-card">
+                    <p>"Amazing quality and fast shipping!"</p>
+                    <div className="stars">⭐⭐⭐⭐⭐</div>
+                    <strong>- Customer {idx + 1}</strong>
+                  </div>
+                </Carousel.Item>
+              ))}
+            </Carousel>
           </Container>
         </div>
       </div>

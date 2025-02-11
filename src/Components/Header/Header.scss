@@ -6,6 +6,8 @@
   transition: all 0.3s ease-in-out;
   width: 100%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1050;
 }
 
 /* 🟢 Hàng trên (Logo, Hotline, User Info) */
@@ -14,7 +16,7 @@
   align-items: center;
   width: 100%;
   padding: 20px 0;
-  background: white;
+  z-index: 1051;
 }
 
 /* 📞 Hotline */
@@ -33,13 +35,6 @@
 }
 
 /* 🖼 Logo */
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
 .logo-image {
   width: 130px;
   height: 130px;
@@ -49,28 +44,6 @@
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(255, 123, 0, 0.5);
-  }
-}
-
-/* 🟠 Viền phát sáng */
-.logo-container::before {
-  content: "";
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #ff7b00, #ff99c8);
-  z-index: -1;
-  animation: rotateGlow 3s linear infinite;
-}
-
-/* 🌟 Animation xoay viền */
-@keyframes rotateGlow {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }
 
@@ -87,15 +60,6 @@
   }
 }
 
-.welcome-text {
-  font-weight: 600;
-  color: #ff7b00;
-  transition: color 0.3s ease-in-out;
-
-  &:hover {
-    color: #ff4800;
-  }
-}
 .auth-link {
   font-size: 20px;
   font-weight: 600;
@@ -124,12 +88,18 @@
   }
 }
 
+/* 🟠 Account Dropdown */
+#account-dropdown {
+  position: relative;
+  z-index: 1100 !important; // Đảm bảo dropdown không bị che bởi menu
+}
+
 /* 🔥 Hàng dưới - Navigation Menu */
 .bottom-header {
   background: linear-gradient(135deg, #ff6b6b, #ffcc5c);
   width: 100vw;
   position: relative;
-  padding: 12px 0;
+  padding: 15px 0;
   transition: all 0.3s ease-in-out;
 }
 
@@ -152,31 +122,59 @@
 
   .nav-item,
   .nav-dropdown {
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: 600;
     text-decoration: none;
     font-size: 20px;
     position: relative;
     transition: all 0.3s ease-in-out;
 
-    &:hover {
-      background: linear-gradient(90deg, #f5a8cc, #f4d8be);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
     &::after {
       content: "";
       display: block;
       width: 0;
       height: 3px;
-      background: white;
+      background: linear-gradient(90deg, #ff0077, #ff8000);
       transition: width 0.3s ease-in-out;
     }
 
     &:hover::after {
       width: 100%;
+    }
+  }
+
+  /* 🔽 Dropdown Styling */
+  .nav-dropdown {
+    position: relative;
+
+    .dropdown-menu {
+      position: absolute !important;
+      z-index: 1101 !important; // Đảm bảo dropdown hiển thị trên navigation
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 10px 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+    &.show .dropdown-menu {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .dropdown-item {
+      color: black;
+      font-size: 18px;
+      padding: 10px 20px;
+      transition: background 0.3s, color 0.3s;
+
+      &:hover {
+        background: linear-gradient(90deg, #ff0077, #ff8000);
+        color: white;
+      }
     }
   }
 }
@@ -221,7 +219,7 @@
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background: #ff7b00;
+    background: #ff9b3d;
     color: white;
     transform: scale(1.05);
   }

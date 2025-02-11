@@ -16,8 +16,8 @@ const Footer = () => {
           </div>
           <div className="footer-section">
             <h4>Contact</h4>
-            <p>Email: contact@blindboxsale.com</p>
-            <p>Phone: 012-345-678</p>
+            <p>Email: blindboxsaleswebsite@gmail.com</p>
+            <p>Phone: 1800-123-456</p>
             <p>Address: Thu Duc district, Ho Chi Minh city</p>
           </div>
           <div className="footer-section">
@@ -27,7 +27,7 @@ const Footer = () => {
                 <a href="/">Home Page</a>
               </li>
               <li>
-                <a href="/service">Service</a>
+                <a href="/service">Shop</a>
               </li>
               <li>
                 <a href="/about">About</a>

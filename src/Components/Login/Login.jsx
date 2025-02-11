@@ -75,23 +75,28 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      ToastManager.showError("Email/Password is required!");
+      ToastManager.showError("Email and Password are required!");
       return;
     }
-
     setIsLoading(true);
     try {
       const response = await loginUser(email, password);
-      console.log(response?.token);
-      const token = response?.token;
-      const decodedToken = jwtDecode(token);
-      if (decodedToken) {
-        localStorage.setItem("username", response.user.name);
-        localStorage.setItem("role", decodedToken.Role);
-        ToastManager.showSuccess("Login successful");
-        navigate("/");
-      } else {
+      if (!response?.token) {
         ToastManager.showError("Invalid login response: Token not found");
+        return;
+      }
+      const { token, user } = response;
+      localStorage.setItem("username", user.name);
+      localStorage.setItem("phoneNumber", user.phoneNumber);
+      localStorage.setItem("email", user.email);
+
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken?.Role;
+      localStorage.setItem("role", role);
+      ToastManager.showSuccess("Login successful");
+
+      if (role === "user") {
+        navigate("/");
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);

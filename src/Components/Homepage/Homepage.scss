@@ -1,8 +1,3 @@
-// Mixin cho hiệu ứng glow
-@mixin glow($color) {
-  box-shadow: 0 0 10px $color, 0 0 20px $color, 0 0 30px lighten($color, 10%);
-}
-
 .homepage {
   background-color: #f7f7f7;
   font-family: "Arial", sans-serif;
@@ -14,7 +9,8 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-    height: 600px;
+    height: 700px;
+
     .banner-swiper {
       width: 100%;
       height: 100%;
@@ -37,7 +33,7 @@
       padding: 20px;
       border-radius: 10px;
       backdrop-filter: blur(5px);
-      margin-bottom: 150px;
+      margin-bottom: 60px;
     }
     .banner-logo {
       max-width: 120px;
@@ -66,11 +62,11 @@
       text-transform: uppercase;
       text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
       letter-spacing: 2px;
-      font-family: "Playfair Display", serif; /* 🆕 Font nghệ thuật */
+      font-family: "Playfair Display", serif;
       transition: transform 0.3s ease-in-out;
 
       &:hover {
-        transform: scale(1.1); /* ✨ Hiệu ứng phóng to nhẹ */
+        transform: scale(1.1);
       }
     }
 
@@ -80,22 +76,18 @@
       font-weight: 500;
       color: white;
       text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
-      background: linear-gradient(
-        90deg,
-        #ff9c3f,
-        #ff81b3
-      ); /* 🟠➡️💖 Gradient cam-hồng */
+      background: linear-gradient(100deg, #ff9c3f, #ff9bc3);
       background-clip: text;
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent; /* 🔥 Tạo chữ gradient */
+      -webkit-text-fill-color: transparent;
       font-style: italic;
-      font-family: "Dancing Script", cursive; /* 🆕 Font chữ bay bổng */
+      font-family: "Dancing Script", cursive;
       margin-top: 10px;
       opacity: 0.9;
       transition: opacity 0.3s ease-in-out;
 
       &:hover {
-        opacity: 1; /* 🔥 Hover làm nổi bật hơn */
+        opacity: 1;
       }
     }
 
@@ -109,7 +101,6 @@
       &:hover {
         background-color: #ff6b6b;
         color: white;
-        @include glow(#ff6b6b);
       }
     }
   }
@@ -132,7 +123,7 @@
       h4 {
         color: #ff6b6b;
         margin-bottom: 15px;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         font-weight: bold;
         text-transform: uppercase;
         text-align: center;
@@ -320,6 +311,229 @@
       .glow-effect:hover {
         background: linear-gradient(45deg, #20c997, #28a745);
         box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 1rem;
+    }
+
+    .pagination li {
+      margin: 0 5px;
+    }
+
+    .pagination a {
+      padding: 10px 15px;
+      border-radius: 5px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .pagination .active a {
+      background: #28a745;
+      color: white;
+      font-weight: bold;
+    }
+
+    .prev-button,
+    .next-button {
+      font-weight: bold;
+    }
+  }
+
+  .flash-sale {
+    background-color: #ffffff;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #ff6b6b;
+      text-align: center;
+      position: relative;
+      padding-bottom: 10px;
+
+      &::after {
+        content: "";
+        width: 50px;
+        height: 4px;
+        background: #ffcc5c;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+    }
+
+    .countdown-timer {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff4500;
+      text-shadow: 0 0 10px rgba(255, 69, 0, 0.8),
+        0 0 20px rgba(255, 69, 0, 0.6), 0 0 30px rgba(255, 69, 0, 0.4);
+      animation: flicker 1.5s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+      }
+      100% {
+        opacity: 0.8;
+        text-shadow: 0 0 15px rgba(255, 69, 0, 1);
+      }
+    }
+
+    .flash-sale-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s ease-in-out;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      .product-image {
+        width: 80%;
+        margin-bottom: 15px;
+        border-radius: 8px;
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #d32f2f;
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+
+      .danger-effect {
+        background: linear-gradient(45deg, #ff0000, #f7fd53);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s;
+        border: none;
+      }
+
+      .danger-effect:hover {
+        background: linear-gradient(45deg, #f7fd53, #ff0000);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+      }
+    }
+  }
+
+  .customer-reviews {
+    background: white;
+    padding: 50px 20px;
+    border-radius: 12px;
+    margin: 30px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #ff6b6b;
+      text-align: center;
+      position: relative;
+      padding-bottom: 10px;
+
+      &::after {
+        content: "";
+        width: 50px;
+        height: 4px;
+        background: #ffcc5c;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+    }
+
+    .review-card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease-in-out;
+      position: relative;
+      margin: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      text-align: center;
+      overflow: hidden;
+
+      /* Hiệu ứng viền gradient */
+      &::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff5470);
+        z-index: -1;
+        border-radius: 14px;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+
+        /* Viền sáng lên khi hover */
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      p {
+        font-style: italic;
+        color: #444;
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      /* Hiệu ứng glow nhẹ cho chữ */
+      strong {
+        margin-top: 12px;
+        color: #222;
+        font-weight: bold;
+        font-size: 1rem;
+        text-shadow: 0px 0px 5px rgba(255, 87, 127, 0.5);
+      }
+
+      /* Hiệu ứng sao rating */
+      .stars {
+        color: #ffcc00;
+        font-size: 1.3rem;
+        text-shadow: 0px 0px 8px rgba(255, 204, 0, 0.6);
       }
     }
   }
