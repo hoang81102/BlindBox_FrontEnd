@@ -116,10 +116,14 @@ const Header = () => {
               <NavLink to="/about" className="nav-item">
                 About
               </NavLink>
+
+              {/* SHOP DROPDOWN */}
               <NavDropdown
                 title="Shop"
                 id="shop-dropdown"
                 className="nav-dropdown"
+                onMouseEnter={(e) => e.currentTarget.classList.add("show")}
+                onMouseLeave={(e) => e.currentTarget.classList.remove("show")}
               >
                 <NavDropdown.Item href="/shop/category1">
                   Category 1
@@ -128,10 +132,14 @@ const Header = () => {
                   Category 2
                 </NavDropdown.Item>
               </NavDropdown>
+
+              {/* PRODUCT DROPDOWN */}
               <NavDropdown
                 title="Product"
                 id="product-dropdown"
                 className="nav-dropdown"
+                onMouseEnter={(e) => e.currentTarget.classList.add("show")}
+                onMouseLeave={(e) => e.currentTarget.classList.remove("show")}
               >
                 <NavDropdown.Item href="/product/new">
                   New Arrivals
@@ -140,6 +148,7 @@ const Header = () => {
                   Best Sellers
                 </NavDropdown.Item>
               </NavDropdown>
+
               <NavLink to="/contact" className="nav-item">
                 Contact
               </NavLink>
