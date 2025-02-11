@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Register.scss";
-import { MdEmail, MdPerson, MdPhone, MdLocationOn } from "react-icons/md";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {
+  MdEmail,
+  MdPerson,
+  MdPhone,
+  MdLocationOn,
+  MdDarkMode,
+  MdLightMode,
+  MdVisibility,
+  MdVisibilityOff,
+} from "react-icons/md";
 import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
-import registerVideo from "../../Assets/Video/Labubu_video.mp4";
+import registerVideo from "../../Assets/Video/LoginVideo.mp4";
+import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
 import { registerUser } from "../../Services/ApiController";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -25,6 +34,7 @@ const Register = () => {
   const [phoneError, setPhoneError] = useState("");
   const [addressError, setAddressError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
@@ -49,7 +59,11 @@ const Register = () => {
   const handleEmailChange = (event) => {
     const value = event.target.value;
     setEmail(value);
-    setEmailError(validateEmail(value) ? "" : "Invalid email format");
+    setEmailError(
+      validateEmail(value)
+        ? ""
+        : "Invalid email format (Email must be exmaple@gmail.com)"
+    );
   };
 
   const handlePasswordChange = (event) => {
@@ -106,18 +120,32 @@ const Register = () => {
       return;
     }
 
-    try {
-      const response = await registerUser(email, password, fullName, phone);
-      toast.success("Registration successful");
-      navigate("/login");
-    } catch (error) {
-      toast.error(error || "Registration failed");
-    }
+    const response = await registerUser(email, password, fullName, phone);
+    toast.success(
+      "Registration successful! Please check your email to verify your account."
+    );
+    setTimeout(() => {
+      navigate("/verify?email=" + encodeURIComponent(email));
+    });
     setIsLoading(false);
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle("dark-mode");
+  };
+
   return (
-    <div className="register-page">
+    <div className={`register-page ${darkMode ? "dark-mode" : ""}`}>
+      <div className="dark-mode-toggle" onClick={toggleDarkMode}>
+        {darkMode ? <MdLightMode size={30} /> : <MdDarkMode size={30} />}
+      </div>
+      <div className="home-logo-wrapper">
+        <div className="home-logo" onClick={() => navigate("/")}>
+          <img src={LogoSystem}></img>
+        </div>
+        <span className="home-title">Mystic BlindBox</span>
+      </div>
       <div className="register-wrapper">
         <div className="register-container">
           <div className="register-left-section">
@@ -332,6 +360,17 @@ const Register = () => {
                   "Register"
                 )}
               </button>
+              <div className="register-login-redirect">
+                <p>
+                  Already have an account?{" "}
+                  <span
+                    className="register-login-link"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login here
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
