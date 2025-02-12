@@ -1,65 +1,82 @@
 .footer {
-  background-color: #ffc7d6;
-  color: #000000;
+  background: linear-gradient(135deg, #ffa5a8, #ff734c);
+  color: white;
+  padding: 30px 0;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+}
 
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .footer-sections {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+.footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-    .footer-section {
-      flex: 1;
-      margin: 0 10px;
-      font-family: "'Playfair Display', serif";
+.footer-sections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+}
 
-      h4 {
-        margin-bottom: 10px;
-        color: #ffffff;
-        font-size: 1.6em;
-      }
-      p,
-      a {
-        margin: 5px 0;
-        font-family: "'Quicksand', sans-serif";
-        font-size: 1.2em;
-        color: #000000;
-        text-decoration: none;
-        &:hover {
-          color: #000000;
-        }
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        li {
-          margin: 5px 0;
-        }
-      }
-      .social-links {
-        display: flex;
-        a {
-          margin: 0 5px;
-          font-size: 2em;
-          color: #000000;
-          &:hover {
-            color: #000000;
-          }
-        }
-      }
-    }
-  }
-  .footer-bottom {
-    text-align: center;
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+  max-width: 250px;
+  text-align: left;
+}
 
-    p {
-      margin: 0;
-      color: #000000;
-      font-size: 1.2em;
-    }
-  }
+.footer-section h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  border-bottom: 2px solid white;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.footer-section p,
+.footer-section ul {
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-section ul li {
+  margin: 5px 0;
+}
+
+.footer-section ul li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+  color: #ffeb3b;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-links a {
+  color: white;
+  font-size: 1.5rem;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.social-links a:hover {
+  color: #ffeb3b;
+  transform: scale(1.1);
+}
+
+.footer-bottom {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
