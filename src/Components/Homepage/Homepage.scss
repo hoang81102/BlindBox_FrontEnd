@@ -193,7 +193,7 @@
       }
 
       .best-sellers-video {
-        width: 80%;
+        width: 100%;
         max-width: 500px;
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -208,9 +208,8 @@
 
         img {
           max-width: 100%;
-          max-height: 700px;
-          object-fit: contain;
           transition: transform 0.3s ease-in-out;
+          border-radius: 20px;
         }
 
         .carousel-control-prev,
