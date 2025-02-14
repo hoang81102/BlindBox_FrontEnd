@@ -100,6 +100,7 @@
       transition: 0.3s;
       &:hover {
         background-color: #ff6b6b;
+        box-shadow: 0px 0px 15px 5px rgba(255, 107, 107, 0.75);
         color: white;
       }
     }
@@ -256,60 +257,102 @@
     }
 
     .product-card {
-      text-align: center;
       background: linear-gradient(135deg, #fff, #f9f9f9);
-      padding: 20px;
       border-radius: 12px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       border: 1px solid rgba(0, 0, 0, 0.1);
       position: relative;
       overflow: hidden;
+      width: 100%;
+      max-width: 300px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
 
-      img {
-        width: 90%;
-        max-width: 160px;
-        margin-bottom: 12px;
+      .product-image-container {
+        width: 100%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // Giúp ảnh không bị méo và lấp đầy toàn bộ khung
         transition: transform 0.3s ease-in-out;
       }
 
-      h3 {
-        font-size: 1.2rem;
+      .product-info {
+        width: 100%;
+        height: 30%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .product-title {
+        font-size: 1.3rem;
+        margin-top: 10px;
         font-weight: bold;
         color: #333;
-        margin-bottom: 8px;
+        transition: color 0.3s ease-in-out;
       }
 
-      p {
-        font-size: 1rem;
-        color: #777;
-        margin-bottom: 12px;
+      .product-price {
+        font-size: 1.2rem;
+        color: #ff6b6b;
+        font-weight: bold;
+        transition: transform 0.3s ease-in-out;
       }
 
+      .button-group {
+        position: absolute;
+        width: 90%;
+        gap: 10px;
+        top: 92%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        visibility: hidden;
+        background-color: rgba(210, 210, 210, 0.096);
+        backdrop-filter: blur(10px);
+        border: 0.1px solid rgba(195, 195, 195, 0.185);
+        padding: 5px 20px;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+
+        .add-to-cart-button,
+        .view-button {
+          background: linear-gradient(45deg, #28a745, #20c997);
+          transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+          padding: 5px 20px;
+          margin-top: 2px;
+          border-radius: 5px;
+          border: none;
+          cursor: pointer;
+          &:hover {
+            background: linear-gradient(45deg, #20c997, #28a745);
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+          }
+        }
+      }
       &:hover {
         transform: scale(1.05);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      }
-
-      &:hover img {
-        transform: scale(1.1);
-      }
-
-      .glow-effect {
-        background: linear-gradient(45deg, #28a745, #20c997);
-        color: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        transition: 0.3s;
-        border: none;
-      }
-
-      .glow-effect:hover {
-        background: linear-gradient(45deg, #20c997, #28a745);
-        box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+        .button-group {
+          opacity: 1;
+          visibility: visible;
+        }
       }
     }
 
@@ -331,16 +374,13 @@
       border: 1px solid #ddd;
       color: #333;
       cursor: pointer;
+      text-decoration: none !important;
+      border-bottom: none !important;
     }
 
     .pagination .active a {
       background: #28a745;
       color: white;
-      font-weight: bold;
-    }
-
-    .prev-button,
-    .next-button {
       font-weight: bold;
     }
   }

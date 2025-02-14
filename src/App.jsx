@@ -9,12 +9,14 @@ import VerifyEmail from "./Components/Register/VerifyEmail";
 import ResetPassword from "./Components/Login/ResetPassword";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
+import ScrollToTop from "./Services/ScrollToTop";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Router>
+      <ScrollToTop></ScrollToTop>
       <Routes>
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />

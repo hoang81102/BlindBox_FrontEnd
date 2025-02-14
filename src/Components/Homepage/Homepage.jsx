@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import Countdown from "react-countdown";
 import ReactPaginate from "react-paginate";
-
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import labubuImg from "../../Assets/Image/Labubu_icon.png";
 import LabubuVideo from "../../Assets/Video/LoginVideo.mp4";
 import LabubuLogo from "../../Assets/Image/Labubu_Logo.jpg";
@@ -41,18 +41,23 @@ const bannerImages = [
   BlindBoxCollection6,
 ];
 const HomePage = () => {
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
-  const totalProducts = 30;
+  const totalProducts = 32;
   const productList = [...Array(totalProducts)].map((_, idx) => ({
     id: idx + 1,
     name: `Product ${idx + 1}`,
     price: (19.99 + idx * 5).toFixed(2),
-    image: labubuImg,
+    imageCollection: BlindBoxCollection1,
+    imageItem: BlindBoxCollection2,
   }));
-
+  const navigate = useNavigate(); // Hook để điều hướng
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  const handleNavigate = (productId) => {
+    navigate(`/products/${productId}`);
   };
 
   const offset = currentPage * itemsPerPage;
@@ -210,28 +215,56 @@ const HomePage = () => {
             </Row>
           </section>
 
-          {/* Featured Products with Pagination */}
+          {/* Featured Products with Image Hover Effect */}
           <Container className="featured-products">
             <h2 className="text-center">Featured Products</h2>
             <Row>
-              {currentProducts.map((product) => (
-                <Col
-                  md={4}
-                  className="product-card hover-effect colorful-card"
-                  key={product.id}
-                >
-                  <img
-                    className="product-image w-50"
-                    src={product.image}
-                    alt={product.name}
-                  />
-                  <h3>{product.name}</h3>
-                  <p>${product.price}</p>
-                  <Button variant="success" className="glow-effect">
-                    Add to Cart
-                  </Button>
-                </Col>
-              ))}
+              {currentProducts.map((product) => {
+                const [isHovered, setIsHovered] = useState(false);
+                return (
+                  <Col
+                    md={4}
+                    className="product-card hover-effect colorful-card"
+                    key={product.id}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                  >
+                    <div className="product-image-container">
+                      <img
+                        className="product-image"
+                        src={
+                          isHovered
+                            ? product.imageItem
+                            : product.imageCollection
+                        }
+                        alt={product.name}
+                      />
+                      <div
+                        className={`button-group ${isHovered ? "show" : ""}`}
+                      >
+                        <Button
+                          variant="primary"
+                          className="view-button"
+                          onClick={() => handleNavigate(product.id)}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="success"
+                          className="add-to-cart-button"
+                          onClick={() =>
+                            console.log(`Added ${product.name} to cart`)
+                          }
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
+                    </div>
+                    <h3 className="product-title">{product.name}</h3>
+                    <p className="product-price">${product.price}</p>
+                  </Col>
+                );
+              })}
             </Row>
 
             {/* Pagination Controls */}
