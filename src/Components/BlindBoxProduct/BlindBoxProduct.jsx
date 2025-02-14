@@ -6,12 +6,12 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
-import CollectionImage from "../../Assets/Image/BlindBoxCollection.avif";
+import CollectionImage from "../../Assets/Image/BlindBoxCollection7.avif";
 import Character1 from "../../Assets/Image/Labubu1_ImageSlider.jpg";
-import Character2 from "../../Assets/Image/Labubu2_ImageSlider.jpg";
-import Character3 from "../../Assets/Image/Labubu3_ImageSlider.jpg";
-import Character4 from "../../Assets/Image/Labubu4_ImageSlider.jpg";
-import Character5 from "../../Assets/Image/Labubu5_ImageSlider.jpg";
+import Character2 from "../../Assets/Image/Labubu_NewYearCollection.webp";
+import Character3 from "../../Assets/Image/Labubu2_NewYearCollection.jpg";
+import Character4 from "../../Assets/Image/Labubu3_NewYearCollection.jpg";
+import Character5 from "../../Assets/Image/Labubu4_ImageSlider.jpg";
 
 const characters = [
   CollectionImage,
@@ -163,10 +163,7 @@ const BlindBoxProduct = () => {
                 boxes" - you will not be able to choose which model you will
                 receive. You won't know what you get until you open it. Surprise
                 will be an indispensable spice to make the game more
-                interesting. Blindboxes in the same SET will not overlap. In
-                case both SET is purchased and SECRET/CHASER appears, one basic
-                model will be lost. *SECRET/CHASER: These are rare models and
-                are often highlighted in black on Blindbox
+                interesting.
               </p>
             </div>
           )}

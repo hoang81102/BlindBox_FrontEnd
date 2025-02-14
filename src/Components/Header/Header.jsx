@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Navbar,
   Nav,
@@ -10,6 +10,7 @@ import {
   FormControl,
   Button,
 } from "react-bootstrap";
+import { CartContext } from "../Cart/CartContext";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
@@ -22,7 +23,9 @@ const Header = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [scrolling, setScrolling] = useState(false);
-
+  const { cart } = useContext(CartContext);
+  const cartCount = cart.length;
+  console.log("Cart count in Header:", cartCount);
   useEffect(() => {
     const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");
@@ -85,7 +88,12 @@ const Header = () => {
                 ></video>
                 <span className="welcome-text">{user.username}</span>
                 <NavLink to="/cart" className="cart-link">
-                  <FaShoppingCart />
+                  <div className="cart-icon-container">
+                    <FaShoppingCart />
+                    {cartCount > 0 && (
+                      <span className="cart-count">{cartCount}</span>
+                    )}
+                  </div>
                 </NavLink>
                 <NavDropdown
                   title="Account"
@@ -112,7 +120,12 @@ const Header = () => {
                   Register
                 </NavLink>
                 <NavLink to="/cart" className="cart-link">
-                  <FaShoppingCart />
+                  <div className="cart-icon-container">
+                    <FaShoppingCart />
+                    {cartCount > 0 && (
+                      <span className="cart-count">{cartCount}</span>
+                    )}
+                  </div>
                 </NavLink>
               </>
             )}

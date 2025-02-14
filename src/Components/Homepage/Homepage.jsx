@@ -1,4 +1,5 @@
-import { React, useState } from "react";
+import { React, useState, useContext } from "react";
+import { CartContext } from "../Cart/CartContext";
 import "./HomePage.scss";
 import {
   Container,
@@ -10,8 +11,9 @@ import {
   Form,
 } from "react-bootstrap";
 import Countdown from "react-countdown";
+import { toast } from "react-toastify";
 import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import labubuImg from "../../Assets/Image/Labubu_icon.png";
 import LabubuVideo from "../../Assets/Video/LoginVideo.mp4";
 import LabubuLogo from "../../Assets/Image/Labubu_Logo.jpg";
@@ -26,6 +28,8 @@ import BlindBoxCollection3 from "../../Assets/Image/BlindBoxCollection3.jpg";
 import BlindBoxCollectio4 from "../../Assets/Image/BlindBoxCollection4.jpg";
 import BlindBoxCollection5 from "../../Assets/Image/BlindBoxCollection5.jpg";
 import BlindBoxCollection6 from "../../Assets/Image/BlindBoxCollection6.jpg";
+import BlindBoxCollection7 from "../../Assets/Image/BlindBoxCollection7.avif";
+import NewYearCollection from "../../Assets/Image/Labubu_NewYearCollection.png";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -39,19 +43,20 @@ const bannerImages = [
   BlindBoxCollectio4,
   BlindBoxCollection5,
   BlindBoxCollection6,
+  BlindBoxCollection7,
 ];
 const HomePage = () => {
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
-  const totalProducts = 32;
+  const totalProducts = 56;
   const productList = [...Array(totalProducts)].map((_, idx) => ({
     id: idx + 1,
     name: `Product ${idx + 1}`,
     price: (19.99 + idx * 5).toFixed(2),
-    imageCollection: BlindBoxCollection1,
-    imageItem: BlindBoxCollection2,
+    imageCollection: NewYearCollection,
+    imageItem: LabubuSlider1,
   }));
-  const navigate = useNavigate(); // Hook để điều hướng
+  const navigate = useNavigate();
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -60,6 +65,11 @@ const HomePage = () => {
     navigate(`/products/${productId}`);
   };
 
+  const { addToCart } = useContext(CartContext);
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+  };
   const offset = currentPage * itemsPerPage;
   const currentProducts = productList.slice(offset, offset + itemsPerPage);
   return (
@@ -247,14 +257,12 @@ const HomePage = () => {
                           className="view-button"
                           onClick={() => handleNavigate(product.id)}
                         >
-                          View
+                          View product
                         </Button>
                         <Button
                           variant="success"
                           className="add-to-cart-button"
-                          onClick={() =>
-                            console.log(`Added ${product.name} to cart`)
-                          }
+                          onClick={() => handleAddToCart(product)}
                         >
                           Add to Cart
                         </Button>

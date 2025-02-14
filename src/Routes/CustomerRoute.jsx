@@ -6,6 +6,7 @@ import About from "../Components/About/About";
 import Contact from "../Components/Contact/Contact";
 import FAQs from "../Components/FAQS/FAQS";
 import BlindBoxProduct from "../Components/BlindBoxProduct/BlindBoxProduct";
+import CartPage from "../Components/Cart/CartPage";
 const CustomerRoute = () => {
   return (
     <Routes>
@@ -16,6 +17,7 @@ const CustomerRoute = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/faqs" element={<FAQs />} />
       <Route path="/products/:id" element={<BlindBoxProduct />} />
+      <Route path="/cart" element={<CartPage />} />
     </Routes>
   );
 };

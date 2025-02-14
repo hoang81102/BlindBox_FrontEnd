@@ -12,9 +12,10 @@ $border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   h3 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: bold;
     text-transform: uppercase;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
     color: #220202;
     text-align: center;
     position: relative;
@@ -48,11 +49,11 @@ $border-radius: 10px;
 
     strong {
       color: #222;
-      font-weight: 700; // Đậm hơn để nhấn mạnh
+      font-weight: 700;
     }
 
     a {
-      color: #ff7b00; // Màu cam nổi bật nhưng không quá chói
+      color: #ff7b00;
       font-weight: 600;
       text-decoration: none;
       transition: color 0.3s ease-in-out;
@@ -72,7 +73,7 @@ $border-radius: 10px;
 
     .collection-image {
       width: 100%;
-      height: 420px;
+      height: 500px;
       object-fit: cover;
       border-radius: $border-radius;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -86,6 +87,7 @@ $border-radius: 10px;
 
   .character-slider-container {
     width: 100%;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,7 +95,7 @@ $border-radius: 10px;
 
     .swiper {
       width: 100%;
-      max-width: 500px;
+      max-width: 5500px;
     }
 
     .swiper-slide {
@@ -103,8 +105,8 @@ $border-radius: 10px;
       cursor: pointer;
 
       .character-image {
-        width: 75px;
-        height: 75px;
+        width: 100px;
+        height: 100px;
         object-fit: cover;
         border-radius: 8px;
         border: 2px solid transparent;
@@ -415,29 +417,37 @@ $border-radius: 10px;
   }
 
   .related-products {
-    margin-top: 30px;
+    margin-top: 40px;
     padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
 
     .related-products-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
+      display: flex;
       justify-content: center;
-      padding: 10px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
 
-      .related-product-image {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .related-product-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      border: 3px solid white;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 
-        &:hover {
-          transform: scale(1.05);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        border-color: #ffffff;
       }
     }
   }

@@ -79,12 +79,14 @@ const Login = () => {
       return;
     }
     setIsLoading(true);
+
     try {
       const response = await loginUser(email, password);
       if (!response?.token) {
         ToastManager.showError("Invalid login response: Token not found");
         return;
       }
+
       const { token, user } = response;
       localStorage.setItem("username", user.name);
       localStorage.setItem("phoneNumber", user.phoneNumber);
@@ -95,11 +97,10 @@ const Login = () => {
       localStorage.setItem("role", role);
       ToastManager.showSuccess("Login successful");
 
-      if (role === "user") {
-        navigate("/");
-      } else if (role === "admin") {
-        navigate("/admin");
-      }
+      const redirectPath = localStorage.getItem("redirectPath") || "/";
+      localStorage.removeItem("redirectPath");
+
+      navigate(redirectPath);
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       ToastManager.showError(
