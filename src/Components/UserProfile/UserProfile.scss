@@ -5,10 +5,13 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
 
   .profile-card {
     text-align: center;
     padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+    border-radius: 10px;
 
     .profile-avatar {
       display: flex;
@@ -21,22 +24,24 @@
         border: 3px solid #007bff;
         border-radius: 50%;
         padding: 5px;
-        background: #f8f9fa;
+        background: #fff;
       }
     }
 
     .profile-info {
       .profile-name {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: bold;
+        color: #333;
       }
 
       .profile-detail {
         font-size: 16px;
-        color: #555;
+        color: #666;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-top: 5px;
 
         .icon {
           margin-right: 8px;
@@ -55,33 +60,41 @@
     background: #ffc107;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 10px 15px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 10px;
+    transition: background 0.3s ease, transform 0.2s;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 600;
 
     &:hover {
       background: #e0a800;
+      transform: scale(1.05);
     }
   }
 
   .profile-info input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-top: 5px;
     border: 1px solid #ced4da;
     border-radius: 6px;
     font-size: 14px;
+    background: #f8f9fa;
   }
 
   .address-book {
     margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
 
     h3 {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       margin-bottom: 10px;
+      color: #333;
     }
 
     .address-list {
@@ -89,12 +102,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #f8f9fa;
-        padding: 10px;
+        background: #ffffff;
+        padding: 12px;
         border-radius: 8px;
         margin-bottom: 8px;
         font-size: 14px;
         transition: all 0.3s ease;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 
         .icon {
           margin-right: 8px;
@@ -120,10 +134,11 @@
 
       input {
         flex-grow: 1;
-        padding: 8px;
+        padding: 10px;
         border: 1px solid #ced4da;
         border-radius: 6px;
         font-size: 14px;
+        background: #ffffff;
       }
 
       .add-button {
@@ -134,13 +149,14 @@
         background: #007bff;
         color: white;
         border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
+        padding: 10px 15px;
+        border-radius: 8px;
         cursor: pointer;
-        transition: background 0.3s ease;
+        transition: background 0.3s ease, transform 0.2s;
 
         &:hover {
           background: #0056b3;
+          transform: scale(1.05);
         }
       }
     }
