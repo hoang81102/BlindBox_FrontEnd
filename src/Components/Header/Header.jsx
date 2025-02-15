@@ -25,7 +25,7 @@ const Header = () => {
   const [scrolling, setScrolling] = useState(false);
   const { cart } = useContext(CartContext);
   const cartCount = cart.length;
-  console.log("Cart count in Header:", cartCount);
+
   useEffect(() => {
     const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");

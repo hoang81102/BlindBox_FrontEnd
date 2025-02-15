@@ -1,0 +1,62 @@
+.best-sellers {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  text-align: center;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ff6b6b;
+    text-align: center;
+    position: relative;
+    padding-bottom: 10px;
+
+    &::after {
+      content: "";
+      width: 50px;
+      height: 4px;
+      background: #ffcc5c;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+  }
+}
+
+.best-sellers-video {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.best-sellers-carousel {
+  .carousel-item {
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  img {
+    max-width: 100%;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 20px;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    filter: invert(1);
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.05);
+    }
+  }
+}
