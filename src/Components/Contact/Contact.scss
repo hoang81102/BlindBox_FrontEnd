@@ -1,30 +1,34 @@
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600&display=swap");
 
-$gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
-
 .contact-container {
   max-width: 800px;
   margin: auto;
   padding: 40px;
   margin-bottom: 10px;
-  background: $gradient-bg;
+  background: #f4f4f4;
   border-radius: 15px;
-  box-shadow: 0px 5px 15px rgba(255, 101, 132, 0.2);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  color: #fff;
+  color: #333;
 
-  .title {
-    font-size: 2.5rem;
-    font-family: "Fredoka", sans-serif;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  .contact-title {
+    font-size: 3rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 2px 2px 5px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #000000, #000000);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textGlow 1.5s infinite alternate;
   }
 
-  .subtitle {
+  .contact-subtitle {
     font-size: 1.2rem;
     font-family: "Quicksand", sans-serif;
     margin-bottom: 25px;
+    color: #666;
   }
 
   .contact-form {
@@ -32,7 +36,7 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
     flex-direction: column;
     gap: 15px;
 
-    .input-group {
+    .contact-input-group {
       display: flex;
       gap: 10px;
 
@@ -46,14 +50,14 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
       font-family: "Quicksand", sans-serif;
       font-size: 1rem;
       padding: 12px;
-      border: none;
+      border: 1px solid #ccc;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.8);
+      background: #fff;
       outline: none;
       transition: 0.3s ease-in-out;
 
       &:focus {
-        background: #fff;
+        border-color: #888;
       }
     }
 
@@ -62,8 +66,8 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
       resize: none;
     }
 
-    .submit-btn {
-      background: #ff89a0;
+    .contact-submit-btn {
+      background: #008cba;
       color: #fff;
       font-size: 1.2rem;
       font-family: "Fredoka", sans-serif;
@@ -74,12 +78,11 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
       transition: 0.3s;
 
       &:hover {
-        background: #ff4d6d;
+        background: #006789;
       }
     }
   }
 
-  /* Contact Info */
   .contact-info {
     margin-top: 20px;
     display: flex;
@@ -87,21 +90,13 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
     gap: 10px;
     font-size: 1rem;
 
-    div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
     .icon {
       font-size: 1.2rem;
-      color: #fff;
+      color: #008cba;
     }
   }
 
-  /* Social Media */
-  .social-links {
+  .contact-social-links {
     margin-top: 20px;
     display: flex;
     justify-content: center;
@@ -109,7 +104,7 @@ $gradient-bg: linear-gradient(135deg, #ff9d9d, #ffd374);
 
     .social-icon {
       font-size: 1.8rem;
-      color: #fff;
+      color: #008cba;
       transition: 0.3s;
 
       &:hover {

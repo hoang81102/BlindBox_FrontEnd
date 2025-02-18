@@ -10,7 +10,7 @@ import ResetPassword from "./Components/Login/ResetPassword";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
 import ScrollToTop from "./Services/ScrollToTop";
-import { CartProvider } from "./Components/Cart/CartContext";
+import { CartProvider } from "./Components/AccountDropdown/Cart/CartContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 

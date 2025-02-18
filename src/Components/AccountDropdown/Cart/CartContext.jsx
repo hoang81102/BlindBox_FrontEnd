@@ -1,11 +1,18 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
 
-  // 🛒 Thêm sản phẩm vào giỏ hàng (nếu đã có thì tăng số lượng)
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
@@ -20,7 +27,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // ➕ Tăng số lượng sản phẩm
   const increaseQuantity = (id) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
@@ -29,7 +35,6 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // ➖ Giảm số lượng sản phẩm (nếu về 0 thì xóa khỏi giỏ hàng)
   const decreaseQuantity = (id) => {
     setCart((prevCart) =>
       prevCart
@@ -40,9 +45,12 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // ❌ Xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
   };
 
   return (
@@ -53,6 +61,7 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         removeFromCart,
+        clearCart,
       }}
     >
       {children}

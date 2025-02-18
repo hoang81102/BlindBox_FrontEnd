@@ -3,19 +3,30 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const loginUser = async (email, password) => {
-  const response = await axios.post(`${API_URL}/api/Auth/login`, {
-    Username: email,
-    Password: password,
+  const response = await axios.post(`${API_URL}/api/login`, {
+    email,
+    password,
   });
   return response.data;
 };
 
-export const registerUser = async (email, password, name, phoneNumber) => {
-  const response = await axios.post(`${API_URL}/api/Auth/register`, {
+export const registerUser = async (
+  firstName,
+  lastName,
+  email,
+  password,
+  gender,
+  phoneNumber,
+  address
+) => {
+  const response = await axios.post(`${API_URL}/api/register`, {
+    firstName,
+    lastName,
     email,
     password,
-    name,
+    gender,
     phoneNumber,
+    address,
   });
   return response.data;
 };
@@ -35,5 +46,11 @@ export const resetPassword = async ({ token, newPassword }) => {
       newPassword,
     }
   );
+  return response.data;
+};
+export const googleLogin = async (credential) => {
+  const response = await axios.post(`${API_URL}/api/google-login`, {
+    token: credential,
+  });
   return response.data;
 };
