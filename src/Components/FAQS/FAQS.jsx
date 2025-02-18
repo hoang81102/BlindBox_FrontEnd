@@ -2,6 +2,7 @@ import React from "react";
 import "./FAQs.scss";
 import { FaChevronDown } from "react-icons/fa";
 import { motion } from "framer-motion";
+
 const faqsData = [
   {
     question: "What is a Blind Box?",
@@ -43,25 +44,32 @@ const faqsData = [
 const FAQs = () => {
   return (
     <div className="faqs-container">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 2 }}
-        className="title"
-      >
-        Frequently Asked Questions 🤔
-      </motion.h1>
-      <div className="faq-list">
-        {faqsData.map((faq, index) => (
-          <div key={index} className="faq-item">
-            <input type="checkbox" id={`faq-${index}`} className="faq-toggle" />
-            <label htmlFor={`faq-${index}`} className="faq-question">
-              {faq.question}
-              <FaChevronDown className="icon" />
-            </label>
-            <div className="faq-answer">{faq.answer}</div>
-          </div>
-        ))}
+      <div className="faqs-form">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="faqs-title"
+        >
+          Frequently Asked Questions 🤔
+        </motion.h1>
+
+        <div className="faq-list">
+          {faqsData.map((faq, index) => (
+            <div key={index} className="faq-item">
+              <input
+                type="checkbox"
+                id={`faq-${index}`}
+                className="faq-toggle"
+              />
+              <label htmlFor={`faq-${index}`} className="faq-question">
+                {faq.question}
+                <FaChevronDown className="icon" />
+              </label>
+              <div className="faq-answer">{faq.answer}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

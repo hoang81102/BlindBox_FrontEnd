@@ -10,9 +10,18 @@ import {
   FormControl,
   Button,
 } from "react-bootstrap";
-import { CartContext } from "../Cart/CartContext";
+import { CartContext } from "../AccountDropdown/Cart/CartContext";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { FaShoppingCart } from "react-icons/fa";
+import {
+  FaUser,
+  FaBox,
+  FaShoppingCart,
+  FaHeart,
+  FaGift,
+  FaQuestionCircle,
+  FaSignOutAlt,
+  FaWallet,
+} from "react-icons/fa";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
 import WelcomeVideo from "../../Assets/Video/Animation_Hello1.webm";
 import "./Header.scss";
@@ -28,24 +37,21 @@ const Header = () => {
 
   useEffect(() => {
     const role = localStorage.getItem("role");
-    const username = localStorage.getItem("username");
-    if (role && username) {
-      setUser({ username });
+    const firstName = localStorage.getItem("firstName");
+    const lastName = localStorage.getItem("lastName");
+    const fullName = localStorage.getItem("fullName");
+    if (role && firstName) {
+      setUser({ username: `${fullName}`, role });
     }
-  }, [location]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolling(window.scrollY > 100);
-    };
-
+    const handleScroll = () => setScrolling(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location]);
 
   const handleLogout = () => {
-    localStorage.removeItem("role");
-    localStorage.removeItem("username");
+    localStorage.clear();
+    clearCart();
     setUser(null);
     navigate("/login");
   };
@@ -62,16 +68,19 @@ const Header = () => {
             scrolling ? "hidden" : ""
           }`}
         >
+          {/*Hotline*/}
           <Col xs={3} md={3} className="d-flex justify-content-start">
             <div className="hotline">Hotline: 1800-123-456</div>
           </Col>
 
+          {/*Logo*/}
           <Col xs={6} md={6} className="d-flex justify-content-center">
             <Navbar.Brand href="/">
-              <img src={LogoSystem} className="logo-image" alt="Logo" />
+              <img src={LogoSystem} className="header-logo-image" alt="Logo" />
             </Navbar.Brand>
           </Col>
 
+          {/*Thông tin user */}
           <Col
             xs={3}
             md={3}
@@ -84,9 +93,10 @@ const Header = () => {
                   autoPlay
                   muted
                   loop
-                  className="welcome-video"
+                  className="welcome-hello-video"
                 ></video>
                 <span className="welcome-text">{user.username}</span>
+
                 <NavLink to="/cart" className="cart-link">
                   <div className="cart-icon-container">
                     <FaShoppingCart />
@@ -95,18 +105,42 @@ const Header = () => {
                     )}
                   </div>
                 </NavLink>
+
                 <NavDropdown
                   title="Account"
                   id="account-dropdown"
                   align="end"
                   data-bs-theme="light"
                 >
-                  <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                  <NavDropdown.Item href="/payment-history">
-                    Payment History
+                  <NavDropdown.Item href="/profile">
+                    <FaUser style={{ marginRight: "8px" }} /> Profile
                   </NavDropdown.Item>
+                  <NavDropdown.Item href="/wallet">
+                    <FaWallet style={{ marginRight: "8px" }} /> Wallet
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="/order-history">
+                    <FaBox style={{ marginRight: "8px" }} /> Order History
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="/wishlist">
+                    <FaHeart style={{ marginRight: "8px" }} /> Wishlist
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="/voucher">
+                    <FaGift style={{ marginRight: "8px" }} /> Voucher
+                  </NavDropdown.Item>
+
                   <NavDropdown.Divider />
+
+                  <NavDropdown.Item href="/contact">
+                    <FaQuestionCircle style={{ marginRight: "8px" }} /> Help &
+                    Support
+                  </NavDropdown.Item>
+
+                  <NavDropdown.Divider />
+
                   <NavDropdown.Item onClick={handleLogout}>
+                    <FaSignOutAlt
+                      style={{ marginRight: "8px", color: "red" }}
+                    />{" "}
                     Logout
                   </NavDropdown.Item>
                 </NavDropdown>
@@ -131,71 +165,47 @@ const Header = () => {
             )}
           </Col>
         </Row>
-
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
         {/* 🔵 Hàng 2: Navigation Menu + Search */}
-        <Row className={`bottom-header ${scrolling ? "fixed-nav" : ""}`}>
-          <Col className="d-flex justify-content-center">
-            <Nav className="navbar-nav">
-              <NavLink to="/" className="nav-item">
-                Home
-              </NavLink>
-              <NavLink to="/about" className="nav-item">
-                About
-              </NavLink>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Row className={`bottom-header ${scrolling ? "fixed-nav" : ""}`}>
+            <Col className="d-flex justify-content-center">
+              {/*Navigation Menu */}
+              <Nav className="navbar-nav">
+                <NavLink to="/home" className="nav-item">
+                  Home
+                </NavLink>
+                <NavLink to="/about" className="nav-item">
+                  About
+                </NavLink>
+                <NavLink to="/luckyWheel" className="nav-item">
+                  Lucky Wheel
+                </NavLink>
+                <NavLink to="/" className="nav-item">
+                  Blind Box
+                </NavLink>
+                <NavLink to="/faqs" className="nav-item">
+                  FAQS
+                </NavLink>
+                <NavLink to="/contact" className="nav-item">
+                  Contact
+                </NavLink>
+              </Nav>
+            </Col>
 
-              {/* SHOP DROPDOWN */}
-              <NavDropdown
-                title="Shop"
-                id="shop-dropdown"
-                className="nav-dropdown"
-                onMouseEnter={(e) => e.currentTarget.classList.add("show")}
-                onMouseLeave={(e) => e.currentTarget.classList.remove("show")}
-              >
-                <NavDropdown.Item href="/shop/category1">
-                  Category 1
-                </NavDropdown.Item>
-                <NavDropdown.Item href="/shop/category2">
-                  Category 2
-                </NavDropdown.Item>
-              </NavDropdown>
-
-              {/* PRODUCT DROPDOWN */}
-              <NavDropdown
-                title="Product"
-                id="product-dropdown"
-                className="nav-dropdown"
-                onMouseEnter={(e) => e.currentTarget.classList.add("show")}
-                onMouseLeave={(e) => e.currentTarget.classList.remove("show")}
-              >
-                <NavDropdown.Item href="/product/new">
-                  New Arrivals
-                </NavDropdown.Item>
-                <NavDropdown.Item href="/product/best-sellers">
-                  Best Sellers
-                </NavDropdown.Item>
-              </NavDropdown>
-
-              <NavLink to="/contact" className="nav-item">
-                Contact
-              </NavLink>
-              <NavLink to="/faqs" className="nav-item">
-                FAQS
-              </NavLink>
-            </Nav>
-          </Col>
-
-          {/* 🟡 Ô tìm kiếm mới */}
-          <Col className="search-container">
-            <Form className="search-form d-flex">
-              <FormControl
-                type="text"
-                placeholder="Search products..."
-                className="search-input"
-              />
-              <Button className="search-button">Search</Button>
-            </Form>
-          </Col>
-        </Row>
+            {/*Search*/}
+            <Col className="search-container">
+              <Form className="search-form d-flex">
+                <FormControl
+                  type="text"
+                  placeholder="Search products..."
+                  className="search-input"
+                />
+                <Button className="search-button">Search</Button>
+              </Form>
+            </Col>
+          </Row>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );

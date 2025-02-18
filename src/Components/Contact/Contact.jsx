@@ -16,18 +16,19 @@ const Contact = () => {
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 2 }}
-        className="title"
+        transition={{ duration: 1 }}
+        className="contact-title"
       >
         Get in Touch ✨
       </motion.h1>
-      <p className="subtitle">
+
+      <p className="contact-subtitle">
         Have a question? Fill out the form below and we'll get back to you as
         soon as possible! 💌
       </p>
 
       <form className="contact-form">
-        <div className="input-group">
+        <div className="contact-input-group">
           <input type="text" placeholder="Enter your name" required />
           <input type="email" placeholder="Enter your email" required />
         </div>
@@ -37,7 +38,7 @@ const Contact = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="submit-btn"
+          className="contact-submit-btn"
         >
           Send Message 🚀
         </motion.button>
@@ -59,7 +60,7 @@ const Contact = () => {
       </div>
 
       {/* Social Media Section */}
-      <div className="social-links">
+      <div className="contact-social-links">
         <a href="#">
           <FaFacebook className="social-icon" />
         </a>

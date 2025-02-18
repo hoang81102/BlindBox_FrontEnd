@@ -27,7 +27,7 @@ const BlindBoxProduct = () => {
   const [mainImage, setMainImage] = useState(CollectionImage);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
-  const basePrice = 200000;
+  const basePrice = 200;
   const [selectedSize, setSelectedSize] = useState("Blindbox");
   const [price, setPrice] = useState(basePrice);
 
@@ -78,11 +78,11 @@ const BlindBoxProduct = () => {
           </h2>
           <p className="sku">SKU: PVN5947</p>
           <p className="brand">TRADEMARK: PARTNER TOYS</p>
-          <p className="price">{price.toLocaleString()}₫</p>
+          <p className="price">{price.toLocaleString()}$</p>
           <p className="status">Status: In stock</p>
 
           <div className="options">
-            <label>Kích thước:</label>
+            <label>Option:</label>
             <div className="size-options">
               <button
                 className={`size-btn ${
@@ -106,6 +106,7 @@ const BlindBoxProduct = () => {
           <Button className="out-of-stock" disabled>
             🛒 OUT OF STOCK
           </Button>
+
           <Button className="wishlist">❤️ Add to favorites</Button>
           <div className="purchase-info">
             <p>

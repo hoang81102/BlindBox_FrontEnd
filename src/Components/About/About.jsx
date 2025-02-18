@@ -25,7 +25,7 @@ const About = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-3"
       >
-        Welcome to Mystic Blind Box!
+        About Mystic Blind Box!
       </motion.h1>
       <p className="about-us-subtitle text-center text-muted">
         Discover the thrill of surprise with our exclusive collections.
@@ -33,7 +33,7 @@ const About = () => {
 
       <div className="row justify-content-center mt-4">
         <motion.div
-          className="col-md-4 feature-card card p-4 shadow-sm"
+          className="col-md-4 about-us-feature-card card p-4 shadow-sm"
           whileHover={{ scale: 1.05 }}
         >
           <FaBoxOpen className="icon mb-3 text-primary" />
@@ -42,7 +42,7 @@ const About = () => {
         </motion.div>
 
         <motion.div
-          className="col-md-4 feature-card card p-4 shadow-sm mx-3"
+          className="col-md-4 about-us-feature-card card p-4 shadow-sm mx-3"
           whileHover={{ scale: 1.05 }}
         >
           <FaGift className="icon mb-3 text-danger" />
@@ -51,10 +51,10 @@ const About = () => {
         </motion.div>
 
         <motion.div
-          className="col-md-4 feature-card card p-4 shadow-sm"
+          className="col-md-4 about-us-feature-card card p-4 shadow-sm"
           whileHover={{ scale: 1.05 }}
         >
-          <FaSmile className="icon mb-3 text-warning" />
+          <FaSmile className="icon mb-3 about-us-text-warning" />
           <h3>100% Fun Guaranteed</h3>
           <p>Experience the excitement of opening every box.</p>
         </motion.div>
@@ -92,22 +92,29 @@ const About = () => {
         </ul>
       </div>
 
-      <div className="about-us-team mt-5 p-4 bg-dark text-white rounded shadow">
-        <h2>Meet Our Team</h2>
-        <p>
-          Our dedicated team of passionate individuals works tirelessly to bring
-          you the best blind box experience.
-        </p>
-        <FaUsers className="icon mb-3" />
-      </div>
+      {/* Meet Our Team & Explore More on the same row */}
+      <div className="row mt-5">
+        <div className="col-md-6">
+          <div className="about-us-team p-4 rounded shadow">
+            <h2>Meet Our Team</h2>
+            <p>
+              Our dedicated team of passionate individuals works tirelessly to
+              bring you the best blind box experience.
+            </p>
+            <FaUsers className="icon mb-3" />
+          </div>
+        </div>
 
-      <div className="about-us-content mt-5 p-4 bg-secondary text-white rounded shadow">
-        <h2>Explore More</h2>
-        <p>
-          Check out our blog for the latest updates and stories behind our
-          collections.
-        </p>
-        <FaBlog className="icon mb-3" />
+        <div className="col-md-6">
+          <div className="about-us-content p-4 rounded shadow">
+            <h2>Explore More</h2>
+            <p>
+              Check out our blog for the latest updates and stories behind our
+              collections.
+            </p>
+            <FaBlog className="icon mb-3" />
+          </div>
+        </div>
       </div>
 
       <div className="row mt-5">

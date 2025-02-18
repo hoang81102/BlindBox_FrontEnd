@@ -138,12 +138,12 @@
           border-radius: 10px;
           opacity: 0;
           transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-          filter: brightness(1.25) contrast(0.9) hue-rotate(4deg);
+          filter: brightness(1.25) contrast(0.9) hue-rotate(5deg);
           background-color: #fbe5d7;
         }
         .left-eye,
         .right-eye {
-          fill: #fbe5d7;
+          fill: #fbe5d7 !important;
         }
 
         .left-eye {
@@ -330,43 +330,13 @@
         }
       }
 
-      .login-social {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        width: 100%;
-
-        .login-social-button {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 10px;
-          border-radius: 5px;
-          font-size: 16px;
-          cursor: pointer;
-          background-color: #ffffff83;
-          .google {
-            background-color: white;
-            color: #db4437;
-            border-radius: 50%;
-          }
-          .facebook {
-            background-color: white;
-            color: #1877f2;
-            border-radius: 50%;
-          }
-
-          &:hover {
-            background-color: #aeaeae;
-          }
-
-          svg {
-            margin-right: 10px;
-          }
-        }
+      .login-social button {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
       }
-
       .login-register-redirect {
         text-align: center;
         margin-top: 15px;

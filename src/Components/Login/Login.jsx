@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { MdEmail } from "react-icons/md";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
   MdVisibility,
   MdVisibilityOff,
@@ -16,10 +17,12 @@ import leftEye from "../../Assets/Image/Labubu_lefteye(nhắm).png";
 import rightEye from "../../Assets/Image/Labubu_righteye(nhắm).png";
 import { toast } from "react-toastify";
 import { loginUser } from "../../Services/ApiController";
+import { googleLogin } from "../../Services/ApiController";
 import ToastManager from "../../Services/ToastManager";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { jwtDecode } from "jwt-decode";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
+import { address } from "framer-motion/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +34,7 @@ const Login = () => {
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const videoRef = useRef(null);
+
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.0;
@@ -73,34 +77,57 @@ const Login = () => {
     document.body.classList.toggle("dark-mode");
   };
 
+  const saveUserAndRole = (user, token) => {
+    if (!user || !token) return;
+
+    const userInfo = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      fullName: `${user.firstName} ${user.lastName}`,
+      phoneNumber: user.phoneNumber,
+      email: user.email,
+      gender: user.gender,
+      address: user.address,
+    };
+
+    Object.entries(userInfo).forEach(([key, value]) =>
+      localStorage.setItem(key, value)
+    );
+
+    const decodedToken = jwtDecode(token);
+    const roleKey = Object.keys(decodedToken).find((key) =>
+      key.includes("role")
+    );
+    const role = roleKey ? decodedToken[roleKey] : "Guest";
+    localStorage.setItem("role", role);
+
+    return role;
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
-      ToastManager.showError("Email and Password are required!");
-      return;
+      return ToastManager.showError("Email and Password are required!");
     }
     setIsLoading(true);
-
     try {
       const response = await loginUser(email, password);
-      if (!response?.token) {
-        ToastManager.showError("Invalid login response: Token not found");
-        return;
+      if (!response?.accessToken) {
+        return ToastManager.showError(
+          "Invalid login response: Token not found"
+        );
       }
+      const role = saveUserAndRole(response, response.accessToken);
+      const roleRedirects = {
+        admin: "/admin",
+        User: "/",
+      };
 
-      const { token, user } = response;
-      localStorage.setItem("username", user.name);
-      localStorage.setItem("phoneNumber", user.phoneNumber);
-      localStorage.setItem("email", user.email);
-
-      const decodedToken = jwtDecode(token);
-      const role = decodedToken?.Role;
-      localStorage.setItem("role", role);
-      ToastManager.showSuccess("Login successful");
-
-      const redirectPath = localStorage.getItem("redirectPath") || "/";
+      navigate(
+        localStorage.getItem("redirectPath") || roleRedirects[role] || "/404"
+      );
       localStorage.removeItem("redirectPath");
 
-      navigate(redirectPath);
+      ToastManager.showSuccess("Login successful");
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       ToastManager.showError(
@@ -109,6 +136,41 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = async (response) => {
+    try {
+      const data = await googleLogin(response.credential);
+      if (data?.id) {
+        ToastManager.showSuccess("Google Login successful!");
+
+        const role = saveUserAndRole(data, data.accessToken);
+
+        const roleRedirects = {
+          admin: "/admin",
+          User: "/",
+        };
+
+        navigate(
+          localStorage.getItem("redirectPath") || roleRedirects[role] || "/404"
+        );
+        if (redirectPath) {
+          navigate(redirectPath);
+          localStorage.removeItem("redirectPath");
+        }
+        ToastManager.showSuccess("Login successful");
+      } else {
+        ToastManager.showError("Google Login failed!");
+      }
+    } catch (err) {
+      console.error(err);
+      ToastManager.showError("Google Login error!");
+    }
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error("Google Login Failed:", error);
+    ToastManager.showError("Google Login Failed!");
   };
 
   const isFormValid = () => {
@@ -245,18 +307,16 @@ const Login = () => {
                   "Login"
                 )}
               </button>
-
-              {/* Thanh chia */}
               <div className="login-divider">OR LOGIN WITH</div>
-
-              {/* Đăng nhập bằng Google & Facebook */}
               <div className="login-social">
-                <button className="login-social-button google">
-                  <FaGoogle className="social-icon google" /> Google
-                </button>
-                <button className="login-social-button facebook">
-                  <FaFacebook className="social-icon facebook" /> Facebook
-                </button>
+                <GoogleOAuthProvider
+                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                >
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginFailure}
+                  />
+                </GoogleOAuthProvider>
               </div>
 
               <div className="login-register-redirect">

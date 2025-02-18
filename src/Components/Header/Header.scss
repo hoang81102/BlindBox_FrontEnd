@@ -4,7 +4,7 @@
   font-family: "Poppins", sans-serif;
   font-size: 18px;
   transition: all 0.3s ease-in-out;
-  width: 100%;
+
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1050;
@@ -35,10 +35,11 @@
 }
 
 /* 🖼 Logo */
-.logo-image {
+.header-logo-image {
   width: 130px;
   height: 130px;
   border-radius: 50%;
+  background: white;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 
   &:hover {
@@ -80,22 +81,23 @@
 
 .welcome-text {
   font-family: "Pacifico", cursive;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #ff7f50; // Cam đậm
+  color: #ff7f50;
   text-shadow: 2px 2px 5px rgba(255, 120, 100, 0.3);
   margin-right: 15px;
   transition: all 0.3s ease-in-out;
-
+  white-space: nowrap;
+  min-width: 120px;
   &:hover {
-    color: #ff6347; // Cam đỏ nhẹ
+    color: #ff6347;
     text-shadow: 3px 3px 8px rgba(255, 99, 71, 0.5);
   }
 }
 
-.welcome-video {
-  width: 20%;
-  height: 20%;
+.welcome-hello-video {
+  width: 15%;
+  height: auto;
   object-fit: cover;
 }
 
@@ -141,14 +143,14 @@
   font-family: "Quicksand", sans-serif;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, #ff9973, #ffbca8);
+  background: linear-gradient(135deg, #ff8153, #ffa98f);
   border-radius: 8px;
   padding: 5px 10px;
   box-shadow: 0px 5px 15px rgba(255, 120, 100, 0.3);
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background: linear-gradient(135deg, #ff6347, #ffb6a0);
+    background: linear-gradient(135deg, #ff5133, #ff8f6d);
     transform: scale(1.05);
     box-shadow: 0px 7px 20px rgba(255, 99, 71, 0.5);
   }
@@ -175,12 +177,17 @@
 
 /* 🔵 Navigation Menu */
 .navbar-nav {
-  display: flex;
   justify-content: center;
-  gap: 50px;
+  gap: 18px;
   align-items: center;
   width: 100%;
 
+  @media (max-width: 991px) {
+    .navbar-nav {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
   .nav-item,
   .nav-dropdown {
     color: rgb(0, 0, 0);
@@ -234,8 +241,8 @@
       transition: background 0.3s, color 0.3s;
 
       &:hover {
-        background: linear-gradient(90deg, #ff0077, #ff8000);
-        color: white;
+        background: rgb(239, 239, 239);
+        color: rgb(0, 0, 0);
       }
     }
   }
