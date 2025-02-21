@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0;
   z-index: 1051;
 }
 
@@ -99,13 +99,14 @@
   background: linear-gradient(135deg, #ff6b6b, #ffcc5c);
   width: 100vw;
   position: relative;
-  padding: 15px 0;
+  padding: 10px 0;
   transition: all 0.3s ease-in-out;
 }
 
 /* 🛑 Sticky Navigation */
 .bottom-header.fixed-nav {
   position: fixed;
+  justify-content: space-around;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -127,6 +128,7 @@
     text-decoration: none;
     font-size: 20px;
     position: relative;
+    margin-left: 25px;
     transition: all 0.3s ease-in-out;
 
     &::after {

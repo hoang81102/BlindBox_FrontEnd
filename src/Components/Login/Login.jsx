@@ -97,6 +97,8 @@ const Login = () => {
 
       if (role === "user") {
         navigate("/");
+      } else if (role === "admin") {
+        navigate("/admin");
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
@@ -117,8 +119,8 @@ const Login = () => {
       <div className="dark-mode-toggle" onClick={toggleDarkMode}>
         {darkMode ? <MdLightMode size={30} /> : <MdDarkMode size={30} />}
       </div>
-      <div className="home-logo-wrapper">
-        <div className="home-logo" onClick={() => navigate("/")}>
+      <div className="home-logo-wrapper" onClick={() => navigate("/")}>
+        <div className="home-logo">
           <img src={LogoSystem}></img>
         </div>
         <span className="home-title">Mystic BlindBox</span>
