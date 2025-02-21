@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.scss";
+
 import { MdEmail } from "react-icons/md";
 import {
   MdVisibility,
