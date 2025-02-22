@@ -1,12 +1,12 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./HomePage.scss";
+import "./Homepage.scss";
 import { useNavigate } from "react-router-dom";
 import BlindBoxCollection1 from "../../Assets/Image/BlindBoxCollection.avif";
 import BlindBoxCollection2 from "../../Assets/Image/BlindBoxCollection2.jpg";
 import BlindBoxCollection3 from "../../Assets/Image/BlindBoxCollection3.jpg";
 import BlindBoxCollection4 from "../../Assets/Image/BlindBoxCollection4.jpg";
-const HomePage = () => {
+const Homepage = () => {
   const navigate = useNavigate();
   const handleNavigateBlindBox = () => {
     navigate("/");
@@ -181,4 +181,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Homepage;
