@@ -68,7 +68,7 @@ const BlindBoxProduct = () => {
   const handleAddToCart = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      alert("Please login to add product to cart.");
       return;
     }
 
@@ -91,7 +91,6 @@ const BlindBoxProduct = () => {
       setTimeout(() => setShowMiniCart(false), 3000);
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
-      alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
     }
   };
 
