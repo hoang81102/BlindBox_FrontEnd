@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   Form,
@@ -59,48 +59,38 @@ const UserManager = () => {
     },
   ];
 
-  const [users, setUsers] = useState(initialUsers);
+  const [users] = useState(initialUsers);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   const handleSortButton = () => {
-    // Luôn sắp xếp theo cột "fullName"
-    setSortConfig((prev) => {
-      if (prev.key !== "fullName") {
-        return { key: "fullName", direction: "ascending" };
-      }
-      return {
-        key: "fullName",
-        direction: prev.direction === "ascending" ? "descending" : "ascending",
-      };
-    });
+    setSortConfig((prev) => ({
+      key: "fullName",
+      direction:
+        prev.key === "fullName" && prev.direction === "ascending"
+          ? "descending"
+          : "ascending",
+    }));
     setCurrentPage(1);
   };
 
   const sortedUsers = useMemo(() => {
-    let sortableUsers = [...users];
-    if (sortConfig.key !== null) {
-      sortableUsers.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableUsers;
+    return [...users].sort((a, b) => {
+      if (!sortConfig.key) return 0;
+      return sortConfig.direction === "ascending"
+        ? a.fullName.localeCompare(b.fullName)
+        : b.fullName.localeCompare(a.fullName);
+    });
   }, [users, sortConfig]);
 
   const filteredUsers = useMemo(() => {
-    return sortedUsers.filter((user) => {
-      return Object.values(user).some((value) =>
+    return sortedUsers.filter((user) =>
+      Object.values(user).some((value) =>
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+      )
+    );
   }, [sortedUsers, searchTerm]);
 
   const resetFilters = () => {
@@ -110,27 +100,20 @@ const UserManager = () => {
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredUsers.slice(
+    indexOfLastItem - itemsPerPage,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  // Hàm xác định icon sắp xếp dựa theo hướng hiện tại
-  const renderSortIcon = () => {
-    if (sortConfig.key === "fullName") {
-      return sortConfig.direction === "ascending" ? (
-        <FaArrowUp className="ms-2" />
-      ) : (
-        <FaArrowDown className="ms-2" />
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="container p-4">
-      {/* Gộp thanh tìm kiếm, nút sắp xếp và nút reset filter trong 1 hàng */}
-      <div className="row mb-4 align-items-center">
-        <div className="col-12 col-md-6">
+    <div
+      className="container px-5 pt-5"
+      style={{ marginLeft: "235px", marginTop: "60px" }}
+    >
+      <h3>User Management</h3>
+      <div className="row mb-4 align-items-center pt-3">
+        <div className="col-md-6">
           <InputGroup>
             <InputGroup.Text>
               <FaSearch />
@@ -140,30 +123,33 @@ const UserManager = () => {
               placeholder="Tìm kiếm người dùng..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search users"
             />
           </InputGroup>
         </div>
-        <div className="col-12 col-md-3 mt-2 mt-md-0">
+        <div className="col-md-3 mt-2 mt-md-0">
           <Button
             variant="primary"
             onClick={handleSortButton}
             className="w-100"
           >
-            Sắp xếp {renderSortIcon()}
+            Sắp xếp{" "}
+            {sortConfig.key === "fullName" &&
+              (sortConfig.direction === "ascending" ? (
+                <FaArrowUp className="ms-2" />
+              ) : (
+                <FaArrowDown className="ms-2" />
+              ))}
           </Button>
         </div>
-        <div className="col-12 col-md-3 mt-2 mt-md-0 text-md-end">
+        <div className="col-md-3 mt-2 mt-md-0 text-md-end">
           <Button onClick={resetFilters} variant="primary" className="w-100">
             Reset Filters
           </Button>
         </div>
       </div>
-
-      <Table striped bordered hover responsive className="rounded">
+      <Table striped bordered hover responsive>
         <thead>
           <tr>
-            <th>Avatar</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Date of Birth</th>
@@ -174,17 +160,6 @@ const UserManager = () => {
         <tbody>
           {currentItems.map((user) => (
             <tr key={user.id}>
-              <td>
-                <Image
-                  src={user.avatar}
-                  alt={user.fullName}
-                  roundedCircle
-                  style={{ width: "45px", height: "45px" }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                  }}
-                />
-              </td>
               <td>{user.fullName}</td>
               <td>{user.email}</td>
               <td>{format(new Date(user.dateOfBirth), "MMM dd, yyyy")}</td>

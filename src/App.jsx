@@ -9,6 +9,8 @@ import VerifyEmail from "./Components/Register/VerifyEmail";
 import ResetPassword from "./Components/Login/ResetPassword";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
+import AdminLayout from "./Routes/AdminLayout";
+import AdminRoute from "./Routes/AdminRoute";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -28,6 +30,14 @@ function App() {
             <CustomerLayout>
               <CustomerRoute />
             </CustomerLayout>
+          }
+        />
+        <Route
+          path="/admin*"
+          element={
+            <AdminLayout>
+              <AdminRoute />
+            </AdminLayout>
           }
         />
       </Routes>

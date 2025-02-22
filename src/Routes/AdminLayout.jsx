@@ -1,14 +1,13 @@
 import React from "react";
-import AdminSideBar from "../Components/Admin/AdminNavBar/AdminSideBar";
+import AdminSideBar from "../Components/Admin/AdminSideBar/AdminSideBar";
 
-
-const AdminLayout = () => {
+const AdminLayout = ({ children }) => {
   return (
     <div className="admin-layout">
-      <AdminSideBar/>
+      <AdminSideBar />
+      <main>{children}</main>
     </div>
   );
 };
 
 export default AdminLayout;
-
