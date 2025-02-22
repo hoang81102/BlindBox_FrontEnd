@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { MdEmail } from "react-icons/md";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
   MdVisibility,
   MdVisibilityOff,
@@ -15,12 +16,12 @@ import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
 import leftEye from "../../Assets/Image/Labubu_lefteye(nhắm).png";
 import rightEye from "../../Assets/Image/Labubu_righteye(nhắm).png";
 import { toast } from "react-toastify";
-import { loginUser } from "../../Services/ApiController";
+import { loginUser } from "../../Controller/ApiController";
+import { googleLogin } from "../../Controller/ApiController";
 import ToastManager from "../../Services/ToastManager";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { jwtDecode } from "jwt-decode";
-import { FaGoogle, FaFacebook } from "react-icons/fa";
-
+import { CartService } from "../../Services/CartService";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +30,10 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const { loadCart } = useContext(CartService);
   const navigate = useNavigate();
   const videoRef = useRef(null);
+
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.0;
@@ -73,33 +76,64 @@ const Login = () => {
     document.body.classList.toggle("dark-mode");
   };
 
+  const saveUserAndRole = (user, token) => {
+    if (!user || !token) return;
+
+    const userInfo = {
+      userId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      fullName: `${user.firstName} ${user.lastName}`,
+      phoneNumber: user.phoneNumber,
+      email: user.email,
+      gender: user.gender,
+      address: user.address,
+    };
+
+    Object.entries(userInfo).forEach(([key, value]) =>
+      localStorage.setItem(key, value)
+    );
+
+    const decodedToken = jwtDecode(token);
+    const roleKey = Object.keys(decodedToken).find((key) =>
+      key.includes("role")
+    );
+    const role = roleKey ? decodedToken[roleKey] : "Guest";
+    localStorage.setItem("role", role);
+
+    return role;
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
-      ToastManager.showError("Email and Password are required!");
-      return;
+      return ToastManager.showError("Email and Password are required!");
     }
     setIsLoading(true);
     try {
       const response = await loginUser(email, password);
-      if (!response?.token) {
-        ToastManager.showError("Invalid login response: Token not found");
-        return;
+      if (!response?.accessToken) {
+        return ToastManager.showError(
+          "Invalid login response: Token not found"
+        );
       }
-      const { token, user } = response;
-      localStorage.setItem("username", user.name);
-      localStorage.setItem("phoneNumber", user.phoneNumber);
-      localStorage.setItem("email", user.email);
+      const role = saveUserAndRole(response, response.accessToken);
+      const roleRedirects = {
+        admin: "/admin",
+        User: "/",
+      };
 
-      const decodedToken = jwtDecode(token);
-      const role = decodedToken?.Role;
-      localStorage.setItem("role", role);
+      const redirectPath = localStorage.getItem("redirectPath");
+      navigate(redirectPath || roleRedirects[role] || "/404");
+
+      if (redirectPath) {
+        localStorage.removeItem("redirectPath");
+      }
+
+      //Gọi cart
+      const userId = localStorage.getItem("userId");
+      loadCart(userId);
+
       ToastManager.showSuccess("Login successful");
-
-      if (role === "user") {
-        navigate("/");
-      } else if (role === "admin") {
-        navigate("/admin");
-      }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       ToastManager.showError(
@@ -108,6 +142,44 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = async (response) => {
+    try {
+      const data = await googleLogin(response.credential);
+      if (data?.id) {
+        ToastManager.showSuccess("Google Login successful!");
+
+        const role = saveUserAndRole(data, data.accessToken);
+
+        const roleRedirects = {
+          admin: "/admin",
+          User: "/",
+        };
+
+        const redirectPath = localStorage.getItem("redirectPath");
+        navigate(redirectPath || roleRedirects[role] || "/404");
+
+        if (redirectPath) {
+          localStorage.removeItem("redirectPath");
+        }
+        //Gọi cart
+        const userId = localStorage.getItem("userId");
+        loadCart(userId);
+        ToastManager.showSuccess("Login successful");
+      } else {
+        ToastManager.showError("Google Login failed!");
+      }
+    } catch (err) {
+      console.error(err);
+      ToastManager.showError("Google Login error!");
+    }
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error("Google Login Failed:", error);
+    ToastManager.showError("Google Login Failed!");
+    navigate("/404");
   };
 
   const isFormValid = () => {
@@ -130,6 +202,7 @@ const Login = () => {
           <div className="login-left-section">
             <video
               ref={videoRef}
+              type="video/mp4"
               src={loginVideo}
               autoPlay
               muted
@@ -244,18 +317,17 @@ const Login = () => {
                   "Login"
                 )}
               </button>
-
-              {/* Thanh chia */}
               <div className="login-divider">OR LOGIN WITH</div>
-
-              {/* Đăng nhập bằng Google & Facebook */}
               <div className="login-social">
-                <button className="login-social-button google">
-                  <FaGoogle className="social-icon google" /> Google
-                </button>
-                <button className="login-social-button facebook">
-                  <FaFacebook className="social-icon facebook" /> Facebook
-                </button>
+                <GoogleOAuthProvider
+                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                >
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginFailure}
+                    text="signin_with"
+                  />
+                </GoogleOAuthProvider>
               </div>
 
               <div className="login-register-redirect">

@@ -1,0 +1,111 @@
+.sidebar {
+  width: 230px;
+  position: sticky;
+  top: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  overflow-y: auto;
+  max-height: 700px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ff9e5e, #ff6b6b);
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #ff6b6b, #ff3b3b);
+  }
+
+  h3,
+  h4 {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .list-group {
+    border: none;
+
+    .list-group-item {
+      font-size: 16px;
+      font-weight: 500;
+      color: #555;
+      padding: 8px 12px;
+      border: none;
+      background: #f8f8f8;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        background: #ff9e5e;
+        color: #fff;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        background: #ff8b38;
+      }
+    }
+  }
+
+  .category-section {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .scrollable-list {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #eee;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #ff9e5e, #ff6b6b);
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #ff6b6b, #ff3b3b);
+    }
+  }
+
+  .form-check {
+    margin-bottom: 8px;
+  }
+}

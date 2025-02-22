@@ -1,0 +1,156 @@
+.lucky-box-game {
+  text-align: center;
+  padding: 50px 0;
+  background: linear-gradient(135deg, #ffd942, #ff9752);
+  border-radius: 15px;
+  color: #fff;
+  margin: 30px 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+  h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ff6b6b;
+    text-align: center;
+    position: relative;
+    padding-bottom: 10px;
+
+    &::after {
+      content: "";
+      width: 50px;
+      height: 4px;
+      background: #ffcc5c;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+  }
+
+  p {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+}
+
+.lucky-box-modal {
+  .modal-content {
+    background: linear-gradient(135deg, #ffcc00, #ff6600);
+    border-radius: 15px;
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .modal-header-custom {
+    border-bottom: none;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .modal-body-custom {
+    padding: 20px;
+  }
+
+  .modal-footer-custom {
+    border-top: none;
+    display: flex;
+    justify-content: center;
+  }
+
+  .lucky-game-close-btn {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px 25px;
+    background: #222;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #111;
+      transform: scale(1.05);
+    }
+  }
+
+  .lucky-box {
+    width: 200px;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .click-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .animated-box {
+    animation: bounce 1.2s infinite;
+  }
+
+  .animated-prize {
+    animation: zoomIn 0.5s ease-in-out;
+  }
+
+  .prize-img {
+    width: 180px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .won-text {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .prize-text {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #d9534f;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

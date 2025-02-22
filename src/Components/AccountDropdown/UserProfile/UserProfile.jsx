@@ -9,8 +9,9 @@ import {
   FaTrash,
   FaEdit,
   FaSave,
+  FaVenusMars,
 } from "react-icons/fa";
-
+import avatar1 from "../../../Assets/Image/avatarTest.jpg";
 const UserProfile = () => {
   const [user, setUser] = useState({
     name: "",
@@ -23,21 +24,26 @@ const UserProfile = () => {
   const [editedUser, setEditedUser] = useState({ ...user });
 
   useEffect(() => {
-    const storedName = localStorage.getItem("username") || "Guest";
+    const storedName = localStorage.getItem("fullName") || "Guest";
     const storedEmail = localStorage.getItem("email") || "No email available";
+    const storeGender = localStorage.getItem("gender") || "Undefined";
     const storedPhone =
       localStorage.getItem("phoneNumber") || "No phone number";
-    const storedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
+    const storedAddresses = JSON.parse(localStorage.getItem("addresses")) || [
+      "No available address",
+    ];
 
     setUser({
       name: storedName,
       email: storedEmail,
       phone: storedPhone,
+      gender: storeGender,
     });
     setEditedUser({
       name: storedName,
       email: storedEmail,
       phone: storedPhone,
+      gender: storeGender,
     });
     setAddresses(storedAddresses);
   }, []);
@@ -66,6 +72,7 @@ const UserProfile = () => {
     localStorage.setItem("username", editedUser.name);
     localStorage.setItem("email", editedUser.email);
     localStorage.setItem("phoneNumber", editedUser.phone);
+    localStorage.setItem("gender", editedUser.gender);
     setIsEditing(false);
   };
 
@@ -73,7 +80,8 @@ const UserProfile = () => {
     <div className="user-profile">
       <div className="profile-card">
         <div className="profile-avatar">
-          <FaUserCircle size={80} />
+          {/* <FaUserCircle size={80} /> */}
+          <img src={avatar1} className="profile-avatar1" alt="avatar" />
         </div>
         <div className="profile-info">
           {isEditing ? (
@@ -99,6 +107,18 @@ const UserProfile = () => {
                   setEditedUser({ ...editedUser, phone: e.target.value })
                 }
               />
+              <select
+                value={editedUser.gender}
+                onChange={(e) =>
+                  setEditedUser({ ...editedUser, gender: e.target.value })
+                }
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Not specified">Prefer not to say</option>
+              </select>
+
               <button onClick={handleSaveProfile} className="save-button">
                 <FaSave /> Save
               </button>
@@ -111,6 +131,12 @@ const UserProfile = () => {
               </p>
               <p className="profile-detail">
                 <FaPhone className="icon" /> {user.phone}
+              </p>
+              <p className="profile-detail">
+                <FaVenusMars className="icon" /> {user.gender}
+              </p>
+              <p className="profile-detail">
+                <FaMapMarkerAlt className="icon" /> {user.address}
               </p>
               <button onClick={handleEditToggle} className="edit-button">
                 <FaEdit /> Edit Profile

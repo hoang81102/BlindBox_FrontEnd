@@ -7,7 +7,7 @@ import loginVideo from "../../Assets/Video/LoginVideo.mp4";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import ToastManager from "../../Services/ToastManager";
-import { forgotPassword } from "../../Services/ApiController";
+import { forgotPassword } from "../../Controller/ApiController";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");

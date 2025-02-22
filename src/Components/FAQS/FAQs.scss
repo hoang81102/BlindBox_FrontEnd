@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600&display=swap");
+
+.faqs-container {
+  max-width: 100%;
+
+  .faqs-form {
+    margin: auto;
+    padding: 40px;
+    margin-bottom: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    background: #f6f6f6;
+    border-radius: 10px;
+    text-align: center;
+    color: #333;
+    max-width: 70%;
+  }
+
+  .faqs-title {
+    font-size: 3rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 2px 2px 5px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #000000, #000000);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textGlow 1.5s infinite alternate;
+  }
+
+  .faq-list {
+    text-align: left;
+  }
+
+  .faq-item {
+    margin-bottom: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f9f9f9;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      font-size: 1.2rem;
+      font-family: "Fredoka", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      background: #ff8153;
+      color: #fff;
+      border-radius: 10px;
+
+      .icon {
+        transition: transform 0.3s;
+      }
+    }
+
+    .faq-toggle {
+      display: none;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 15px;
+      font-size: 1rem;
+      font-family: "Quicksand", sans-serif;
+      color: #555;
+      transition: max-height 0.4s ease-in-out;
+      background: #fff;
+    }
+
+    .faq-toggle:checked + .faq-question + .faq-answer {
+      max-height: 200px;
+      padding: 15px;
+    }
+
+    .faq-toggle:checked + .faq-question .icon {
+      transform: rotate(180deg);
+    }
+  }
+}

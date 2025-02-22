@@ -12,7 +12,7 @@ import loginVideo from "../../Assets/Video/LoginVideo.mp4";
 import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import ToastManager from "../../Services/ToastManager";
-import { resetPassword } from "../../Services/ApiController";
+import { resetPassword } from "../../Controller/ApiController";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -60,6 +60,7 @@ const ResetPassword = () => {
 
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get("token");
+    const email = queryParams.get("email");
     if (!token) {
       ToastManager.showError("Invalid or missing reset token");
       return;
@@ -67,7 +68,7 @@ const ResetPassword = () => {
 
     setIsLoading(true);
     try {
-      await resetPassword({ token, newPassword });
+      await resetPassword({ email, token, newPassword });
       ToastManager.showSuccess("Password reset successfully");
       navigate("/login");
     } catch (error) {
