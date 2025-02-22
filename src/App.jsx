@@ -37,7 +37,16 @@ function App() {
               </CustomerLayout>
             }
           />
+          <Route
+            path="/admin*"
+            element={
+              <AdminLayout>
+                <AdminRoute />
+              </AdminLayout>
+            }
+          />
         </Routes>
+
         <ToastContainer
           position="top-right"
           autoClose={500}
