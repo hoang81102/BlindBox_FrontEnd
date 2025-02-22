@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600&display=swap");
+
+.contact-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 40px;
+  margin-bottom: 10px;
+  background: #f4f4f4;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: #333;
+
+  .contact-title {
+    font-size: 3rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 2px 2px 5px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #000000, #000000);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textGlow 1.5s infinite alternate;
+  }
+
+  .contact-subtitle {
+    font-size: 1.2rem;
+    font-family: "Quicksand", sans-serif;
+    margin-bottom: 25px;
+    color: #666;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .contact-input-group {
+      display: flex;
+      gap: 10px;
+
+      input {
+        flex: 1;
+      }
+    }
+
+    input,
+    textarea {
+      font-family: "Quicksand", sans-serif;
+      font-size: 1rem;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #fff;
+      outline: none;
+      transition: 0.3s ease-in-out;
+
+      &:focus {
+        border-color: #888;
+      }
+    }
+
+    textarea {
+      height: 120px;
+      resize: none;
+    }
+
+    .contact-submit-btn {
+      background: #008cba;
+      color: #fff;
+      font-size: 1.2rem;
+      font-family: "Fredoka", sans-serif;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        background: #006789;
+      }
+    }
+  }
+
+  .contact-info {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1rem;
+
+    .icon {
+      font-size: 1.2rem;
+      color: #008cba;
+    }
+  }
+
+  .contact-social-links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+
+    .social-icon {
+      font-size: 1.8rem;
+      color: #008cba;
+      transition: 0.3s;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+}

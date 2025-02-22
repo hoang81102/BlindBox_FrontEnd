@@ -15,7 +15,7 @@ import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import registerVideo from "../../Assets/Video/LoginVideo.mp4";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
-import { registerUser } from "../../Services/ApiController";
+import { registerUser } from "../../Controller/ApiController";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -23,15 +23,20 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [gender, setGender] = useState("");
+  const [phoneNumber, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [genderError, setGenderError] = useState("");
   const [addressError, setAddressError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -46,14 +51,23 @@ const Register = () => {
     return password.length >= 6;
   };
 
-  const validateFullName = (fullName) => {
-    const nameRegex = /^[a-zA-Z\s]+$/;
-    return nameRegex.test(fullName);
+  const validateFirstName = (firstName) => {
+    const firtnameRegex = /^[a-zA-Z\s]+$/;
+    return firtnameRegex.test(firstName);
   };
 
-  const validatePhone = (phone) => {
+  const validateLastName = (lastName) => {
+    const lastnameRegex = /^[a-zA-Z\s]+$/;
+    return lastnameRegex.test(lastName);
+  };
+
+  const validatePhone = (phoneNumber) => {
     const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone);
+    return phoneRegex.test(phoneNumber);
+  };
+
+  const validateGender = (gender) => {
+    return ["male", "female", "other"].includes(gender);
   };
 
   const handleEmailChange = (event) => {
@@ -66,6 +80,12 @@ const Register = () => {
     );
   };
 
+  const handleGenderChange = (event) => {
+    const value = event.target.value;
+    setGender(value);
+    setGenderError(validateGender(value) ? "" : "Please select a valid gender");
+  };
+
   const handlePasswordChange = (event) => {
     const value = event.target.value;
     setPassword(value);
@@ -74,20 +94,21 @@ const Register = () => {
     );
   };
 
-  const isFormValid = () => {
-    return (
-      validateEmail(email) &&
-      validatePassword(password) &&
-      validateFullName(fullName) &&
-      validatePhone(phone)
+  const handleFirstNameChange = (event) => {
+    const value = event.target.value;
+    setFirstName(value);
+    setFirstNameError(
+      validateFirstName(value)
+        ? ""
+        : "Name should not contain special characters"
     );
   };
 
-  const handleFullNameChange = (event) => {
+  const handleLastNameChange = (event) => {
     const value = event.target.value;
-    setFullName(value);
-    setNameError(
-      validateFullName(value)
+    setLastName(value);
+    setLastNameError(
+      validateLastName(value)
         ? ""
         : "Name should not contain special characters"
     );
@@ -108,7 +129,15 @@ const Register = () => {
   const handleRegister = async () => {
     setIsLoading(true);
 
-    if (!email || !password || !confirmPassword || !fullName || !phone) {
+    if (
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !firstName ||
+      !lastName ||
+      !phoneNumber ||
+      !gender
+    ) {
       setIsLoading(false);
       toast.error("All fields are required!");
       return;
@@ -120,7 +149,15 @@ const Register = () => {
       return;
     }
 
-    const response = await registerUser(email, password, fullName, phone);
+    const response = await registerUser(
+      firstName,
+      lastName,
+      email,
+      password,
+      gender,
+      phoneNumber,
+      address
+    );
     toast.success(
       "Registration successful! Please check your email to verify your account."
     );
@@ -128,6 +165,17 @@ const Register = () => {
       navigate("/verify?email=" + encodeURIComponent(email));
     });
     setIsLoading(false);
+  };
+
+  const isFormValid = () => {
+    return (
+      validateEmail(email) &&
+      validatePassword(password) &&
+      validateFirstName(firstName) &&
+      validateLastName(lastName) &&
+      validateGender(gender) &&
+      validatePhone(phoneNumber)
+    );
   };
 
   const toggleDarkMode = () => {
@@ -140,8 +188,8 @@ const Register = () => {
       <div className="dark-mode-toggle" onClick={toggleDarkMode}>
         {darkMode ? <MdLightMode size={30} /> : <MdDarkMode size={30} />}
       </div>
-      <div className="home-logo-wrapper">
-        <div className="home-logo" onClick={() => navigate("/")}>
+      <div className="home-logo-wrapper" onClick={() => navigate("/")}>
+        <div className="home-logo">
           <img src={LogoSystem}></img>
         </div>
         <span className="home-title">Mystic BlindBox</span>
@@ -167,6 +215,7 @@ const Register = () => {
             </div>
             <h1 className="register-title">REGISTER</h1>
             <div className="register-form-wrapper">
+              {/* Email */}
               <div
                 className={`register-input-box ${
                   emailError ? "with-error" : ""
@@ -196,6 +245,7 @@ const Register = () => {
                 )}
               </div>
 
+              {/* First Name */}
               <div className="register-input-box">
                 <img
                   src={LabubuIcon}
@@ -205,22 +255,49 @@ const Register = () => {
                 <MdPerson className="register-toggle" />
                 <input
                   type="text"
-                  placeholder="Full Name"
-                  value={fullName}
-                  onChange={handleFullNameChange}
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
                   className={`register-input ${
-                    nameError
+                    firstNameError
                       ? "register-input-invalid"
-                      : fullName
+                      : firstName
                       ? "register-input-valid"
                       : ""
                   }`}
                 />
-                {nameError && (
-                  <p className="register-error-message">{nameError}</p>
+                {firstNameError && (
+                  <p className="register-error-message">{firstNameError}</p>
                 )}
               </div>
 
+              {/* Last Name */}
+              <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon"
+                />
+                <MdPerson className="register-toggle" />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  className={`register-input ${
+                    lastNameError
+                      ? "register-input-invalid"
+                      : lastName
+                      ? "register-input-valid"
+                      : ""
+                  }`}
+                />
+                {lastNameError && (
+                  <p className="register-error-message">{lastNameError}</p>
+                )}
+              </div>
+
+              {/* Phone Number */}
               <div className="register-input-box">
                 <img
                   src={LabubuIcon}
@@ -231,12 +308,12 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="Phone Number"
-                  value={phone}
+                  value={phoneNumber}
                   onChange={handlePhoneChange}
                   className={`register-input ${
                     phoneError
                       ? "register-input-invalid"
-                      : phone
+                      : phoneNumber
                       ? "register-input-valid"
                       : ""
                   }`}
@@ -246,7 +323,30 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Gender */}
               <div className="register-input-box">
+                <img
+                  src={LabubuIcon}
+                  alt="Labubu Icon"
+                  className="register-input-icon"
+                />
+                <MdPerson className="register-toggle" />
+                <select
+                  value={gender}
+                  onChange={handleGenderChange}
+                  className={`register-input ${
+                    gender ? "register-input-valid" : ""
+                  }`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              {/* Location */}
+              <div className="register-input-box" id="register-locate">
                 <img
                   src={LabubuIcon}
                   alt="Labubu Icon"
@@ -270,6 +370,7 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Password */}
               <div className="register-input-box">
                 <img
                   src={LabubuIcon}
@@ -299,6 +400,8 @@ const Register = () => {
                   <p className="register-error-message">{passwordError}</p>
                 )}
               </div>
+
+              {/* Confirm Password */}
               <div className="register-input-box">
                 <img
                   src={LabubuIcon}
@@ -360,6 +463,7 @@ const Register = () => {
                   "Register"
                 )}
               </button>
+
               <div className="register-login-redirect">
                 <p>
                   Already have an account?{" "}

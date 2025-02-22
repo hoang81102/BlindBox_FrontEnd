@@ -2,8 +2,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(30vh - 30px);
-  padding: 25px;
+  min-height: calc(40vh - 40px);
+  padding: 15px;
   background-color: white;
   background-size: cover;
   position: relative;
@@ -24,14 +24,14 @@
     transition: color 0.3s ease;
 
     &:hover {
-      color: #ff96b2;
+      color: gray;
     }
 
     .dark-mode & {
-      color: #fff;
+      color: #ffffff;
 
       &:hover {
-        color: #ff96b2;
+        color: gray;
       }
     }
   }
@@ -47,6 +47,7 @@
     cursor: pointer;
     font-size: 32px;
     color: #000;
+
     .home-logo {
       width: 35px;
       height: 35px;
@@ -60,7 +61,7 @@
         height: 100%;
         object-fit: contain;
         border-radius: 50%;
-        box-shadow: 0px 0px 5px rgba(250, 0, 0, 0.5);
+        box-shadow: 0px 0px 2px rgba(250, 0, 0, 0.5);
       }
 
       &:hover {
@@ -75,11 +76,16 @@
       color: #de582d;
       font-family: "Baloo", cursive;
     }
+    &:hover {
+      transform: scale(1.1);
+      transition: transform 0.3s ease;
+    }
   }
+
   .register-container {
     display: flex;
     max-width: 900px;
-    max-height: 1000px;
+    max-height: 1700px;
     border-radius: 10px;
     box-shadow: 10px 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -130,21 +136,26 @@
 
       .register-form-wrapper {
         width: 100%;
-        max-width: 1200px;
+        max-width: 1300px;
 
         .register-input-box {
           position: relative;
-          margin-bottom: 15px;
+          margin-bottom: 20px;
           min-height: 60px;
 
           input,
-          textarea {
+          textarea,
+          select {
             width: 100%;
             padding: 10px 40px 10px 40px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             transition: border 0.3s ease, padding 0.3s ease;
+            background: #fff;
+            color: #6d6d6d;
+            appearance: none;
+            cursor: pointer;
 
             &.register-input-invalid {
               border-color: red;
@@ -170,9 +181,10 @@
             width: 20px;
             height: 25px;
           }
+
           .register-input-icon2 {
             position: absolute;
-            top: 20%;
+            top: 28%;
             left: 10px;
             transform: translateY(-50%);
             color: #aaa;
@@ -184,7 +196,6 @@
 
           .register-error-message {
             font-size: 15px;
-            margin-top: 2px;
             color: red;
             position: absolute;
             left: 0;
@@ -205,9 +216,10 @@
               color: #fe82a3;
             }
           }
+
           .register-locate-toggle {
             position: absolute;
-            top: 18%;
+            top: 22%;
             right: 10px;
             transform: translateY(-50%);
             font-size: 20px;
@@ -218,6 +230,14 @@
               color: #fe82a3;
             }
           }
+        }
+
+        #register-locate {
+          margin-bottom: 30px;
+        }
+
+        #register-locate .register-error-message {
+          bottom: -20px;
         }
 
         .register-actions {
@@ -286,18 +306,6 @@
           }
         }
 
-        .register-message {
-          text-align: center;
-          font-size: 15px;
-          color: #333;
-
-          video {
-            display: block;
-            margin: 0 auto;
-            width: 170px;
-          }
-        }
-
         .register-login-redirect {
           text-align: center;
           margin-top: 15px;
@@ -317,22 +325,4 @@
       }
     }
   }
-}
-
-.register-input-box input,
-.register-input-box textarea {
-  padding: 10px 40px;
-}
-
-.register-input-box textarea {
-  height: 100px;
-}
-
-.register-error-message {
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-.register-actions {
-  margin-top: 10px;
 }

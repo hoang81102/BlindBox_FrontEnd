@@ -1,0 +1,68 @@
+.voucher-container {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 25px;
+  }
+
+  .voucher-filter {
+    margin-bottom: 20px;
+    input {
+      border: 1px solid #ccc;
+      padding: 8px;
+      border-radius: 5px;
+    }
+  }
+
+  .voucher-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease-in-out;
+
+    h5 {
+      font-weight: bold;
+      color: #000;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .voucher-use-button {
+      background: #000;
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      &:hover {
+        background: #444;
+      }
+    }
+  }
+
+  .voucher-expiring-soon {
+    border: 2px solid red;
+    animation: blink 1.5s infinite alternate;
+  }
+}
+
+@keyframes blink {
+  from {
+    border-color: red;
+  }
+  to {
+    border-color: darkred;
+  }
+}
