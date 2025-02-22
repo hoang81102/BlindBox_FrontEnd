@@ -9,6 +9,8 @@ import VerifyEmail from "./Components/Register/VerifyEmail";
 import ResetPassword from "./Components/Login/ResetPassword";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
+import AdminLayout from "./Routes/AdminLayout";
+import AdminRoute from "./Routes/AdminRoute";
 import ScrollToTop from "./Services/ScrollToTop";
 import { CartProvider } from "./Services/CartService";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -35,7 +37,16 @@ function App() {
               </CustomerLayout>
             }
           />
+          <Route
+            path="/admin*"
+            element={
+              <AdminLayout>
+                <AdminRoute />
+              </AdminLayout>
+            }
+          />
         </Routes>
+
         <ToastContainer
           position="top-right"
           autoClose={500}
