@@ -10,7 +10,7 @@ import {
   FormControl,
   Button,
 } from "react-bootstrap";
-import { CartContext } from "../AccountDropdown/Cart/CartContext";
+import { CartService } from "../../Services/CartService";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FaUser,
@@ -32,7 +32,7 @@ const Header = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [scrolling, setScrolling] = useState(false);
-  const { cart } = useContext(CartContext);
+  const { cart, clearCart } = useContext(CartService);
   const cartCount = cart.length;
 
   useEffect(() => {
@@ -51,9 +51,9 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.clear();
-    clearCart();
     setUser(null);
-    navigate("/login");
+    clearCart();
+    navigate("/");
   };
 
   return (

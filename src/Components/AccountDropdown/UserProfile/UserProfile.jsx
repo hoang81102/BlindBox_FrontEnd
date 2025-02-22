@@ -11,7 +11,7 @@ import {
   FaSave,
   FaVenusMars,
 } from "react-icons/fa";
-
+import avatar1 from "../../../Assets/Image/avatarTest.jpg";
 const UserProfile = () => {
   const [user, setUser] = useState({
     name: "",
@@ -80,7 +80,8 @@ const UserProfile = () => {
     <div className="user-profile">
       <div className="profile-card">
         <div className="profile-avatar">
-          <FaUserCircle size={80} />
+          {/* <FaUserCircle size={80} /> */}
+          <img src={avatar1} className="profile-avatar1" alt="avatar" />
         </div>
         <div className="profile-info">
           {isEditing ? (

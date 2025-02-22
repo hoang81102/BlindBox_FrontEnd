@@ -94,7 +94,7 @@
       transform: translate(-50%, -50%);
       opacity: 0;
       visibility: hidden;
-      background-color: rgba(210, 210, 210, 0.096);
+      background-color: rgba(223, 223, 223, 0.096);
       backdrop-filter: blur(10px);
       border: 0.1px solid rgba(195, 195, 195, 0.185);
 
@@ -124,82 +124,6 @@
       .button-group {
         opacity: 1;
         visibility: visible;
-      }
-    }
-  }
-
-  .mini-cart {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transform: translateY(20px);
-    opacity: 0;
-    animation: fadeInSlideUp 0.5s ease-out forwards;
-
-    .mini-cart-content {
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-
-    .mini-cart-image {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: cover;
-      border: 1px solid #ddd;
-    }
-
-    .mini-cart-details {
-      flex-grow: 1;
-    }
-
-    .mini-cart-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .mini-cart-price {
-      font-size: 14px;
-      color: #ff6f61;
-    }
-
-    .mini-cart-button {
-      font-size: 14px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      background: linear-gradient(45deg, #28a745, #20c997);
-      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-      border: none;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .mini-cart-button:hover {
-      background: linear-gradient(45deg, #20c997, #28a745);
-      box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
-    }
-
-    /* Hiệu ứng xuất hiện */
-    @keyframes fadeInSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { MdEmail } from "react-icons/md";
@@ -16,14 +16,12 @@ import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
 import leftEye from "../../Assets/Image/Labubu_lefteye(nhắm).png";
 import rightEye from "../../Assets/Image/Labubu_righteye(nhắm).png";
 import { toast } from "react-toastify";
-import { loginUser } from "../../Services/ApiController";
-import { googleLogin } from "../../Services/ApiController";
+import { loginUser } from "../../Controller/ApiController";
+import { googleLogin } from "../../Controller/ApiController";
 import ToastManager from "../../Services/ToastManager";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { jwtDecode } from "jwt-decode";
-import { FaGoogle, FaFacebook } from "react-icons/fa";
-import { address } from "framer-motion/client";
-
+import { CartService } from "../../Services/CartService";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +30,7 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const { loadCart } = useContext(CartService);
   const navigate = useNavigate();
   const videoRef = useRef(null);
 
@@ -81,6 +80,7 @@ const Login = () => {
     if (!user || !token) return;
 
     const userInfo = {
+      userId: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       fullName: `${user.firstName} ${user.lastName}`,
@@ -122,10 +122,16 @@ const Login = () => {
         User: "/",
       };
 
-      navigate(
-        localStorage.getItem("redirectPath") || roleRedirects[role] || "/404"
-      );
-      localStorage.removeItem("redirectPath");
+      const redirectPath = localStorage.getItem("redirectPath");
+      navigate(redirectPath || roleRedirects[role] || "/404");
+
+      if (redirectPath) {
+        localStorage.removeItem("redirectPath");
+      }
+
+      //Gọi cart
+      const userId = localStorage.getItem("userId");
+      loadCart(userId);
 
       ToastManager.showSuccess("Login successful");
     } catch (error) {
@@ -151,13 +157,15 @@ const Login = () => {
           User: "/",
         };
 
-        navigate(
-          localStorage.getItem("redirectPath") || roleRedirects[role] || "/404"
-        );
+        const redirectPath = localStorage.getItem("redirectPath");
+        navigate(redirectPath || roleRedirects[role] || "/404");
+
         if (redirectPath) {
-          navigate(redirectPath);
           localStorage.removeItem("redirectPath");
         }
+        //Gọi cart
+        const userId = localStorage.getItem("userId");
+        loadCart(userId);
         ToastManager.showSuccess("Login successful");
       } else {
         ToastManager.showError("Google Login failed!");
@@ -171,6 +179,7 @@ const Login = () => {
   const handleGoogleLoginFailure = (error) => {
     console.error("Google Login Failed:", error);
     ToastManager.showError("Google Login Failed!");
+    navigate("/404");
   };
 
   const isFormValid = () => {
@@ -193,6 +202,7 @@ const Login = () => {
           <div className="login-left-section">
             <video
               ref={videoRef}
+              type="video/mp4"
               src={loginVideo}
               autoPlay
               muted
@@ -315,6 +325,7 @@ const Login = () => {
                   <GoogleLogin
                     onSuccess={handleGoogleLoginSuccess}
                     onError={handleGoogleLoginFailure}
+                    text="signin_with"
                   />
                 </GoogleOAuthProvider>
               </div>

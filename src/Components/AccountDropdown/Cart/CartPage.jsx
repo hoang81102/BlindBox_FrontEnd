@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { CartContext } from "./CartContext";
+import { CartService } from "../../../Services/CartService";
 import {
   Container,
   Row,
@@ -15,9 +15,10 @@ import "./CartPage.scss";
 
 const CartPage = () => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
-    useContext(CartContext);
+    useContext(CartService);
   const navigate = useNavigate();
   const [coupon, setCoupon] = useState("");
+  const userId = localStorage.getItem("userId");
   const subTotal = cart.reduce(
     (sum, item) => sum + parseFloat(item.price || 0) * item.quantity,
     0
@@ -55,7 +56,7 @@ const CartPage = () => {
               </thead>
               <tbody>
                 {cart.map((item) => (
-                  <tr key={item.id}>
+                  <tr key={item.cartId}>
                     <td className="cart-product-details">
                       <img
                         src={item.imageCollection}
@@ -63,8 +64,8 @@ const CartPage = () => {
                         className="cart-img"
                       />
                       <div>
-                        <p className="cart-name">{item.name}</p>
-                        <p className="cart-description">{item.description}</p>
+                        <p className="cart-name">{item.cartId}</p>
+                        <p className="cart-description">{item.blindBoxId}</p>
                       </div>
                     </td>
                     <td>${parseFloat(item.price).toFixed(2)}</td>
@@ -72,7 +73,7 @@ const CartPage = () => {
                       <Button
                         variant="outline-danger"
                         className="cart-quantity-button"
-                        onClick={() => decreaseQuantity(item.id)}
+                        onClick={() => decreaseQuantity(item.cartId, userId)}
                       >
                         ➖
                       </Button>
@@ -80,7 +81,7 @@ const CartPage = () => {
                       <Button
                         variant="outline-success"
                         className="cart-quantity-button"
-                        onClick={() => increaseQuantity(item.id)}
+                        onClick={() => increaseQuantity(item.cartId, userId)}
                       >
                         ➕
                       </Button>

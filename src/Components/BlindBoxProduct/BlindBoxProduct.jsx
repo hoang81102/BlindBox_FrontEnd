@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./BlindBoxProduct.scss";
-import { Container, Row, Col, Button, Image, Nav } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Image,
+  Nav,
+  Modal,
+} from "react-bootstrap";
 import { Navigation } from "swiper/modules";
-import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css/navigation";
 import "swiper/css";
-
+import { useNavigate } from "react-router-dom";
+import { CartService } from "../../Services/CartService";
+import DesciptionFeedback from "./DescriptionFeedback/DesciptionFeedback";
+import RelatedProduct from "./RelatedProduct/RelatedProduct";
 import CollectionImage from "../../Assets/Image/BlindBoxCollection7.avif";
 import Character1 from "../../Assets/Image/Labubu1_ImageSlider.jpg";
 import Character2 from "../../Assets/Image/Labubu_NewYearCollection.webp";
@@ -13,31 +24,80 @@ import Character3 from "../../Assets/Image/Labubu2_NewYearCollection.jpg";
 import Character4 from "../../Assets/Image/Labubu3_NewYearCollection.jpg";
 import Character5 from "../../Assets/Image/Labubu4_ImageSlider.jpg";
 
-const characters = [
-  CollectionImage,
-  Character1,
-  Character2,
-  Character3,
-  Character4,
-  Character5,
-];
-const relatedProducts = [Character2, Character3, Character4, Character5];
-
 const BlindBoxProduct = () => {
   const [mainImage, setMainImage] = useState(CollectionImage);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState("description");
   const basePrice = 200;
-  const [selectedSize, setSelectedSize] = useState("Blindbox");
+  const [selectedBoxType, setSelectedBoxType] = useState("Blindbox");
+  const [selectedSize, setSelectedSize] = useState("100%");
   const [price, setPrice] = useState(basePrice);
+  const [quantity, setQuantity] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const [showMiniCart, setShowMiniCart] = useState(false);
+  const { addToCart } = useContext(CartService);
+  const navigate = useNavigate();
+
+  const handleBoxTypeChange = (type) => {
+    setSelectedBoxType(type);
+    setPrice(type === "Set of 6 Blindbox" ? basePrice * 6 : basePrice);
+  };
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
-    setPrice(size === "Set of 6 Blindbox" ? basePrice * 6 : basePrice);
+  };
+
+  const characters = [
+    CollectionImage,
+    Character1,
+    Character2,
+    Character3,
+    Character4,
+    Character5,
+  ];
+
+  const product = {
+    id: "blindbox123",
+    name: "THE STARRY STARRY NIGHT BLIND BOX SERIES",
+    image: mainImage,
+    price: price,
+    size: selectedSize,
+    quantity: quantity,
+  };
+
+  const handleAddToCart = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    const productToAdd = {
+      blindBoxId: 1,
+      packageId: 0,
+      name: "THE STARRY STARRY NIGHT BLIND BOX SERIES",
+      image: mainImage,
+      price: price,
+      size: selectedSize,
+    };
+
+    try {
+      await addToCart(userId, productToAdd, quantity);
+      setIsAdded(true);
+      setShowModal(false);
+      setShowMiniCart(true);
+
+      setTimeout(() => setIsAdded(false), 1000);
+      setTimeout(() => setShowMiniCart(false), 3000);
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
+    }
   };
 
   return (
     <Container className="blindbox-product">
+      {/* Blind Box Detail */}
       <Row>
         <Col md={6} className="collection-image-container">
           <Image src={mainImage} fluid className="collection-image" />
@@ -80,33 +140,37 @@ const BlindBoxProduct = () => {
           <p className="brand">TRADEMARK: PARTNER TOYS</p>
           <p className="price">{price.toLocaleString()}$</p>
           <p className="status">Status: In stock</p>
-
-          <div className="options">
-            <label>Option:</label>
-            <div className="size-options">
+          <div className="box-type-selection">
+            <label>Type:</label>
+            {["Blindbox", "Set of 6 Blindbox"].map((type) => (
               <button
-                className={`size-btn ${
-                  selectedSize === "Blindbox" ? "active" : ""
+                key={type}
+                className={`box-type-btn ${
+                  selectedBoxType === type ? "active" : ""
                 }`}
-                onClick={() => handleSizeChange("Blindbox")}
+                onClick={() => handleBoxTypeChange(type)}
               >
-                Blindbox
+                {type}
               </button>
-              <button
-                className={`size-btn ${
-                  selectedSize === "Set of 6 Blindbox" ? "active" : ""
-                }`}
-                onClick={() => handleSizeChange("Set of 6 Blindbox")}
-              >
-                Set of 6 Blindbox
-              </button>
-            </div>
+            ))}
           </div>
-
-          <Button className="out-of-stock" disabled>
-            🛒 OUT OF STOCK
-          </Button>
-
+          <div className="cart-buttons">
+            <Button
+              className={`add-to-cart ${isAdded ? "added" : ""}`}
+              onClick={() => setShowModal(true)}
+            >
+              {isAdded ? "✔ Added" : "🛒 Add to Cart"}
+            </Button>
+            <Button
+              className="buy-now"
+              onClick={() => {
+                handleAddToCart();
+                navigate("/checkout");
+              }}
+            >
+              ⚡ Buy now
+            </Button>
+          </div>
           <Button className="wishlist">❤️ Add to favorites</Button>
           <div className="purchase-info">
             <p>
@@ -123,103 +187,120 @@ const BlindBoxProduct = () => {
         </Col>
       </Row>
 
-      <Row className="product-tabs">
-        <Col>
-          <Nav variant="tabs" defaultActiveKey="description">
-            <Nav.Item>
-              <Nav.Link
-                eventKey="description"
-                onClick={() => setActiveTab("description")}
-              >
-                Description
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="reviews"
-                onClick={() => setActiveTab("reviews")}
-              >
-                Customer Reviews
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
+      {/* Description/Feedback */}
+      <DesciptionFeedback />
 
-          {activeTab === "description" && (
-            <div className="tab-content">
-              <h3>Product Description</h3>
-              <p>
-                <strong>Brand:</strong> POPMART
+      {/* RelatedProduct */}
+      <RelatedProduct />
+
+      {/* Modal */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        className="blind-box-modal"
+      >
+        <Modal.Header closeButton className="modal-header">
+          <Modal.Title className="modal-title">🛒 Add to Cart</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body className="modal-body">
+          <div className="modal-product-info">
+            <Image src={product.image} fluid className="product-image" />
+            <div className="product-details">
+              <h5 className="product-name">{product.name}</h5>
+              <p className="product-price">
+                <span className="old-price">
+                  {(product.price * 1.1).toLocaleString()}$
+                </span>
+                <span className="new-price">
+                  {product.price.toLocaleString()}$
+                </span>
               </p>
-              <p>
-                <strong>Size: </strong> 7~9cm
-              </p>
-              <p>
-                <strong>Material: </strong> ABS/PVC
-              </p>
-              <p>
-                <strong>Recommended Age: </strong> 15+
-              </p>
-              <p>
-                <strong>Please note:</strong> These products are called "Blind
-                boxes" - you will not be able to choose which model you will
-                receive. You won't know what you get until you open it. Surprise
-                will be an indispensable spice to make the game more
-                interesting.
-              </p>
+              <p className="stock-info">Stock: Available</p>
             </div>
-          )}
-
-          {activeTab === "reviews" && (
-            <div className="tab-content">
-              <h3>Customer Reviews</h3>
-              <div className="feedback-item">
-                <img
-                  src="avatar1.jpg"
-                  alt="Customer Avatar"
-                  className="avatar"
-                />
-                <div className="feedback-content">
-                  <span className="customer-name">Do Minh Quang</span>
-                  <div className="rating"></div>
-                  <p className="comment">
-                    "The product is very beautiful and cute!"
-                  </p>
-                </div>
-              </div>
-
-              <div className="feedback-item">
-                <img
-                  src="avatar2.jpg"
-                  alt="Customer Avatar"
-                  className="avatar"
-                />
-                <div className="feedback-content">
-                  <span className="customer-name">Nguyen Son Tung</span>
-                  <div className="rating"></div>
-                  <p className="comment">"Good quality, fast delivery."</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </Col>
-      </Row>
-
-      {/* Related Products */}
-      <Row className="related-products">
-        <Col>
-          <h3>Related products</h3>
-          <div className="related-products-list">
-            {relatedProducts.map((product, index) => (
-              <Image
-                key={index}
-                src={product}
-                thumbnail
-                className="related-product-image"
-              />
-            ))}
           </div>
-        </Col>
-      </Row>
+
+          <hr className="divider" />
+
+          <div className="size-selection-container">
+            <span className="size-guide">Size Guide</span>
+            <div className="size-selection-container">
+              <label className="size-label">Size</label>
+              <div className="size-selection">
+                {["100%", "200%", "300%", "400%", "500%", "1000%"].map(
+                  (size) => (
+                    <button
+                      key={size}
+                      className={`size-btn ${
+                        selectedSize === size ? "active" : ""
+                      }`}
+                      onClick={() => handleSizeChange(size)}
+                    >
+                      {size}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+
+          <hr className="divider" />
+
+          <div className="quantity-container">
+            <label className="quantity-label">Quantity</label>
+            <div className="quantity-box">
+              <button
+                className="quantity-btn"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                -
+              </button>
+              <span className="quantity-value">{quantity}</span>
+              <button
+                className="quantity-btn"
+                onClick={() => setQuantity(Math.min(10, quantity + 1))}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer className="modal-footer">
+          <Button
+            variant="primary"
+            onClick={handleAddToCart}
+            className="add-to-cart-btn"
+          >
+            Add to Cart
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Mini Cart Popup */}
+      {showMiniCart && (
+        <div className="mini-cart">
+          <Image
+            src={mainImage}
+            alt="Added Product"
+            className="mini-cart-image"
+          />
+          <div className="mini-cart-details">
+            <p className="mini-cart-title">
+              THE STARRY STARRY NIGHT BLIND BOX SERIES
+            </p>
+            <p className="mini-cart-price">{product.price.toLocaleString()}$</p>
+            <Button
+              variant="primary"
+              className="mini-cart-button"
+              onClick={() => navigate("/cart")}
+            >
+              Go to Cart
+            </Button>
+          </div>
+        </div>
+      )}
     </Container>
   );
 };
