@@ -1,0 +1,52 @@
+.admin-container {
+  padding-left: 20px; 
+  padding-top: 20px;  
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.admin-table th {
+  font-weight: bold;
+  color: snow;
+}
+
+.admin-thead {
+  background-color: #6c5dd3;
+  color: #fff;
+}
+
+.admin-table td {
+  font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ddd;
+}
+
+.admin-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.admin-thead th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.admin-thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.admin-table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.admin-table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}

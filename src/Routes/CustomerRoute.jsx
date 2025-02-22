@@ -1,13 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import BlindBox from "../Components/BlindBox/BlindBox";
-import AdminNavBar from "../Components/Admin/AdminNavBar/AdminNavBar";
 import About from "../Components/About/About";
 import Contact from "../Components/Contact/Contact";
 import FAQs from "../Components/FAQS/FAQS";
 import BlindBoxProduct from "../Components/BlindBoxProduct/BlindBoxProduct";
 import CartPage from "../Components/AccountDropdown/Cart/CartPage";
 import LuckyWheel from "../Components/LuckyWheel/LuckyWheel";
-import HomePage from "../Components/HomePage/HomePage";
+import Homepage from "../Components/HomePage/HomePage";
 import UserProfile from "../Components/AccountDropdown/UserProfile/UserProfile";
 import Wallet from "../Components/AccountDropdown/Wallet/Wallet";
 import OrderHistory from "../Components/AccountDropdown/OrderHistory/OrderHistory";
@@ -18,8 +17,7 @@ const CustomerRoute = () => {
   return (
     <Routes>
       <Route path="/" element={<BlindBox />} />
-      <Route path="/adminNavBar" element={<AdminNavBar />} />
-      <Route path="/home" element={<HomePage />} />
+      <Route path="/home" element={<Homepage />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
