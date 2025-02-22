@@ -1,16 +1,16 @@
 import { Container, Row, Col, Button } from "react-bootstrap";
-import { React, useState, useContext } from "react";
-import { CartContext } from "../../AccountDropdown/Cart/CartContext";
-import { toast } from "react-toastify";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import NewYearCollection from "../../../Assets/Image/Labubu_NewYearCollection.png";
 import LabubuSlider1 from "../../../Assets/Image/Labubu1_ImageSlider.jpg";
 import "./FeatureProduct.scss";
+
 const FeatureProduct = () => {
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(0);
   const totalProducts = 60;
+
   const productList = [...Array(totalProducts)].map((_, idx) => ({
     id: idx + 1,
     name: `Product ${idx + 1}`,
@@ -18,6 +18,7 @@ const FeatureProduct = () => {
     imageCollection: NewYearCollection,
     imageItem: LabubuSlider1,
   }));
+
   const navigate = useNavigate();
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
@@ -25,25 +26,6 @@ const FeatureProduct = () => {
 
   const handleNavigate = (productId) => {
     navigate(`/products/${productId}`);
-  };
-
-  const { addToCart } = useContext(CartContext);
-  const [showMiniCart, setShowMiniCart] = useState(false);
-  const [addedProduct, setAddedProduct] = useState(null);
-  const [addedProductId, setAddedProductId] = useState(null);
-  const handleAddToCart = (product) => {
-    addToCart(product);
-    setShowMiniCart(true);
-    setAddedProduct(product);
-    setAddedProductId(product.id);
-
-    setTimeout(() => {
-      setShowMiniCart(false);
-    }, 3000);
-
-    setTimeout(() => {
-      setAddedProductId(null);
-    }, 1500);
   };
 
   const offset = currentPage * itemsPerPage;
@@ -77,14 +59,6 @@ const FeatureProduct = () => {
                   >
                     View product
                   </Button>
-                  <Button
-                    variant="success"
-                    className="add-to-cart-button"
-                    onClick={() => handleAddToCart(product)}
-                    disabled={addedProductId === product.id}
-                  >
-                    {addedProductId === product.id ? "Added!" : "Add to Cart"}
-                  </Button>
                 </div>
               </div>
               <h3 className="product-title">{product.name}</h3>
@@ -93,29 +67,6 @@ const FeatureProduct = () => {
           );
         })}
       </Row>
-      {showMiniCart && addedProduct && (
-        <div className="mini-cart">
-          <div className="mini-cart-content">
-            <img
-              src={addedProduct.imageItem}
-              alt={addedProduct.name}
-              className="mini-cart-image"
-            />
-            <div className="mini-cart-details">
-              <p className="mini-cart-title">{addedProduct.name}</p>
-              <p className="mini-cart-price">${addedProduct.price}</p>
-            </div>
-            <Button
-              variant="primary"
-              className="mini-cart-button"
-              onClick={() => navigate("/cart")}
-            >
-              Go to Cart
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Pagination Controls */}
       <ReactPaginate
         previousLabel={"← Previous"}

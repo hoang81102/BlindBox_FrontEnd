@@ -13,6 +13,7 @@ import Wallet from "../Components/AccountDropdown/Wallet/Wallet";
 import OrderHistory from "../Components/AccountDropdown/OrderHistory/OrderHistory";
 import Wishlist from "../Components/AccountDropdown/Wishlist/Wishlist";
 import AvailableVoucher from "../Components/AccountDropdown/AvailableVoucher/AvailableVoucher";
+import Payment from "../Components/Payment/Payment";
 const CustomerRoute = () => {
   return (
     <Routes>
@@ -31,6 +32,7 @@ const CustomerRoute = () => {
       <Route path="/order-history" element={<OrderHistory />} />
       <Route path="/wishlist" element={<Wishlist />} />
       <Route path="/voucher" element={<AvailableVoucher />} />
+      <Route path="/checkout" element={<Payment />} />
     </Routes>
   );
 };

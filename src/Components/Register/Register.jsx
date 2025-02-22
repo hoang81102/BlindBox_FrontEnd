@@ -15,7 +15,7 @@ import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import registerVideo from "../../Assets/Video/LoginVideo.mp4";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
-import { registerUser } from "../../Services/ApiController";
+import { registerUser } from "../../Controller/ApiController";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 
