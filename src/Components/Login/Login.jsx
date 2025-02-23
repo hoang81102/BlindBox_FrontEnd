@@ -145,6 +145,7 @@ const Login = () => {
   };
 
   const handleGoogleLoginSuccess = async (response) => {
+    console.log("Google Response:", response);
     try {
       const data = await googleLogin(response.credential);
       if (data?.id) {
