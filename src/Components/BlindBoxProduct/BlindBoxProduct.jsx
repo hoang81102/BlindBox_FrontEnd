@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./BlindBoxProduct.scss";
 import {
   Container,
@@ -15,6 +15,8 @@ import "swiper/css/navigation";
 import "swiper/css";
 import { useNavigate } from "react-router-dom";
 import { CartService } from "../../Services/CartService";
+import { useParams } from "react-router-dom";
+import { getBlindBoxbyId } from "../../Controller/ApiController";
 import DesciptionFeedback from "./DescriptionFeedback/DesciptionFeedback";
 import RelatedProduct from "./RelatedProduct/RelatedProduct";
 import CollectionImage from "../../Assets/Image/BlindBoxCollection7.avif";
@@ -35,8 +37,9 @@ const BlindBoxProduct = () => {
   const [showModal, setShowModal] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [showMiniCart, setShowMiniCart] = useState(false);
-  const { addToCart } = useContext(CartService);
+  const { addToCart, loadCart } = useContext(CartService);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const handleBoxTypeChange = (type) => {
     setSelectedBoxType(type);
@@ -47,6 +50,24 @@ const BlindBoxProduct = () => {
     setSelectedSize(size);
   };
 
+  const [productData, setProductData] = useState(null);
+  const { blindBoxId } = useParams();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await getBlindBoxbyId(blindBoxId);
+        setProductData(data);
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [blindBoxId]);
+
   const characters = [
     CollectionImage,
     Character1,
@@ -56,15 +77,6 @@ const BlindBoxProduct = () => {
     Character5,
   ];
 
-  const product = {
-    id: "blindbox123",
-    name: "THE STARRY STARRY NIGHT BLIND BOX SERIES",
-    image: mainImage,
-    price: price,
-    size: selectedSize,
-    quantity: quantity,
-  };
-
   const handleAddToCart = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
@@ -72,17 +84,10 @@ const BlindBoxProduct = () => {
       return;
     }
 
-    const productToAdd = {
-      blindBoxId: 1,
-      packageId: 0,
-      name: "THE STARRY STARRY NIGHT BLIND BOX SERIES",
-      image: mainImage,
-      price: price,
-      size: selectedSize,
-    };
-
     try {
-      await addToCart(userId, productToAdd, quantity);
+      console.log("productData being sent:", productData);
+      await addToCart(userId, productData, quantity);
+      await loadCart(userId);
       setIsAdded(true);
       setShowModal(false);
       setShowMiniCart(true);
@@ -93,7 +98,20 @@ const BlindBoxProduct = () => {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
+  const handleBuyNow = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Please login to add product to cart.");
+      return;
+    }
 
+    try {
+      setShowModal(false);
+      // navigate("/checkout");
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+    }
+  };
   return (
     <Container className="blindbox-product">
       {/* Blind Box Detail */}
@@ -131,14 +149,13 @@ const BlindBoxProduct = () => {
             </Swiper>
           </div>
         </Col>
+
         <Col md={6} className="product-details">
-          <h2 className="product-title">
-            THE STARRY STARRY NIGHT BLIND BOX SERIES
-          </h2>
+          <h2 className="product-title">{productData?.blindBoxName}</h2>
           <p className="sku">SKU: PVN5947</p>
-          <p className="brand">TRADEMARK: PARTNER TOYS</p>
-          <p className="price">{price.toLocaleString()}$</p>
-          <p className="status">Status: In stock</p>
+          <p className="brand">{productData?.description}</p>
+          <p className="price">{productData?.price?.toLocaleString()}VND</p>
+          <p className="status">Stock: {productData?.stock}</p>
           <div className="box-type-selection">
             <label>Type:</label>
             {["Blindbox", "Set of 6 Blindbox"].map((type) => (
@@ -163,8 +180,8 @@ const BlindBoxProduct = () => {
             <Button
               className="buy-now"
               onClick={() => {
-                handleAddToCart();
-                navigate("/checkout");
+                handleBuyNow();
+                setShowModal(true);
               }}
             >
               ⚡ Buy now
@@ -205,18 +222,18 @@ const BlindBoxProduct = () => {
 
         <Modal.Body className="modal-body">
           <div className="modal-product-info">
-            <Image src={product.image} fluid className="product-image" />
+            <Image src={mainImage} fluid className="product-image" />
             <div className="product-details">
-              <h5 className="product-name">{product.name}</h5>
+              <h5 className="product-name">{productData?.blindBoxName}</h5>
               <p className="product-price">
                 <span className="old-price">
-                  {(product.price * 1.1).toLocaleString()}$
+                  {(productData?.price * 1.1).toLocaleString()}$
                 </span>
                 <span className="new-price">
-                  {product.price.toLocaleString()}$
+                  {productData?.price.toLocaleString()}$
                 </span>
               </p>
-              <p className="stock-info">Stock: Available</p>
+              <p className="stock-info">Stock: {productData?.stock}</p>
             </div>
           </div>
 
@@ -286,10 +303,10 @@ const BlindBoxProduct = () => {
             className="mini-cart-image"
           />
           <div className="mini-cart-details">
-            <p className="mini-cart-title">
-              THE STARRY STARRY NIGHT BLIND BOX SERIES
+            <p className="mini-cart-title">{productData?.blindBoxName}</p>
+            <p className="mini-cart-price">
+              {productData?.price.toLocaleString()}$
             </p>
-            <p className="mini-cart-price">{product.price.toLocaleString()}$</p>
             <Button
               variant="primary"
               className="mini-cart-button"

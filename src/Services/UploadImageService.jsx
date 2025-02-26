@@ -23,6 +23,7 @@ const UploadImageService = (file, onProgress) => {
         console.error("Upload failed:", error);
         reject(error);
       },
+
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
         resolve(downloadURL);

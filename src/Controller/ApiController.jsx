@@ -77,3 +77,32 @@ export const updateQuantity = async (cartId, userId, quantity) => {
   });
   return response.data;
 };
+
+export const deleteItemInCart = async (cartId) => {
+  const response = await axios.delete(
+    `${API_URL}/api/Cart/delete-cart/${cartId}`
+  );
+  return response.data;
+};
+
+export const getAllBlindBox = async () => {
+  const response = await axios.get(`${API_URL}/api/Blindbox/getAll`);
+  return response.data;
+};
+
+export const getBlindBoxbyId = async (id) => {
+  const response = await axios.get(`${API_URL}/api/Blindbox/${id}`);
+  return response.data;
+};
+
+export const getWallet = async (accountId) => {
+  const response = await axios.get(`${API_URL}/api/Wallet/getWallet`, {
+    params: { accountId },
+  });
+  return response.data;
+};
+
+export const getPackageId = async (id) => {
+  const response = await axios.get(`${API_URL}/api/Package/${id}`);
+  return response.data;
+};

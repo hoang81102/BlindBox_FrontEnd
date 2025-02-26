@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { addToCart as addToCartAPI } from "../Controller/ApiController";
 import { loadCart as getCartbyUserId } from "../Controller/ApiController";
 import { updateQuantity } from "../Controller/ApiController";
+import { deleteItemInCart } from "../Controller/ApiController";
 export const CartService = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -10,17 +11,15 @@ export const CartProvider = ({ children }) => {
     return savedCart ? JSON.parse(savedCart) : [];
   });
   useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
+    localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = async (userId, product, quantity) => {
     try {
       await addToCartAPI(
         userId,
-        product.blindBoxId,
-        product.packageId,
+        product?.blindBoxId,
+        product?.packageId,
         quantity
       );
       setCart((prevCart) => {
@@ -84,8 +83,13 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  const removeFromCart = async (cartId) => {
+    try {
+      await deleteItemInCart(cartId);
+      setCart((prevCart) => prevCart.filter((item) => item.cartId !== cartId));
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
   };
 
   const clearCart = () => {

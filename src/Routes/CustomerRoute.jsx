@@ -22,7 +22,7 @@ const CustomerRoute = () => {
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/faqs" element={<FAQs />} />
-      <Route path="/products/:id" element={<BlindBoxProduct />} />
+      <Route path="/products/:blindBoxId" element={<BlindBoxProduct />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/luckyWheel" element={<LuckyWheel />} />
       <Route path="/blindbox" element={<LuckyWheel />} />
