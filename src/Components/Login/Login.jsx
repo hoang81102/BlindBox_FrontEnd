@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.scss";
+
 import { MdEmail } from "react-icons/md";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
@@ -145,6 +145,7 @@ const Login = () => {
   };
 
   const handleGoogleLoginSuccess = async (response) => {
+    console.log("Google Response:", response);
     try {
       const data = await googleLogin(response.credential);
       if (data?.id) {

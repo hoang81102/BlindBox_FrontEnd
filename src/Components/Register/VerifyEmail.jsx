@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import "./Register.scss"; // Tận dụng SCSS từ Register
+import "./Register.scss";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import registerVideo from "../../Assets/Video/LoginVideo.mp4";
 import animationLoading from "../../Assets/Video/Animation_Loading.webm";

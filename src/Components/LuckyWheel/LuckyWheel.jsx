@@ -23,8 +23,8 @@ const LuckyWheel = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [selectedPrize, setSelectedPrize] = useState(null);
-  const [balance, setBalance] = useState(100);
-  const spinCost = 10;
+  const [balance, setBalance] = useState(1000000);
+  const spinCost = 10000;
 
   const products = collections[selectedCollection];
 
@@ -47,13 +47,12 @@ const LuckyWheel = () => {
 
   return (
     <Container className="lucky-wheel-container">
-      z
       <Row>
         {/* Left Side: Wallet, Collection Selection, Spin Cost */}
         <Col md={6} className="left-panel">
           <h1 className="lucky-wheel-title">🎁 Lucky Spin Wheel 🎡</h1>
-          <p className="lucky-wheel-balance">Your Balance: ${balance}</p>
-          <p className="lucky-wheel-cost">Cost per spin: ${spinCost}</p>
+          <p className="lucky-wheel-balance">Your Balance: {balance}VND</p>
+          <p className="lucky-wheel-cost">Cost per spin: {spinCost}VND</p>
           <Form>
             <Form.Group>
               <Form.Label>Choose your collection:</Form.Label>
