@@ -71,15 +71,15 @@
     }
 
     .product-title {
-      font-size: 1.3rem;
-      margin-top: 10px;
+      font-size: 1.2rem;
+      margin-top: 2px;
       font-weight: bold;
       color: #333;
       transition: color 0.3s ease-in-out;
     }
 
     .product-price {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #ff6b6b;
       font-weight: bold;
       transition: transform 0.3s ease-in-out;
@@ -89,7 +89,7 @@
       position: absolute;
       width: 90%;
       gap: 10px;
-      top: 92%;
+      top: 93%;
       left: 50%;
       transform: translate(-50%, -50%);
       opacity: 0;

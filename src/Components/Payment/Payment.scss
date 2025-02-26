@@ -1,0 +1,157 @@
+.payment-container {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.payment-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff5a5f;
+  text-transform: uppercase;
+}
+
+.payment-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+.payment-voucher {
+  gap: 10px;
+}
+.payment-apply {
+  background: #ff5a5f;
+  border: none;
+  transition: 0.3s;
+
+  &:hover {
+    background: #e64c4c;
+  }
+}
+.payment-product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.payment-product-name {
+  font-size: 16px;
+  color: #333;
+}
+
+.payment-product-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+.payment-address {
+  font-weight: bold;
+  color: #555;
+}
+
+.payment-address-detail {
+  font-size: 14px;
+  color: #777;
+}
+
+.payment-change-btn {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff5a5f;
+  border-color: #ff5a5f;
+  transition: 0.3s;
+
+  &:hover {
+    background: #ff5a5f;
+    color: white;
+  }
+}
+
+/* Payment Method Styling */
+.form-check-input {
+  border: 2px solid #ff5a5f;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+
+  &:checked {
+    background-color: #ff5a5f;
+    border-color: #ff5a5f;
+  }
+}
+
+.payment-summary-label {
+  font-size: 16px;
+  color: #444;
+}
+
+.payment-summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+.payment-total-label {
+  font-size: 18px;
+  color: #333;
+}
+
+.payment-total-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+/* Place Order Button */
+.payment-place-order-btn {
+  font-size: 18px;
+  font-weight: bold;
+  background: #ff5a5f;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  transition: 0.3s;
+  text-transform: uppercase;
+
+  &:hover {
+    background: #e64c4c;
+  }
+}
+
+/* Modal Styling */
+.payment-modal .modal-header {
+  background: #ff5a5f;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.payment-modal-body {
+  padding: 20px;
+}
+
+.payment-modal-footer {
+  border-top: none;
+}
+
+.payment-modal .btn-primary {
+  background: #ff5a5f;
+  border: none;
+  transition: 0.3s;
+
+  &:hover {
+    background: #e64c4c;
+  }
+}

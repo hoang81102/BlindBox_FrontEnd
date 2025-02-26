@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Pie } from "react-chartjs-2";
 import { motion } from "framer-motion";
 import "chart.js/auto";
 import "./Wallet.scss";
 import { FaWallet } from "react-icons/fa";
+import { getWallet } from "../../../Controller/ApiController";
 
 const Wallet = () => {
   const [balance, setBalance] = useState(5000);
@@ -28,7 +29,8 @@ const Wallet = () => {
   ]);
   const [filterType, setFilterType] = useState("All");
   const [depositAmount, setDepositAmount] = useState("");
-
+  const [wallet, setWallet] = useState(null);
+  const [loading, setLoading] = useState(true);
   const handleDeposit = () => {
     const amount = parseInt(depositAmount);
     if (!isNaN(amount) && amount > 0) {
@@ -70,6 +72,28 @@ const Wallet = () => {
     ],
   };
 
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+        if (userId) {
+          const walletData = await getWallet(userId);
+          setWallet(walletData);
+        } else {
+          console.error("No userId found in localStorage");
+        }
+      } catch (error) {
+        console.error("Error fetching wallet:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWallet();
+  }, []);
+
+  if (loading) return <p>Loading wallet...</p>;
+  if (!wallet) return <p>Wallet not found.</p>;
   return (
     <Container className="wallet-container">
       <Row className="mb-4">
@@ -82,7 +106,7 @@ const Wallet = () => {
             transition={{ duration: 0.5 }}
             className="wallet-balance"
           >
-            {balance.toLocaleString()} $
+            {wallet.balance} $
           </motion.span>
         </Col>
       </Row>

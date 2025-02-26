@@ -2,7 +2,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(40vh - 40px);
   padding: 15px;
   background-color: white;
   background-size: cover;
@@ -109,6 +108,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      text-align: center;
       padding: 20px;
       transition: all 0.3s ease;
       box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
