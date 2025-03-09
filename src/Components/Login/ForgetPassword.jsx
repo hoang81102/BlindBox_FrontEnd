@@ -7,19 +7,14 @@ import loginVideo from "../../Assets/Video/LoginVideo.mp4";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import ToastManager from "../../Services/ToastManager";
-import { forgotPassword } from "../../Controller/ApiController";
-
+import { forgotPassword } from "../../Services/AuthService";
+import { validateEmail } from "../../Services/Validation";
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(String(email).toLowerCase());
-  };
 
   const handleEmailChange = (event) => {
     const value = event.target.value;
@@ -45,6 +40,7 @@ const ForgetPassword = () => {
     }
     setIsLoading(false);
   };
+
   const isFormValid = () => {
     return validateEmail(email);
   };

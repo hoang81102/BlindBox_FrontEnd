@@ -5,31 +5,34 @@ import ReactPaginate from "react-paginate";
 import NewYearCollection from "../../../Assets/Image/Labubu_NewYearCollection.png";
 import LabubuSlider1 from "../../../Assets/Image/Labubu1_ImageSlider.jpg";
 import "./FeatureProduct.scss";
-import { getAllBlindBox } from "../../../Controller/ApiController";
+import { fetchBlindBoxes } from "../../../Services/BlindBoxService";
 
 const FeatureProduct = () => {
-  const itemsPerPage = 12;
+  const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
   const [hoveredProductId, setHoveredProductId] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBlindBoxes = async () => {
-      try {
-        const data = await getAllBlindBox();
-        setProducts(data);
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    loadBlindBoxes(currentPage);
+  }, [currentPage]);
 
-    fetchBlindBoxes();
-  }, []);
+  const loadBlindBoxes = async (page) => {
+    setLoading(true);
+    try {
+      const data = await fetchBlindBoxes(page + 1, itemsPerPage);
+      setProducts(data.items);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Error loading Blind Boxes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
@@ -39,18 +42,15 @@ const FeatureProduct = () => {
     navigate(`/products/${blindBoxId}`);
   };
 
-  const offset = currentPage * itemsPerPage;
-  const currentProducts = products.slice(offset, offset + itemsPerPage);
-
   return (
     <Container className="featured-products">
       <h2 className="text-center">Featured Products</h2>
 
       {loading ? (
-        <p className="text-center">Loading product...</p>
+        <p className="text-waiting">Loading product...</p>
       ) : (
         <Row>
-          {currentProducts.map((product) => {
+          {products.map((product) => {
             const isHovered = hoveredProductId === product.blindBoxId;
 
             return (
@@ -92,7 +92,7 @@ const FeatureProduct = () => {
         previousLabel={"← Previous"}
         nextLabel={"Next →"}
         breakLabel={"..."}
-        pageCount={Math.ceil(products.length / itemsPerPage)}
+        pageCount={totalPages}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
         onPageChange={handlePageClick}

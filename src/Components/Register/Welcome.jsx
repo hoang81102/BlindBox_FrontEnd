@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Welcome.scss";
-import helloVideo from "../../Assets/Video/Animation_Hello.webm"; // Thêm video
+import helloVideo from "../../Assets/Video/Animation_Hello.webm";
 
 const Welcome = () => {
   const navigate = useNavigate();

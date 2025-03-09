@@ -16,7 +16,7 @@ import "swiper/css";
 import { useNavigate } from "react-router-dom";
 import { CartService } from "../../Services/CartService";
 import { useParams } from "react-router-dom";
-import { getBlindBoxbyId } from "../../Controller/ApiController";
+import { getBlindBoxDetails } from "../../Services/BlindBoxService";
 import DesciptionFeedback from "./DescriptionFeedback/DesciptionFeedback";
 import RelatedProduct from "./RelatedProduct/RelatedProduct";
 import CollectionImage from "../../Assets/Image/BlindBoxCollection7.avif";
@@ -56,7 +56,7 @@ const BlindBoxProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const data = await getBlindBoxbyId(blindBoxId);
+        const data = await getBlindBoxDetails(blindBoxId);
         setProductData(data);
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
@@ -85,7 +85,6 @@ const BlindBoxProduct = () => {
     }
 
     try {
-      console.log("productData being sent:", productData);
       await addToCart(userId, productData, quantity);
       await loadCart(userId);
       setIsAdded(true);
@@ -154,7 +153,7 @@ const BlindBoxProduct = () => {
           <h2 className="product-title">{productData?.blindBoxName}</h2>
           <p className="sku">SKU: PVN5947</p>
           <p className="brand">{productData?.description}</p>
-          <p className="price">{productData?.price?.toLocaleString()}VND</p>
+          <p className="price">{productData?.price}VND</p>
           <p className="status">Stock: {productData?.stock}</p>
           <div className="box-type-selection">
             <label>Type:</label>
@@ -184,20 +183,20 @@ const BlindBoxProduct = () => {
                 setShowModal(true);
               }}
             >
-              ⚡ Buy now
+              Buy now
             </Button>
           </div>
-          <Button className="wishlist">❤️ Add to favorites</Button>
+          <Button className="wishlist">Add to favorites</Button>
           <div className="purchase-info">
             <p>
-              📞 CONTACT: <strong>1800 123 456</strong>
+              CONTACT: <strong>1800 123 456</strong>
             </p>
             <p>
-              🚚 USE SHIPPING CODE: <strong>.....</strong> FOR ORDER{" "}
+              USE SHIPPING CODE: <strong>.....</strong> FOR ORDER{" "}
               <strong>FROM .... </strong>
             </p>
             <p>
-              🎖️ GENUINE: <strong>100% COMMITMENT</strong>
+              GENUINE: <strong>100% COMMITMENT</strong>
             </p>
           </div>
         </Col>
@@ -217,7 +216,7 @@ const BlindBoxProduct = () => {
         className="blind-box-modal"
       >
         <Modal.Header closeButton className="modal-header">
-          <Modal.Title className="modal-title">🛒 Add to Cart</Modal.Title>
+          <Modal.Title className="modal-title">Add to Cart</Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="modal-body">
@@ -229,9 +228,7 @@ const BlindBoxProduct = () => {
                 <span className="old-price">
                   {(productData?.price * 1.1).toLocaleString()}$
                 </span>
-                <span className="new-price">
-                  {productData?.price.toLocaleString()}$
-                </span>
+                <span className="new-price">{productData?.price}$</span>
               </p>
               <p className="stock-info">Stock: {productData?.stock}</p>
             </div>

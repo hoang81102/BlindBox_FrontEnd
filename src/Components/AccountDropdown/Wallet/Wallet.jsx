@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import "chart.js/auto";
 import "./Wallet.scss";
 import { FaWallet } from "react-icons/fa";
-import { getWallet } from "../../../Controller/ApiController";
+import { fetchUserWallet } from "../../../Services/WalletService";
 
 const Wallet = () => {
   const [balance, setBalance] = useState(5000);
@@ -73,23 +73,24 @@ const Wallet = () => {
   };
 
   useEffect(() => {
-    const fetchWallet = async () => {
+    const loadWallet = async () => {
+      setLoading(true);
       try {
-        const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+        const userId = localStorage.getItem("userId");
         if (userId) {
-          const walletData = await getWallet(userId);
+          const walletData = await fetchUserWallet(userId);
           setWallet(walletData);
         } else {
           console.error("No userId found in localStorage");
         }
       } catch (error) {
-        console.error("Error fetching wallet:", error);
+        console.error("Error loading wallet:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWallet();
+    loadWallet();
   }, []);
 
   if (loading) return <p>Loading wallet...</p>;

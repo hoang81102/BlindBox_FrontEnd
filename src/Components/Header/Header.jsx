@@ -23,7 +23,7 @@ import {
   FaWallet,
 } from "react-icons/fa";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
-import WelcomeVideo from "../../Assets/Video/Animation_Hello1.webm";
+//import WelcomeVideo from "../../Assets/Video/Animation_Hello1.webm";
 import "./Header.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -88,13 +88,13 @@ const Header = () => {
           >
             {user ? (
               <>
-                <video
+                {/* <video
                   src={WelcomeVideo}
                   autoPlay
                   muted
                   loop
                   className="welcome-hello-video"
-                ></video>
+                ></video> */}
                 <span className="welcome-text">{user.username}</span>
 
                 <NavLink to="/cart" className="cart-link">

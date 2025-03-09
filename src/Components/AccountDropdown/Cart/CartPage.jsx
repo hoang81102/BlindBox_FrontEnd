@@ -1,5 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartService } from "../../../Services/CartService";
+import { getBlindBoxDetails } from "../../../Services/BlindBoxService";
 import {
   Container,
   Row,
@@ -11,20 +12,49 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import CartAnimation from "../../../Assets/Video/Animation_Cart.webm";
+import CollectionImage from "../../../Assets/Image/BlindBoxCollection7.avif";
 import "./CartPage.scss";
 
 const CartPage = () => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useContext(CartService);
   const navigate = useNavigate();
+  const [cartDetails, setCartDetails] = useState([]);
   const [coupon, setCoupon] = useState("");
   const userId = localStorage.getItem("userId");
-  const subTotal = cart.reduce(
-    (sum, item) => sum + parseFloat(item.price || 0) * item.quantity,
+
+  const subTotal = cartDetails.reduce(
+    (sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity,
     0
   );
-  const shippingCost = subTotal > 0 ? 5.0 : 0;
-  const grandTotal = subTotal + shippingCost;
+  const grandTotal = subTotal;
+
+  useEffect(() => {
+    if (!cart.length) return;
+    const fetchBlindBoxDetails = async () => {
+      const updatedCart = await Promise.all(
+        cart.map(async (item) => {
+          if (!item.blindBoxId) return item;
+          try {
+            const response = await getBlindBoxDetails(item.blindBoxId);
+            return { ...item, ...response };
+          } catch (error) {
+            console.error(
+              `Error fetching blind box ${item.blindBoxId}:`,
+              error
+            );
+            return item;
+          }
+        })
+      );
+      setCartDetails(updatedCart);
+    };
+    fetchBlindBoxDetails();
+  }, [cart]);
+
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <Container className="cart-page-container">
@@ -35,13 +65,12 @@ const CartPage = () => {
           muted
           loop
           className="cart-icon-video"
-        ></video>
+        />
         <h2 className="cart-title">Your Cart Is Here !!!</h2>
       </div>
 
-      {cart.length > 0 ? (
+      {cart.length ? (
         <Row className="cart-content">
-          {/* Bên trái: Cart Table */}
           <Col md={8} className="cart-items-container">
             <Table responsive bordered className="cart-table">
               <thead>
@@ -49,23 +78,22 @@ const CartPage = () => {
                   <th>Product Details</th>
                   <th>Price</th>
                   <th>Quantity</th>
-
                   <th>Subtotal</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {cart.map((item) => (
+                {cartDetails.map((item) => (
                   <tr key={item.cartId}>
                     <td className="cart-product-details">
                       <img
-                        src={item.imageCollection}
-                        alt={item.name}
+                        src={CollectionImage}
+                        alt={item.blindBoxName}
                         className="cart-img"
                       />
                       <div>
-                        <p className="cart-name">{item.cartId}</p>
-                        <p className="cart-description">{item.blindBoxId}</p>
+                        <p className="cart-name">{item.blindBoxName}</p>
+                        <p className="cart-description">{item.description}</p>
                       </div>
                     </td>
                     <td>${parseFloat(item.price).toFixed(2)}</td>
@@ -75,7 +103,8 @@ const CartPage = () => {
                         className="cart-quantity-button"
                         onClick={() => decreaseQuantity(item.cartId, userId)}
                       >
-                        ➖
+                        {" "}
+                        -{" "}
                       </Button>
                       <span className="cart-quantity">{item.quantity}</span>
                       <Button
@@ -83,18 +112,19 @@ const CartPage = () => {
                         className="cart-quantity-button"
                         onClick={() => increaseQuantity(item.cartId, userId)}
                       >
-                        ➕
+                        {" "}
+                        +{" "}
                       </Button>
                     </td>
-
                     <td>${(item.price * item.quantity).toFixed(2)}</td>
                     <td>
                       <Button
                         variant="danger"
                         className="cart-delete-button"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.cartId)}
                       >
-                        ❌
+                        {" "}
+                        ❌{" "}
                       </Button>
                     </td>
                   </tr>
@@ -103,32 +133,34 @@ const CartPage = () => {
             </Table>
           </Col>
 
-          {/* Bên phải: Tổng tiền + Mã giảm giá */}
           <Col md={4} className="cart-summary-container">
             <Card className="cart-summary-card">
               <Card.Body>
-                <h5 className="discount-title">Discount Codes</h5>
-                <p className="discount-subtitle">
-                  Enter your coupon code if you have one.
-                </p>
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="text"
-                    placeholder="Search"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                  />
-                  <Button variant="dark" className="apply-coupon">
-                    Apply Coupon
+                {/* <h5 className="shipping-title">Shipping Offer</h5>
+                {subTotal >= 500 ? (
+                  <p className="free-shipping">
+                    Congrats! You got Free Shipping!
+                  </p>
+                ) : (
+                  <p className="spend-more">
+                    Spend ${(500 - subTotal).toFixed(2)} more to get Free
+                    Shipping!
+                  </p>
+                )}
+
+                <hr /> */}
+
+                <div className="support-section">
+                  <h5>Need Help?</h5>
+                  <p>Contact our support team or check the FAQ.</p>
+                  <Button variant="info" onClick={() => navigate("/faq")}>
+                    Visit FAQ
                   </Button>
-                </Form.Group>
+                </div>
                 <hr />
                 <div className="price-summary">
                   <p>
                     Sub Total <span>${subTotal.toFixed(2)}</span>
-                  </p>
-                  <p>
-                    Shipping <span>${shippingCost.toFixed(2)}</span>
                   </p>
                   <hr />
                   <p className="grand-total">
@@ -138,17 +170,7 @@ const CartPage = () => {
                 <Button
                   variant="info"
                   className="proceed-checkout"
-                  onClick={() => {
-                    if (
-                      !localStorage.getItem("fullName") &&
-                      !localStorage.getItem("email")
-                    ) {
-                      localStorage.setItem("redirectPath", "/cart");
-                      navigate("/login");
-                    } else {
-                      navigate("/checkout");
-                    }
-                  }}
+                  onClick={handleCheckout}
                 >
                   Proceed To Checkout
                 </Button>

@@ -12,7 +12,7 @@ import loginVideo from "../../Assets/Video/LoginVideo.mp4";
 import LabubuIcon from "../../Assets/Image/Labubu_icon.png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import ToastManager from "../../Services/ToastManager";
-import { resetPassword } from "../../Controller/ApiController";
+import { resetPassword } from "../../Services/AuthService";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");

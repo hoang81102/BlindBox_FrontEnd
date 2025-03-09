@@ -15,9 +15,16 @@ import LabubuIcon from "../../Assets/Image/Labubu_icon(Register).png";
 import logoImage from "../../Assets/Image/Labubu_Logo.jpg";
 import registerVideo from "../../Assets/Video/LoginVideo.mp4";
 import LogoSystem from "../../Assets/Image/LogoSystem.jpg";
-import { registerUser } from "../../Controller/ApiController";
+import { registerUser } from "../../Services/AuthService";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  validateEmail,
+  validatePassword,
+  validateName,
+  validatePhone,
+  validateGender,
+} from "../../Services/Validation";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -41,34 +48,6 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(String(email).toLowerCase());
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
-
-  const validateFirstName = (firstName) => {
-    const firtnameRegex = /^[a-zA-Z\s]+$/;
-    return firtnameRegex.test(firstName);
-  };
-
-  const validateLastName = (lastName) => {
-    const lastnameRegex = /^[a-zA-Z\s]+$/;
-    return lastnameRegex.test(lastName);
-  };
-
-  const validatePhone = (phoneNumber) => {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phoneNumber);
-  };
-
-  const validateGender = (gender) => {
-    return ["male", "female", "other"].includes(gender);
-  };
 
   const handleEmailChange = (event) => {
     const value = event.target.value;
@@ -98,9 +77,7 @@ const Register = () => {
     const value = event.target.value;
     setFirstName(value);
     setFirstNameError(
-      validateFirstName(value)
-        ? ""
-        : "Name should not contain special characters"
+      validateName(value) ? "" : "Name should not contain special characters"
     );
   };
 
@@ -108,9 +85,7 @@ const Register = () => {
     const value = event.target.value;
     setLastName(value);
     setLastNameError(
-      validateLastName(value)
-        ? ""
-        : "Name should not contain special characters"
+      validateName(value) ? "" : "Name should not contain special characters"
     );
   };
 
@@ -126,56 +101,41 @@ const Register = () => {
     setAddressError(value ? "" : "Address is required");
   };
 
-  const handleRegister = async () => {
-    setIsLoading(true);
-
-    if (
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !firstName ||
-      !lastName ||
-      !phoneNumber ||
-      !gender
-    ) {
-      setIsLoading(false);
-      toast.error("All fields are required!");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setIsLoading(false);
-      setConfirmPasswordError("Passwords do not match");
-      return;
-    }
-
-    const response = await registerUser(
-      firstName,
-      lastName,
-      email,
-      password,
-      gender,
-      phoneNumber,
-      address
-    );
-    toast.success(
-      "Registration successful! Please check your email to verify your account."
-    );
-    setTimeout(() => {
-      navigate("/verify?email=" + encodeURIComponent(email));
-    });
-    setIsLoading(false);
-  };
-
   const isFormValid = () => {
     return (
       validateEmail(email) &&
       validatePassword(password) &&
-      validateFirstName(firstName) &&
-      validateLastName(lastName) &&
+      validateName(firstName) &&
+      validateName(lastName) &&
       validateGender(gender) &&
       validatePhone(phoneNumber)
     );
+  };
+
+  const handleRegister = async () => {
+    setIsLoading(true);
+    try {
+      const result = await registerUser({
+        firstName,
+        lastName,
+        email,
+        password,
+        gender,
+        phoneNumber,
+        address,
+      });
+      toast.success(
+        "Registration successful! Please check your email to verify your account."
+      );
+      setTimeout(
+        () => navigate(`/verify?email=${encodeURIComponent(result.email)}`),
+        1000
+      );
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleDarkMode = () => {

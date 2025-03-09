@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect } from "react";
-import { addToCart as addToCartAPI } from "../Controller/ApiController";
-import { loadCart as getCartbyUserId } from "../Controller/ApiController";
-import { updateQuantity } from "../Controller/ApiController";
-import { deleteItemInCart } from "../Controller/ApiController";
+import { addToCart as addToCartAPI } from "../APIHandler/CartAPIHandler";
+import { loadCart as getCartbyUserId } from "../APIHandler/CartAPIHandler";
+import { updateQuantity } from "../APIHandler/CartAPIHandler";
+import { deleteItemInCart } from "../APIHandler/CartAPIHandler";
 export const CartService = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -16,12 +16,15 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (userId, product, quantity) => {
     try {
-      await addToCartAPI(
-        userId,
-        product?.blindBoxId,
-        product?.packageId,
-        quantity
-      );
+      if (product.blindBoxId == null) {
+        await addToCartAPI(
+          userId,
+          product?.blindBoxId,
+          product?.packageId,
+          quantity
+        );
+      }
+      await addToCartAPI(userId, product?.blindBoxId, null, quantity);
       setCart((prevCart) => {
         const existingItem = prevCart.find((item) => item.id === product.id);
         if (existingItem) {
@@ -67,17 +70,24 @@ export const CartProvider = ({ children }) => {
 
   const decreaseQuantity = async (cartId, userId) => {
     const item = cart.find((item) => item.cartId === cartId);
-    if (!item || item.quantity <= 1) return;
+    if (!item) return;
 
     const newQuantity = item.quantity - 1;
 
     try {
-      await updateQuantity(cartId, userId, newQuantity);
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.cartId === cartId ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      if (newQuantity === 0) {
+        await deleteItemInCart(cartId);
+        setCart((prevCart) =>
+          prevCart.filter((item) => item.cartId !== cartId)
+        );
+      } else {
+        await updateQuantity(cartId, userId, newQuantity);
+        setCart((prevCart) =>
+          prevCart.map((item) =>
+            item.cartId === cartId ? { ...item, quantity: newQuantity } : item
+          )
+        );
+      }
     } catch (error) {
       console.error("Error decreasing quantity:", error);
     }

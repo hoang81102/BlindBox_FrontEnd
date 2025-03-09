@@ -159,6 +159,43 @@
             color: #008cba;
           }
         }
+        .shipping-title,
+        .support-section h5 {
+          font-size: 1.2rem;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+
+        .free-shipping {
+          color: #28a745;
+          font-weight: 600;
+        }
+
+        .spend-more {
+          color: #dc3545;
+          font-weight: 600;
+        }
+
+        .support-section {
+          margin-top: 15px;
+
+          p {
+            font-size: 0.95rem;
+            color: #555;
+          }
+
+          button {
+            width: 100%;
+            background-color: #008cba;
+            color: white;
+            border: none;
+            font-weight: bold;
+
+            &:hover {
+              background-color: #00455c;
+            }
+          }
+        }
 
         .proceed-checkout {
           width: 100%;

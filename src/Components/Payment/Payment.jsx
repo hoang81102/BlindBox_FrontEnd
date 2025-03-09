@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Payment.scss";
 import { Modal, Button, Form, Image } from "react-bootstrap";
+import { getBlindBoxDetails } from "../../Services/BlindBoxService";
 import CollectionImage from "../../Assets/Image/BlindBoxCollection7.avif";
 
 const Payment = () => {
@@ -9,104 +10,142 @@ const Payment = () => {
   const [showModal, setShowModal] = useState(false);
   const [voucherCode, setVoucherCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [address, setAddress] = useState({
-    name: "Do Minh Quang",
-    phone: "0123 456 789",
-    detail: "827, District Binh Tan, Ho Chi Minh City",
-  });
-  const [newAddress, setNewAddress] = useState({ ...address });
+  const [cartDetails, setCartDetails] = useState([]);
+  const [address, setAddress] = useState(
+    () =>
+      JSON.parse(localStorage.getItem("shippingAddress")) || {
+        name: localStorage.getItem("fullName"),
+        phone: localStorage.getItem("phoneNumber"),
+        detail: localStorage.getItem("address"),
+      }
+  );
+  const [newAddress, setNewAddress] = useState(address);
 
-  const handlePaymentChange = (method) => setPaymentMethod(method);
-  const handleShowModal = () => {
-    setNewAddress({ ...address });
-    setShowModal(true);
-  };
-  const handleCloseModal = () => setShowModal(false);
+  useEffect(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const fetchDetails = async () => {
+      if (cartItems.length === 0) return;
+      const blindBoxIds = cartItems.map((item) => item.blindBoxId);
+
+      try {
+        const blindBoxDetails = await Promise.all(
+          blindBoxIds.map(async (id) => await getBlindBoxDetails(id))
+        );
+
+        const updatedCart = cartItems.map((item, index) => ({
+          ...item,
+          // blindBox: blindBoxDetails[index],
+          ...blindBoxDetails[index],
+        }));
+
+        // Ex: item = {
+        //   cartId: "b446ede8-c977-4653-b4b6-15295457cc4b",
+        //   blindBoxId: 5,
+        //   quantity: 2,
+        //   blindBox: { id: 5, name: "Labubu", price: 200, image: "URL" },
+        // };
+        setCartDetails(updatedCart);
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin sản phẩm:", error);
+      }
+    };
+
+    fetchDetails();
+  }, []);
+
   const handleSaveAddress = () => {
     setAddress(newAddress);
-    handleCloseModal();
+    localStorage.setItem("shippingAddress", JSON.stringify(newAddress));
+    setShowModal(false);
   };
 
-  const handleApplyVoucher = () => {
-    if (voucherCode === "DISCOUNT10") {
-      setDiscount(50); // Giảm giá 50$
-    } else {
-      setDiscount(0);
-    }
-  };
+  const handleApplyVoucher = () =>
+    setDiscount(voucherCode === "DISCOUNT10" ? 50 : 0);
+
+  const subTotal = cartDetails.reduce(
+    (sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity,
+    0
+  );
+  const finalTotal = subTotal + 20 - discount;
 
   return (
     <div className="payment-container container mt-4 p-3 rounded shadow bg-white">
-      <h2 className="payment-title text-center mb-3">Payment</h2>
+      <h2 className="text-center mb-3">Payment</h2>
 
-      {/* Order Information */}
-      <div className="payment-card card p-3 mb-3">
-        <h5 className="payment-section-title">Order Details</h5>
-        <div className="d-flex align-items-center">
-          <Image
-            src={CollectionImage}
-            className="payment-product-image me-3"
-            rounded
-          />
-          <div>
-            <p className="payment-product-name fw-bold">NEW YEAR COLLECTION</p>
-            <p className="payment-product-price text-danger">500$</p>
-          </div>
-        </div>
+      <div className="card p-3 mb-3">
+        <h5>Order Details</h5>
+        {cartDetails.length ? (
+          cartDetails.map((item, index) => (
+            <div key={index} className="d-flex align-items-center mb-2">
+              <Image
+                src={CollectionImage}
+                className="payment-product-image me-3"
+                rounded
+              />
+              <div>
+                <p className="fw-bold">
+                  {item?.blindBoxName || "Unknown Item"}
+                </p>
+                <p className="text-danger">{item?.price || 0}$</p>
+                <p>Quantity: {item.quantity}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No items in cart.</p>
+        )}
       </div>
 
-      {/* Shipping Address */}
-      <div className="payment-card card p-3 mb-3">
-        <h5 className="payment-section-title">Shipping Address</h5>
-        <p className="payment-address">
+      <div className="card p-3 mb-3">
+        <h5>Shipping Address</h5>
+        <p>
           {address.name} | {address.phone}
         </p>
-        <p className="payment-address-detail">{address.detail}</p>
+        <p>{address.detail}</p>
+        {(!address.name ||
+          !address.phone ||
+          !address.detail ||
+          address.phone === "Unknown" ||
+          address.detail === "Not Provided") && (
+          <p className="text-danger mt-2">
+            ⚠️ You need to update your shipping address before checkout!
+          </p>
+        )}
+
         <button
-          className="payment-change-btn btn btn-outline-primary btn-sm"
-          onClick={handleShowModal}
+          className="btn btn-outline-primary btn-sm"
+          onClick={() => setShowModal(true)}
         >
           Change
         </button>
       </div>
 
-      {/* Payment Method */}
-      <div className="payment-card card p-3 mb-3">
-        <h5 className="payment-section-title">Payment Method</h5>
-        {[
-          { id: "wallet", label: "E-Wallet" },
-          { id: "card", label: "Credit/Debit Card" },
-          { id: "cod", label: "Cash on Delivery (COD)" },
-        ].map((method, index) => (
-          <div className="form-check" key={index}>
-            <input
-              type="radio"
-              className="form-check-input"
-              name="payment"
-              value={method.id}
-              checked={paymentMethod === method.id}
-              onChange={() => handlePaymentChange(method.id)}
-            />
-            <label className="form-check-label">{method.label}</label>
-          </div>
+      <div className="card p-3 mb-3">
+        <h5>Payment Method</h5>
+        {["wallet", "card", "cod"].map((method) => (
+          <Form.Check
+            key={method}
+            type="radio"
+            name="payment"
+            label={method.toUpperCase()}
+            value={method}
+            checked={paymentMethod === method}
+            onChange={() => setPaymentMethod(method)}
+          />
         ))}
       </div>
 
-      {/* Add Voucher */}
-      <div className="payment-card card p-3 mb-3">
-        <h5 className="payment-section-title">Add Voucher</h5>
-        <div className="payment-voucher d-flex">
+      <div className="card p-3 mb-3">
+        <h5>Add Voucher</h5>
+        <div className="d-flex">
           <Form.Control
             type="text"
             placeholder="Enter voucher code"
             value={voucherCode}
             onChange={(e) => setVoucherCode(e.target.value)}
           />
-          <Button
-            variant="primary"
-            className="payment-apply"
-            onClick={handleApplyVoucher}
-          >
+          <Button variant="primary" onClick={handleApplyVoucher}>
             Apply
           </Button>
         </div>
@@ -115,88 +154,87 @@ const Payment = () => {
         )}
       </div>
 
-      {/* Order Summary */}
-      <div className="payment-card card p-3 mb-3">
-        <h5 className="payment-section-title">Order Summary</h5>
+      <div className="card p-3 mb-3">
+        <h5>Order Summary</h5>
         <div className="d-flex justify-content-between">
-          <span className="payment-summary-label">Total Product Price:</span>
-          <span className="payment-summary-value">500$</span>
+          <span>Total Product Price:</span>
+          <span>{subTotal}$</span>
         </div>
         <div className="d-flex justify-content-between">
-          <span className="payment-summary-label">Shipping Fee:</span>
-          <span className="payment-summary-value">20$</span>
+          <span>Shipping Fee:</span>
+          <span>1.5$</span>
         </div>
         {discount > 0 && (
           <div className="d-flex justify-content-between text-success">
-            <span className="payment-summary-label">Voucher Discount:</span>
-            <span className="payment-summary-value">-{discount}$</span>
+            <span>Voucher Discount:</span>
+            <span>-{discount}$</span>
           </div>
         )}
         <hr />
         <div className="d-flex justify-content-between fw-bold">
-          <span className="payment-total-label">Total Payment:</span>
-          <span className="payment-total-value text-danger">
-            {520 - discount}$
-          </span>
+          <span>Total Payment:</span>
+          <span className="text-danger">{finalTotal}$</span>
         </div>
       </div>
 
-      {/* Place Order Button */}
-      <button className="payment-place-order-btn btn btn-danger w-100">
+      <button
+        className="btn btn-danger w-100"
+        disabled={
+          !address.name ||
+          !address.phone ||
+          !address.detail ||
+          address.phone === "Unknown" ||
+          address.detail === "Not Provided"
+        }
+      >
         Place Order
       </button>
 
-      {/* Address Change Modal */}
-      <Modal
-        show={showModal}
-        onHide={handleCloseModal}
-        className="payment-modal"
-      >
-        <Modal.Header closeButton className="payment-modal-header">
-          <Modal.Title>Change Shipping Address</Modal.Title>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton className="bg-primary text-white">
+          <Modal.Title>Update Shipping Address</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="payment-modal-body">
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter your name"
-                value={newAddress.name}
-                onChange={(e) =>
-                  setNewAddress({ ...newAddress, name: e.target.value })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter phone number"
-                value={newAddress.phone}
-                onChange={(e) =>
-                  setNewAddress({ ...newAddress, phone: e.target.value })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Address</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter shipping address"
-                value={newAddress.detail}
-                onChange={(e) =>
-                  setNewAddress({ ...newAddress, detail: e.target.value })
-                }
-              />
-            </Form.Group>
-          </Form>
+        <Modal.Body>
+          <div className="p-2">
+            {["name", "phone", "detail"].map((field, index) => (
+              <Form.Group className="mb-3" key={field}>
+                <Form.Label className="fw-bold">
+                  {field === "name" && "Full Name"}
+                  {field === "phone" && "Phone Number"}
+                  {field === "detail" && "Address"}
+                </Form.Label>
+                <Form.Control
+                  type={field === "phone" ? "tel" : "text"}
+                  placeholder={
+                    field === "name"
+                      ? "Enter full name..."
+                      : field === "phone"
+                      ? "Enter phone number..."
+                      : "Enter detailed address..."
+                  }
+                  className="rounded-3 border border-primary shadow-sm p-2"
+                  value={newAddress[field]}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, [field]: e.target.value })
+                  }
+                />
+              </Form.Group>
+            ))}
+          </div>
         </Modal.Body>
-        <Modal.Footer className="payment-modal-footer">
-          <Button variant="secondary" onClick={handleCloseModal}>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            className="rounded-pill px-4"
+            onClick={() => setShowModal(false)}
+          >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSaveAddress}>
+          <Button
+            variant="success"
+            className="rounded-pill px-4"
+            onClick={handleSaveAddress}
+          >
             Save Address
           </Button>
         </Modal.Footer>

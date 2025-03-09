@@ -1,125 +1,101 @@
 import React, { useState, useEffect } from "react";
 import "./UserProfile.scss";
 import {
-  FaUserCircle,
+  FaCamera,
   FaEnvelope,
   FaPhone,
-  FaMapMarkerAlt,
+  FaVenusMars,
   FaPlus,
   FaTrash,
   FaEdit,
   FaSave,
-  FaVenusMars,
 } from "react-icons/fa";
-import avatar1 from "../../../Assets/Image/avatarTest.jpg";
+import { UploadImageToCloudinaryService } from "../../../Services/UploadImageToCloudinaryService";
+
 const UserProfile = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone: "",
+    gender: "",
+    avatar: "",
   });
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState({ ...user });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    const storedName = localStorage.getItem("fullName") || "Guest";
-    const storedEmail = localStorage.getItem("email") || "No email available";
-    const storeGender = localStorage.getItem("gender") || "Undefined";
-    const storedPhone =
-      localStorage.getItem("phoneNumber") || "No phone number";
-    const storedAddresses = JSON.parse(localStorage.getItem("addresses")) || [
-      "No available address",
-    ];
-
-    setUser({
-      name: storedName,
-      email: storedEmail,
-      phone: storedPhone,
-      gender: storeGender,
-    });
-    setEditedUser({
-      name: storedName,
-      email: storedEmail,
-      phone: storedPhone,
-      gender: storeGender,
-    });
-    setAddresses(storedAddresses);
+    const storedUser = {
+      name: localStorage.getItem("fullName") || "Guest",
+      email: localStorage.getItem("email") || "No email available",
+      phone: localStorage.getItem("phoneNumber") || "No phone number",
+      gender: localStorage.getItem("gender") || "Undefined",
+      avatar: localStorage.getItem("avatar") || "",
+    };
+    setUser(storedUser);
+    setAddresses(JSON.parse(localStorage.getItem("addresses")) || []);
   }, []);
 
-  const handleAddAddress = () => {
-    if (newAddress.trim() !== "") {
-      const updatedAddresses = [...addresses, newAddress];
-      setAddresses(updatedAddresses);
-      localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
-      setNewAddress("");
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const imageUrl = await UploadImageToCloudinaryService(file);
+      setUser((prev) => ({ ...prev, avatar: imageUrl }));
+      localStorage.setItem("avatar", imageUrl);
+    } catch (error) {
+      console.error("Lỗi upload ảnh:", error);
+    } finally {
+      setUploading(false);
     }
-  };
-
-  const handleDeleteAddress = (index) => {
-    const updatedAddresses = addresses.filter((_, i) => i !== index);
-    setAddresses(updatedAddresses);
-    localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-
-  const handleSaveProfile = () => {
-    setUser(editedUser);
-    localStorage.setItem("username", editedUser.name);
-    localStorage.setItem("email", editedUser.email);
-    localStorage.setItem("phoneNumber", editedUser.phone);
-    localStorage.setItem("gender", editedUser.gender);
-    setIsEditing(false);
   };
 
   return (
     <div className="user-profile">
       <div className="profile-card">
         <div className="profile-avatar">
-          {/* <FaUserCircle size={80} /> */}
-          <img src={avatar1} className="profile-avatar1" alt="avatar" />
+          <img src={user.avatar} className="profile-avatar1" alt="avatar" />
+          <label htmlFor="avatarInput" className="avatar-icon">
+            <FaCamera className="icon-camera" />
+          </label>
+          <input
+            type="file"
+            id="avatarInput"
+            accept="image/*"
+            hidden
+            onChange={handleImageChange}
+          />
+          {uploading && <p className="text-waiting">Uploading...</p>}
         </div>
         <div className="profile-info">
           {isEditing ? (
             <>
-              <input
-                type="text"
-                value={editedUser.name}
-                onChange={(e) =>
-                  setEditedUser({ ...editedUser, name: e.target.value })
-                }
-              />
-              <input
-                type="email"
-                value={editedUser.email}
-                onChange={(e) =>
-                  setEditedUser({ ...editedUser, email: e.target.value })
-                }
-              />
-              <input
-                type="text"
-                value={editedUser.phone}
-                onChange={(e) =>
-                  setEditedUser({ ...editedUser, phone: e.target.value })
-                }
-              />
+              {["name", "email", "phone"].map((field) => (
+                <input
+                  key={field}
+                  type="text"
+                  value={user[field]}
+                  onChange={(e) =>
+                    setUser({ ...user, [field]: e.target.value })
+                  }
+                />
+              ))}
               <select
-                value={editedUser.gender}
-                onChange={(e) =>
-                  setEditedUser({ ...editedUser, gender: e.target.value })
-                }
+                value={user.gender}
+                onChange={(e) => setUser({ ...user, gender: e.target.value })}
               >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-                <option value="Not specified">Prefer not to say</option>
+                {["Male", "Female", "Other", "Not specified"].map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
               </select>
-
-              <button onClick={handleSaveProfile} className="save-button">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="save-button"
+              >
                 <FaSave /> Save
               </button>
             </>
@@ -135,26 +111,27 @@ const UserProfile = () => {
               <p className="profile-detail">
                 <FaVenusMars className="icon" /> {user.gender}
               </p>
-              <p className="profile-detail">
-                <FaMapMarkerAlt className="icon" /> {user.address}
-              </p>
-              <button onClick={handleEditToggle} className="edit-button">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="edit-button"
+              >
                 <FaEdit /> Edit Profile
               </button>
             </>
           )}
         </div>
       </div>
-
       <div className="address-book">
         <h3>Address Book</h3>
         <div className="address-list">
           {addresses.map((address, index) => (
             <div key={index} className="address-item">
-              <FaMapMarkerAlt className="icon" /> {address}
+              {address}{" "}
               <FaTrash
                 className="delete-icon"
-                onClick={() => handleDeleteAddress(index)}
+                onClick={() =>
+                  setAddresses(addresses.filter((_, i) => i !== index))
+                }
               />
             </div>
           ))}
@@ -166,7 +143,10 @@ const UserProfile = () => {
             value={newAddress}
             onChange={(e) => setNewAddress(e.target.value)}
           />
-          <button onClick={handleAddAddress} className="add-button">
+          <button
+            onClick={() => setAddresses([...addresses, newAddress])}
+            className="add-button"
+          >
             <FaPlus /> Add
           </button>
         </div>
