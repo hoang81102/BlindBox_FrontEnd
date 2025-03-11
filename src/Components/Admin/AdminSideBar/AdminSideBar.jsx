@@ -1,135 +1,108 @@
-import React, { useState } from "react";
-import { FiHome, FiUsers, FiFileText, FiLogOut } from "react-icons/fi";
-import { Button, Image, Navbar, Container } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { FaUserShield } from "react-icons/fa";
-import "animate.css"; // Import thư viện Animate.css
+import { useState } from "react";
+import {
+  FiBarChart2,
+  FiUsers,
+  FiFolder,
+  FiTag,
+  FiBox,
+  FiMessageSquare,
+  FiLogOut,
+} from "react-icons/fi";
+import { Navbar, Nav, Button, Modal } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const AdminSidebar = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigationItems = [
+  const menuItems = [
+    { name: "Revenue Dashboard", path: "/admin/revenue", icon: FiBarChart2 },
+    { name: "User Management", path: "/admin/users", icon: FiUsers },
+    { name: "Category Management", path: "/admin/category", icon: FiFolder },
+    { name: "Voucher Management", path: "/admin/voucher", icon: FiTag },
+    { name: "Product Management", path: "/admin/product", icon: FiBox },
     {
-      id: "revenue",
-      label: "Revenue Dashboard",
-      icon: FiFileText,
-      path: "/admin/revenue",
-    },
-    {
-      id: "users",
-      label: "User Management",
-      icon: FiUsers,
-      path: "/admin/users",
-    },
-    {
-      id: "category",
-      label: "Category Management",
-      icon: FiFileText,
-      path: "/admin/category",
-    },
-    {
-      id: "voucher",
-      label: "Voucher Management",
-      icon: FiFileText,
-      path: "/admin/voucher",
-    },
-    {
-      id: "product",
-      label: "Product Management",
-      icon: FiFileText,
-      path: "/admin/product",
-    },
-    {
-      id: "feedback",
-      label: "Feedback Management",
-      icon: FiFileText,
+      name: "Feedback Management",
       path: "/admin/feedback",
+      icon: FiMessageSquare,
     },
   ];
 
-  const user = {
-    name: "John Doe",
-    role: "Admin",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  };
-
   const handleNavigation = (path) => {
-    setActiveSection(path);
-    navigate(path);
+    if (location.pathname !== path) {
+      navigate(path);
+    }
   };
 
-  const sidebarWidth = isExpanded ? "250px" : "80px";
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    navigate("/");
+  };
 
   return (
     <>
-      {/* AdminSidebar */}
-      <aside
-        className="bg-light shadow"
-        style={{
-          width: sidebarWidth,
-          height: "100vh",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          transition: "width 0.3s ease",
-          overflow: "hidden",
-          padding: "0",
-          zIndex: 1000, // Thêm z-index để đảm bảo sidebar luôn nằm trên cùng
-        }}
+      {/* Sidebar cố định */}
+      <Navbar
+        bg="dark"
+        variant="dark"
+        className="d-flex flex-column vh-100 p-3"
+        style={{ width: "250px", position: "fixed", left: 0, top: 0 }}
       >
-        <div className="d-flex flex-column h-100">
-          <div className="p-3 border-bottom d-flex align-items-center">
-            <Image
-              src={user.avatar}
-              alt="User avatar"
-              roundedCircle
-              style={{ width: "40px", height: "40px" }}
-              onError={(e) => {
-                e.target.src =
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1";
-              }}
-            />
-            {isExpanded && (
-              <div className="ms-3">
-                <div className="fw-bold mb-0">{user.name}</div>
-                <small className="text-muted">{user.role}</small>
-              </div>
-            )}
-          </div>
-          <div className="flex-grow-1">
-            {navigationItems.map((item) => (
-              <Button
-                key={item.id}
-                variant="link"
-                onClick={() => handleNavigation(item.path)}
-                className={`d-flex align-items-center w-100 text-start px-3 py-2 border-0 ${
-                  activeSection === item.path
-                    ? "bg-primary text-white"
-                    : "text-dark"
-                }`}
-                style={{ textDecoration: "none" }}
-              >
-                <item.icon size={20} />
-                {isExpanded && <span className="ms-3">{item.label}</span>}
-              </Button>
-            ))}
-          </div>
-          <div className="p-3 border-top">
-            <Button
-              variant="link"
-              className="d-flex align-items-center w-100 text-danger px-3 border-0"
-              style={{ textDecoration: "none" }}
-              onClick={() => handleNavigation("/")}
+        <Navbar.Brand className="mb-3 text-white fw-semibold">
+          Admin Panel
+        </Navbar.Brand>
+
+        {/* Menu */}
+        <Nav className="flex-column w-100">
+          {menuItems.map((item) => (
+            <Nav.Link
+              key={item.name}
+              onClick={() => handleNavigation(item.path)}
+              className={`d-flex align-items-center p-2 rounded ${
+                location.pathname === item.path
+                  ? "bg-primary text-white"
+                  : "text-white hover-bg-secondary"
+              }`}
             >
-              <FiLogOut size={20} />
-              {isExpanded && <span className="ms-3">Logout</span>}
-            </Button>
-          </div>
-        </div>
-      </aside>
+              <item.icon className="me-2" />
+              <span>{item.name}</span>
+            </Nav.Link>
+          ))}
+        </Nav>
+
+        {/* Logout */}
+        <Button
+          variant="danger"
+          onClick={() => setShowLogoutModal(true)}
+          className="mt-auto w-100 d-flex align-items-center justify-content-center"
+        >
+          <FiLogOut className="me-2" />
+          Logout
+        </Button>
+      </Navbar>
+
+      {/* Modal Logout */}
+      <Modal
+        show={showLogoutModal}
+        onHide={() => setShowLogoutModal(false)}
+        centered
+      >
+        <Modal.Header closeButton className="bg-dark text-white">
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark text-white">
+          Are you sure you want to logout?
+        </Modal.Body>
+        <Modal.Footer className="bg-dark">
+          <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
