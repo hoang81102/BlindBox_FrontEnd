@@ -23,9 +23,7 @@ export const storeUserInfo = (user, token) => {
     address: user.address,
   };
 
-  Object.entries(userInfo).forEach(([key, value]) =>
-    localStorage.setItem(key, value)
-  );
+  localStorage.setItem("userInfo", JSON.stringify(userInfo));
   localStorage.setItem("token", token);
   const decodedToken = jwtDecode(token);
   const roleKey = Object.keys(decodedToken).find((key) => key.includes("role"));

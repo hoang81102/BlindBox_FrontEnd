@@ -36,10 +36,13 @@ const Header = () => {
   const cartCount = cart.length;
 
   useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    const user = userInfo ? JSON.parse(userInfo) : null;
+
     const role = localStorage.getItem("role");
-    const firstName = localStorage.getItem("firstName");
-    const lastName = localStorage.getItem("lastName");
-    const fullName = localStorage.getItem("fullName");
+    const firstName = user?.firstName || "";
+    const lastName = user?.lastName || "";
+    const fullName = user?.fullName || "";
     if (role && firstName) {
       setUser({ username: `${fullName}`, role });
     }

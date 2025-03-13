@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const rootAuth = `${API_URL}/api/Auth`;
 
 export const loginUser = async (email, password) => {
-  const response = await axios.post(`${API_URL}/api/login`, {
+  const response = await axios.post(`${rootAuth}/login`, {
     email,
     password,
   });
@@ -19,7 +20,7 @@ export const registerUser = async (
   phoneNumber,
   address
 ) => {
-  const response = await axios.post(`${API_URL}/api/register`, {
+  const response = await axios.post(`${rootAuth}/register`, {
     firstName,
     lastName,
     email,
@@ -32,14 +33,14 @@ export const registerUser = async (
 };
 
 export const forgotPassword = async (email) => {
-  const response = await axios.post(`${API_URL}/api/forgot-password`, {
+  const response = await axios.post(`${rootAuth}/forgot-password`, {
     email,
   });
   return response.data;
 };
 
 export const resetPassword = async ({ email, token, newPassword }) => {
-  const response = await axios.post(`${API_URL}/api/reset-password`, {
+  const response = await axios.post(`${rootAuth}/reset-password`, {
     email,
     token,
     newPassword,
@@ -48,7 +49,7 @@ export const resetPassword = async ({ email, token, newPassword }) => {
 };
 
 export const googleLogin = async (credential) => {
-  const response = await axios.post(`${API_URL}/api/google-login`, {
+  const response = await axios.post(`${rootAuth}/google-login`, {
     token: credential,
   });
   return response.data;

@@ -81,31 +81,35 @@ const Login = () => {
       );
     }
     const roleRedirects = {
-      admin: "/admin",
+      Admin: "/admin",
       User: "/",
     };
     navigate(roleRedirects[response.role] || "/404");
 
-    await loadCart(localStorage.getItem("userId"));
+    const userInfo = localStorage.getItem("userInfo");
+    const userId = userInfo ? JSON.parse(userInfo).userId : null;
+    if (userId) {
+      await loadCart(userId);
+    }
     ToastManager.showSuccess("Login successful");
   };
 
   const handleGoogleLoginSuccess = async (googleResponse) => {
     try {
       const response = await googleLogin(googleResponse.credential);
-      console.log("res", googleResponse);
       if (!response?.success) {
         return ToastManager.showError("Google Login failed!");
       }
 
       const roleRedirects = {
-        admin: "/admin",
+        Admin: "/admin",
         User: "/",
       };
 
       navigate(roleRedirects[response.role] || "/404");
 
-      const userId = localStorage.getItem("userId");
+      const userInfo = localStorage.getItem("userInfo");
+      const userId = userInfo ? JSON.parse(userInfo).userId : null;
       if (userId) {
         await loadCart(userId);
       }

@@ -78,7 +78,9 @@ const BlindBoxProduct = () => {
   ];
 
   const handleAddToCart = async () => {
-    const userId = localStorage.getItem("userId");
+    const userInfo = localStorage.getItem("userInfo");
+    const userId = userInfo ? JSON.parse(userInfo).userId : null;
+
     if (!userId) {
       alert("Please login to add product to cart.");
       return;

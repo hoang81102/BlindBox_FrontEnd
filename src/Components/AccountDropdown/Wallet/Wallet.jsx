@@ -76,7 +76,8 @@ const Wallet = () => {
     const loadWallet = async () => {
       setLoading(true);
       try {
-        const userId = localStorage.getItem("userId");
+        const userInfo = localStorage.getItem("userInfo");
+        const userId = userInfo ? JSON.parse(userInfo).userId : null;
         if (userId) {
           const walletData = await fetchUserWallet(userId);
           setWallet(walletData);

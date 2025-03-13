@@ -21,7 +21,8 @@ const CartPage = () => {
   const navigate = useNavigate();
   const [cartDetails, setCartDetails] = useState([]);
   const [coupon, setCoupon] = useState("");
-  const userId = localStorage.getItem("userId");
+  const userInfo = localStorage.getItem("userInfo");
+  const userId = userInfo ? JSON.parse(userInfo).userId : null;
 
   const subTotal = cartDetails.reduce(
     (sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity,

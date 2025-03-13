@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
+const rootBlindBox = `${API_URL}/api/blindboxes`;
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
   return {
@@ -11,7 +11,7 @@ const getAuthHeaders = () => {
 };
 
 export const getAllBlindBox = async (pageNumber, pageSize) => {
-  const response = await axios.get(`${API_URL}/api/Blindbox/GetAll-paged`, {
+  const response = await axios.get(`${rootBlindBox}/paged`, {
     params: { pageNumber, pageSize },
     headers: getAuthHeaders(),
   });
@@ -19,7 +19,7 @@ export const getAllBlindBox = async (pageNumber, pageSize) => {
 };
 
 export const getBlindBoxbyId = async (id) => {
-  const response = await axios.get(`${API_URL}/api/Blindbox/${id}`, {
+  const response = await axios.get(`${rootBlindBox}/${id}`, {
     headers: getAuthHeaders(),
   });
   return response.data;

@@ -12,7 +12,10 @@ import Wallet from "../Components/AccountDropdown/Wallet/Wallet";
 import OrderHistory from "../Components/AccountDropdown/OrderHistory/OrderHistory";
 import Wishlist from "../Components/AccountDropdown/Wishlist/Wishlist";
 import AvailableVoucher from "../Components/AccountDropdown/AvailableVoucher/AvailableVoucher";
+import Order from "../Components/Order/Order";
 import Payment from "../Components/Payment/Payment";
+import SuccessPage from "../Components/Payment/SuccessPage";
+import FailPage from "../Components/Payment/FailPage";
 const CustomerRoute = () => {
   return (
     <Routes>
@@ -30,7 +33,10 @@ const CustomerRoute = () => {
       <Route path="/order-history" element={<OrderHistory />} />
       <Route path="/wishlist" element={<Wishlist />} />
       <Route path="/voucher" element={<AvailableVoucher />} />
-      <Route path="/checkout" element={<Payment />} />
+      <Route path="/checkout" element={<Order />} />
+      <Route path="/payment" element={<Payment />} />
+      <Route path="/payment-success" element={<SuccessPage />} />
+      <Route path="/payment-fail" element={<FailPage />} />
     </Routes>
   );
 };

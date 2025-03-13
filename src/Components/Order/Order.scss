@@ -1,0 +1,152 @@
+.order-container {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.order-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff5a5f;
+  text-transform: uppercase;
+}
+
+.order-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+.order-voucher {
+  gap: 10px;
+}
+.order-apply {
+  background: #ff5a5f;
+  border: none;
+  transition: 0.3s;
+
+  &:hover {
+    background: #e64c4c;
+  }
+}
+.order-product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.order-product-name {
+  font-size: 16px;
+  color: #333;
+}
+
+.order-product-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+.order-address {
+  font-weight: bold;
+  color: #555;
+}
+
+.order-address-detail {
+  font-size: 14px;
+  color: #777;
+}
+
+.order-change-btn {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff5a5f;
+  border-color: #ff5a5f;
+  transition: 0.3s;
+
+  &:hover {
+    background: #ff5a5f;
+    color: white;
+  }
+}
+
+/* Payment Method Styling */
+.form-check-input {
+  border: 2px solid #ff5a5f;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+
+  &:checked {
+    background-color: #ff5a5f;
+    border-color: #ff5a5f;
+  }
+}
+
+.order-summary-label {
+  font-size: 16px;
+  color: #444;
+}
+
+.order-summary-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+.order-total-label {
+  font-size: 18px;
+  color: #333;
+}
+
+.order-total-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+/* Place Order Button */
+.order-place-order-btn {
+  font-size: 18px;
+  font-weight: bold;
+  background: #ff5a5f;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  transition: 0.3s;
+  text-transform: uppercase;
+
+  &:hover {
+    background: #e64c4c;
+  }
+}
+
+/* Modal Styling */
+.modal-header {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+  text-align: center;
+}
+
+.form-control {
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.modal-footer button {
+  font-size: 1rem;
+  font-weight: bold;
+}
