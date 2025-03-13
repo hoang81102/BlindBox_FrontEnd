@@ -125,12 +125,9 @@ const CategoryManager = () => {
   };
 
   return (
-    <div
-      className="container px-5 pt-5"
-      style={{ marginLeft: "235px", marginTop: "60px" }}
-    >
+    <div className="container px-5 pt-5">
       <h3>Category Management</h3>
-      <div className="row mb-4 align-items-center pt-3">
+      <div className="row mb-4 align-items-center">
         <div className="col-12 col-md-6">
           <InputGroup>
             <InputGroup.Text>

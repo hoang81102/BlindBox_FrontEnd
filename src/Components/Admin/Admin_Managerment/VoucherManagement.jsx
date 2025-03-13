@@ -91,7 +91,6 @@ const VoucherManagement = () => {
   return (
     <div
       className="container px-5 pt-5"
-      style={{ marginLeft: "235px", marginTop: "60px" }}
     >
       <h3>Voucher Management</h3>
       <div className="row mb-4 align-items-center pt-3">

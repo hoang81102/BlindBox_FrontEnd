@@ -1,0 +1,68 @@
+.admin-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-image: url(../../../assets/image/bannerAdmin4.png);
+  background-size: cover; /* Ensures the image covers the entire container */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  color: #ffffff;
+  padding: 20px;
+  position: relative;
+  border-radius: 15px;
+  width: 100%;
+  top:130px;
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  margin-top: 90px;
+  margin-right: -400px;
+}
+
+.admin-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 3px solid #ffffff;
+}
+
+.admin-details {
+  margin-top: 20px;
+}
+.admin-details .admin-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.admin-hotline {
+  font-size: 14px;
+  color: #ffcc00;
+  margin-top: -10px;
+}
+
+.course-info {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.course-title {
+  font-size: 35px;
+  font-weight: bold;
+  color: red;
+}
+
+.course-heading {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.admin-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

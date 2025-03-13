@@ -1,194 +1,237 @@
-import React, { useState, useMemo } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
-  Table,
-  Form,
+  FiEdit2,
+  FiTrash2,
+  FiPlus,
+  FiSearch,
+  FiChevronUp,
+  FiChevronDown,
+} from "react-icons/fi";
+import { format } from "date-fns";
+import {
+  Container,
+  Row,
+  Col,
   Button,
-  Pagination,
-  Image,
+  Form,
+  Table,
+  Modal,
   InputGroup,
 } from "react-bootstrap";
-import { FaSearch, FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { format } from "date-fns";
 
-const UserManager = () => {
-  const initialUsers = [
+const UserManagement = () => {
+  // Trạng thái cho các modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  // Giả sử bạn có một mảng các tài khoản
+  const accounts = [
     {
       id: 1,
-      fullName: "John Doe",
-      email: "john.doe@example.com",
-      dateOfBirth: "1990-05-15",
-      totalCourses: 5,
-      balance: 499.99,
-      avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
+      name: "Nguyễn Văn A",
+      email: "a@example.com",
+      phone: "0123456789",
+      address: "Hà Nội",
+      dateCreated: new Date(),
     },
-    {
-      id: 2,
-      fullName: "Jane Smith",
-      email: "jane.smith@example.com",
-      dateOfBirth: "1992-08-22",
-      totalCourses: 3,
-      balance: 299.99,
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 3,
-      fullName: "Michael Johnson",
-      email: "michael.j@example.com",
-      dateOfBirth: "1988-12-10",
-      totalCourses: 7,
-      balance: 699.99,
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36",
-    },
-    {
-      id: 4,
-      fullName: "David Wilson",
-      email: "david.wilson@example.com",
-      dateOfBirth: "1985-03-12",
-      totalCourses: 6,
-      balance: 599.99,
-      avatar: "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
-    },
-    {
-      id: 5,
-      fullName: "Emma Taylor",
-      email: "emma.taylor@example.com",
-      dateOfBirth: "1993-11-05",
-      totalCourses: 2,
-      balance: 399.99,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-    },
+    
   ];
 
-  const [users] = useState(initialUsers);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  const handleSortButton = () => {
-    setSortConfig((prev) => ({
-      key: "fullName",
-      direction:
-        prev.key === "fullName" && prev.direction === "ascending"
-          ? "descending"
-          : "ascending",
-    }));
-    setCurrentPage(1);
-  };
-
-  const sortedUsers = useMemo(() => {
-    return [...users].sort((a, b) => {
-      if (!sortConfig.key) return 0;
-      return sortConfig.direction === "ascending"
-        ? a.fullName.localeCompare(b.fullName)
-        : b.fullName.localeCompare(a.fullName);
-    });
-  }, [users, sortConfig]);
-
-  const filteredUsers = useMemo(() => {
-    return sortedUsers.filter((user) =>
-      Object.values(user).some((value) =>
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [sortedUsers, searchTerm]);
-
-  const resetFilters = () => {
-    setSearchTerm("");
-    setSortConfig({ key: null, direction: null });
-    setCurrentPage(1);
-  };
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const currentItems = filteredUsers.slice(
-    indexOfLastItem - itemsPerPage,
-    indexOfLastItem
-  );
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
   return (
-    <div
-      className="container px-5 pt-5"
-      style={{ marginLeft: "235px", marginTop: "60px" }}
+    <Container
+      fluid
+      className="min-vh-100 pt-lg-5 px-5 "
+      style={{ backgroundColor: "#FAFAFB" }}
     >
-      <h3>User Management</h3>
-      <div className="row mb-4 align-items-center pt-3">
-        <div className="col-md-6">
-          <InputGroup>
-            <InputGroup.Text>
-              <FaSearch />
-            </InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="Tìm kiếm người dùng..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </InputGroup>
-        </div>
-        <div className="col-md-3 mt-2 mt-md-0">
+      <Row>
+        <Container>
+          <Row className="mb-4 align-items-center ">
+            <Col>
+              <h1
+                style={{
+                  background: "linear-gradient(to right, #ff8153, #ffa98f)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontSize: "28px",
+                  fontWeight: 600,
+                }}
+              >
+                Account Management
+              </h1>
+            </Col>
+            <Col xs="auto">
+              <Button
+                variant="primary"
+                style={{ backgroundColor: "#FB6F92", borderColor: "#FFAFCC" }}
+                onClick={() => setShowAddModal(true)}
+              >
+                <FiPlus className="me-2" /> Add Account
+              </Button>
+            </Col>
+          </Row>
+
+          <Row className="mb-4">
+            <Col>
+              <InputGroup>
+                <InputGroup.Text>
+                  <FiSearch />
+                </InputGroup.Text>
+                <Form.Control type="text" placeholder="Search accounts..." />
+              </InputGroup>
+            </Col>
+          </Row>
+
+          <Table responsive bordered hover className="shadow-sm text-center">
+            <thead className="bg-light">
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {accounts.map((account) => (
+                <tr key={account.id}>
+                  <td>{account.name}</td>
+                  <td>{account.email}</td>
+                  <td>{account.phone}</td>
+                  <td>{account.address}</td>
+                  <td>{format(account.dateCreated, "MMM dd, yyyy")}</td>
+                  <td>
+                    <Button
+                      variant="link"
+                      className="p-0 me-2"
+                      style={{ color: "#33FF00" }}
+                      onClick={() => {
+                        setSelectedAccount(account);
+                        setShowEditModal(true);
+                      }}
+                    >
+                      <FiEdit2 />
+                    </Button>
+                    <Button
+                      variant="link"
+                      className="p-0"
+                      style={{ color: "#FF0000" }}
+                      onClick={() => {
+                        setSelectedAccount(account);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <FiTrash2 />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Container>
+      </Row>
+
+      {/* Add Account Modal */}
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Control type="text" placeholder="Name" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="email" placeholder="Email" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="tel" placeholder="Phone" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="text" placeholder="Address" />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+            Cancel
+          </Button>
           <Button
             variant="primary"
-            onClick={handleSortButton}
-            className="w-100"
+            style={{ backgroundColor: "#FB6F92", borderColor: "#FFAFCC" }}
           >
-            Sắp xếp{" "}
-            {sortConfig.key === "fullName" &&
-              (sortConfig.direction === "ascending" ? (
-                <FaArrowUp className="ms-2" />
-              ) : (
-                <FaArrowDown className="ms-2" />
-              ))}
+            Add Account
           </Button>
-        </div>
-        <div className="col-md-3 mt-2 mt-md-0 text-md-end">
-          <Button onClick={resetFilters} variant="primary" className="w-100">
-            Reset Filters
-          </Button>
-        </div>
-      </div>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Date of Birth</th>
-            <th>Total Courses</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((user) => (
-            <tr key={user.id}>
-              <td>{user.fullName}</td>
-              <td>{user.email}</td>
-              <td>{format(new Date(user.dateOfBirth), "MMM dd, yyyy")}</td>
-              <td>{user.totalCourses}</td>
-              <td>${user.balance.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+        </Modal.Footer>
+      </Modal>
 
-      {totalPages > 1 && (
-        <div className="mt-4 d-flex justify-content-center">
-          <Pagination>
-            <Pagination.Prev
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            />
-            <Pagination.Item active>{currentPage}</Pagination.Item>
-            <Pagination.Next
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-            />
-          </Pagination>
-        </div>
-      )}
-    </div>
+      {/* Edit Account Modal */}
+      <Modal
+        show={showEditModal}
+        onClick={() => setShowEditModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Control type="text" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="email" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="tel" />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control type="text" />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            style={{ backgroundColor: "#33FF00", borderColor: "#33FF00" }}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        show={showDeleteModal}
+        onClick={() => setShowDeleteModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete the account for{" "}
+          {selectedAccount?.name}?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            style={{ backgroundColor: "#FF0000", borderColor: "#FF0000" }}
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Container>
   );
 };
 
-export default UserManager;
+export default UserManagement;
