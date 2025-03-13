@@ -10,11 +10,17 @@ import ResetPassword from "./Components/Login/ResetPassword";
 import CustomerRoute from "./Routes/CustomerRoute";
 import CustomerLayout from "./Routes/CustomerLayout";
 import AdminLayout from "./Routes/AdminLayout";
-import AdminRoute from "./Routes/AdminRoute";
 import ScrollToTop from "./Services/ScrollToTop";
 import { CartProvider } from "./Services/CartService";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
+/*..............................................*/
+/*AdminRoute*/
+import RevenueManagement from "./Components/Admin/Admin_Managerment/RevenueManagement";
+import CategoryManager from "./Components/Admin/Admin_Managerment/CategoryManagement";
+import UserManagement from "./Components/Admin/Admin_Managerment/UserManagement";
+import VoucherManagement from "./Components/Admin/Admin_Managerment/VoucherManagement";
+import ProductManagement from "./Components/Admin/Admin_Managerment/ProductManagement";
 
 function App() {
   return (
@@ -37,14 +43,25 @@ function App() {
               </CustomerLayout>
             }
           />
-          <Route
-            path="/admin*"
-            element={
-              <AdminLayout>
-                <AdminRoute />
-              </AdminLayout>
-            }
-          />
+          {/*..............................................*/}
+          {/*AdminRoute*/}
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              path="/admin/revenue"
+              element={<RevenueManagement />}
+            ></Route>
+            <Route path="/admin/category" element={<CategoryManager />}></Route>
+            <Route path="/admin/user" element={<UserManagement />}></Route>
+            <Route
+              path="/admin/voucher"
+              element={<VoucherManagement />}
+            ></Route>
+            <Route
+              path="/admin/product"
+              element={<ProductManagement />}
+            ></Route>
+          </Route>
         </Routes>
 
         <ToastContainer

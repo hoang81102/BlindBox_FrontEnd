@@ -1,0 +1,46 @@
+.sidebar-user-profile {
+  width: 290px;
+  height: 100%;
+  padding: 30px;
+  border-radius: 15px 0 0 15px;
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+}
+
+.sidebar-user-profile .welcome {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.sidebar-user-profile .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  color: #6d6c80;
+  text-decoration: none;
+  background-color: #f8f8fc;
+}
+
+.sidebar-user-profile .nav-link:hover {
+  background-color: #e9e7ff;
+  color: #5751e1;
+}
+
+.sidebar-user-profile .nav-link.active {
+  background-color: #f3eeff;
+  color: #6f42c1;
+}
+
+.sidebar-user-profile .nav-link i {
+  margin-right: 10px;
+}
+
+.sidebar-user-profile .section-title {
+  font-size: 14px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #6c757d;
+}

@@ -1,12 +1,18 @@
 import React from "react";
-import AdminSideBar from "../Components/Admin/AdminSideBar/AdminSideBar";
+import HeaderAdmin from "../Components/Admin/HeaderAdmin/HeaderAdmin";
+import AdminSidebarLayout from "./AdminSidebarLayout";
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
   return (
-    <div className="admin-layout">
-      <AdminSideBar />
-      <main>{children}</main>
-    </div>
+    <>
+      <div className="header-admin" style={{ margin: "0px 50px" }}>
+        <HeaderAdmin />
+      </div>
+      <div className="my-4">
+        <AdminSidebarLayout />
+        
+      </div>
+    </>
   );
 };
 
