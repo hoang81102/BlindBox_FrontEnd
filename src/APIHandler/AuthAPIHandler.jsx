@@ -6,7 +6,7 @@ const rootAuth = `${API_URL}/api/Auth`;
 export const loginUser = async (email, password) => {
   const response = await axios.post(`${rootAuth}/login`, {
     email,
-    password,
+    password
   });
   return response.data;
 };

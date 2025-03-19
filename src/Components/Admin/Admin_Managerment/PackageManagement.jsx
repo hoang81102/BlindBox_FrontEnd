@@ -20,19 +20,18 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
-import { format } from "date-fns";
 import {
-  getAllCategory,
-  createCategory,
-  updateCategoryById,
-  deleteCategoryById,
-} from "../../../APIHandler/CategoryManagerAPIHandler";
+  getAllPackages,
+  createPackage,
+  updatePackageById,
+  deletePackageById,
+} from "../../../APIHandler/PackageManagementAPIHanlder";
 
-const CategoryManager = () => {
-  const [categories, setCategories] = useState([]);
+const PackageManager = () => {
+  const [packages, setPackages] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: "createdAt",
-    direction: "descending",
+    key: "packageName",
+    direction: "ascending",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,74 +39,78 @@ const CategoryManager = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [actionLoading, setActionLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const itemsPerPage = 7;
+  const itemsPerPage = 6;
 
-  const fetchCategories = async (page = currentPage) => {
+  const fetchPackages = async (page = currentPage) => {
     setLoading(true);
     try {
-      const data = await getAllCategory(page, itemsPerPage);
-      const categoryData = data.items || data || [];
-      setCategories(categoryData);
+      const data = await getAllPackages(page, itemsPerPage);
+      const packageData = data.items || data || [];
+      console.log("Fetched packages:", packageData); // Log để kiểm tra dữ liệu
+      setPackages(packageData);
       setTotalPages(
         data.totalPages || Math.ceil(data.totalCount / itemsPerPage) || 1
       );
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch categories");
+      setError(err.response?.data?.message || "Failed to fetch packages");
+      console.error("Error fetching packages:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  
   useEffect(() => {
-    fetchCategories();
+    fetchPackages();
   }, [currentPage]);
 
   const handleSortButton = useCallback(() => {
     setSortConfig((prev) => {
-      if (prev.key !== "createdAt") {
-        return { key: "createdAt", direction: "descending" };
+      if (prev.key !== "packageName") {
+        return { key: "packageName", direction: "ascending" };
       }
       return {
-        key: "createdAt",
+        key: "packageName",
         direction: prev.direction === "ascending" ? "descending" : "ascending",
       };
     });
     setCurrentPage(1);
   }, []);
 
-  const sortedCategories = useMemo(() => {
-    let sortableCategories = [...categories];
-    if (sortConfig.key === "createdAt") {
-      sortableCategories.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-        return sortConfig.direction === "ascending"
-          ? dateA - dateB
-          : dateB - dateA;
+  const sortedPackages = useMemo(() => {
+    let sortablePackages = [...packages];
+    if (sortConfig.key === "packageName") {
+      sortablePackages.sort((a, b) => {
+        const nameA = a.packageName.toLowerCase();
+        const nameB = b.packageName.toLowerCase();
+        if (sortConfig.direction === "ascending") {
+          return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+        }
+        return nameA > nameB ? -1 : nameA < nameB ? 1 : 0;
       });
     }
-    return sortableCategories;
-  }, [categories, sortConfig]);
+    return sortablePackages;
+  }, [packages, sortConfig]);
 
-  const filteredCategories = useMemo(() => {
-    return sortedCategories.filter((category) =>
-      Object.values(category).some((value) =>
+  const filteredPackages = useMemo(() => {
+    return sortedPackages.filter((pkg) =>
+      Object.values(pkg).some((value) =>
         value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-  }, [sortedCategories, searchTerm]);
+  }, [sortedPackages, searchTerm]);
 
-  const currentItems = filteredCategories;
+  const currentItems = filteredPackages;
 
   const renderSortIcon = () =>
-    sortConfig.key === "createdAt" ? (
+    sortConfig.key === "packageName" ? (
       sortConfig.direction === "ascending" ? (
         <FiArrowUp style={{ marginLeft: "5px" }} />
       ) : (
@@ -117,11 +120,27 @@ const CategoryManager = () => {
 
   const validateForm = (data) => {
     const errors = {};
-    if (!data.categoryName || data.categoryName.trim() === "") {
-      errors.categoryName = "Category name is required";
+    if (!data.packageName || data.packageName.trim() === "") {
+      errors.packageName = "Package name is required";
     }
-    if (!data.categoryImage || data.categoryImage.trim() === "") {
-      errors.categoryImage = "Image URL is required";
+    if (
+      !data.packagePrice ||
+      isNaN(data.packagePrice) ||
+      data.packagePrice < 0
+    ) {
+      errors.packagePrice = "Valid non-negative package price is required";
+    }
+    if (!data.description || data.description.trim() === "") {
+      errors.description = "Description is required";
+    }
+    if (!data.stock || isNaN(data.stock) || data.stock < 0) {
+      errors.stock = "Valid non-negative stock is required";
+    }
+    if (!data.amount || isNaN(data.amount) || data.amount < 0) {
+      errors.amount = "Valid non-negative amount is required";
+    }
+    if (!data.packageStatus || data.packageStatus.trim() === "") {
+      errors.packageStatus = "Package status is required";
     }
     return {
       isValid: Object.keys(errors).length === 0,
@@ -129,37 +148,35 @@ const CategoryManager = () => {
     };
   };
 
-  const handleAddCategory = useCallback(async () => {
+  const handleAddPackage = useCallback(async () => {
     const { isValid, errors } = validateForm(formData);
     setFormErrors(errors);
     if (!isValid) return;
 
     setActionLoading(true);
     try {
-      const currentTime = new Date().toISOString();
       const updatedFormData = {
         ...formData,
-        createdAt: currentTime,
+        packagePrice: Number(formData.packagePrice),
+        stock: Number(formData.stock),
+        amount: Number(formData.amount),
+        createdAt: new Date().toISOString(),
       };
-      const response = await createCategory(updatedFormData);
-      const newCategory = response || {
-        ...updatedFormData,
-        categoryId: Date.now(),
-      };
-      setCategories((prev) => [newCategory, ...prev]);
+      await createPackage(updatedFormData);
+      await fetchPackages(currentPage); 
       setShowAddModal(false);
       setFormData({});
       setFormErrors({});
     } catch (err) {
       setFormErrors({
-        general: err.response?.data?.message || "Failed to create category",
+        general: err.response?.data?.message || "Failed to create package",
       });
     } finally {
       setActionLoading(false);
     }
-  }, [formData]);
+  }, [formData, currentPage]);
 
-  const handleEditCategory = async () => {
+  const handleEditPackage = async () => {
     const { isValid, errors } = validateForm(formData);
     setFormErrors(errors);
     if (!isValid) return;
@@ -168,44 +185,40 @@ const CategoryManager = () => {
     try {
       const updatedFormData = {
         ...formData,
+        packagePrice: Number(formData.packagePrice),
+        stock: Number(formData.stock),
+        amount: Number(formData.amount),
         updatedAt: new Date().toISOString(),
       };
-      setCategories((prev) =>
-        prev.map((category) =>
-          category.categoryId === selectedCategory.categoryId
-            ? updatedFormData
-            : category
-        )
-      );
-      await updateCategoryById(selectedCategory.categoryId, updatedFormData);
+      await updatePackageById(selectedPackage.packageId, updatedFormData);
+      await fetchPackages(currentPage); 
       setShowEditModal(false);
       setFormData({});
       setFormErrors({});
     } catch (err) {
       setFormErrors({
-        general: err.response?.data?.message || "Failed to update category",
+        general: err.response?.data?.message || "Failed to update package",
       });
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleDeleteCategory = async () => {
+  const handleDeletePackage = async () => {
     setActionLoading(true);
     try {
-      await deleteCategoryById(selectedCategory.categoryId);
-      setCategories((prev) =>
-        prev.filter(
-          (category) => category.categoryId !== selectedCategory.categoryId
-        )
+      await deletePackageById(selectedPackage.packageId);
+      const newPackages = packages.filter(
+        (pkg) => pkg.packageId !== selectedPackage.packageId
       );
-      if (categories.length === 0 && currentPage > 1) {
+      if (newPackages.length === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else {
+        await fetchPackages(currentPage); 
         setShowDeleteModal(false);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete category");
+      setError(err.response?.data?.message || "Failed to delete package");
     } finally {
       setActionLoading(false);
     }
@@ -236,7 +249,7 @@ const CategoryManager = () => {
                   padding: "5px",
                 }}
               >
-                Category Management
+                Package Management
               </h1>
             </Col>
             <Col xs="auto">
@@ -244,8 +257,7 @@ const CategoryManager = () => {
                 style={{ background: "#4169e1", padding: "6px 12px" }}
                 onClick={() => setShowAddModal(true)}
               >
-                <FiPlus />
-                Add Category
+                <FiPlus /> Add Package
               </Button>
             </Col>
           </Row>
@@ -262,7 +274,7 @@ const CategoryManager = () => {
                 </InputGroup.Text>
                 <Form.Control
                   type="text"
-                  placeholder="Search categories..."
+                  placeholder="Search packages..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -281,7 +293,7 @@ const CategoryManager = () => {
                 }}
                 onClick={handleSortButton}
               >
-                Sort by Date {renderSortIcon()}
+                Sort by name {renderSortIcon()}
               </Button>
             </Col>
           </Row>
@@ -293,7 +305,7 @@ const CategoryManager = () => {
               <Spinner animation="border" />
             </div>
           ) : currentItems.length === 0 ? (
-            <Alert variant="info">No categories found.</Alert>
+            <Alert variant="info">No packages found.</Alert>
           ) : (
             <>
               <Table
@@ -305,17 +317,19 @@ const CategoryManager = () => {
               >
                 <thead>
                   <tr>
-                    <th>Image</th>
                     <th>Name</th>
-                    <th>Create Date</th>
-                    <th>Update Date</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Stock</th>
+                    <th>Amount</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {currentItems.map((category) => (
+                <tbody style={{ backgroundColor: "#fff", color: "#333" }}>
+                  {currentItems.map((pkg) => (
                     <tr
-                      key={category.categoryId}
+                      key={pkg.packageId}
                       style={{ transition: "background-color 0.3s" }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.backgroundColor = "#fff5f2")
@@ -324,32 +338,20 @@ const CategoryManager = () => {
                         (e.currentTarget.style.backgroundColor = "#fff")
                       }
                     >
-                      <td>
-                        <img
-                          src={category.categoryImage}
-                          alt={category.categoryName}
-                          style={{ width: "100px", height: "auto" }}
-                        />
-                      </td>
-                      <td>{category.categoryName}</td>
-                      <td>
-                        {category.createdAt
-                          ? format(new Date(category.createdAt), "MM, dd, yyyy")
-                          : "N/A"}
-                      </td>
-                      <td>
-                        {category.updatedAt
-                          ? format(new Date(category.updatedAt), "MM, dd, yyyy")
-                          : "N/A"}
-                      </td>
+                      <td>{pkg.packageName}</td>
+                      <td>{pkg.packagePrice}</td>
+                      <td>{pkg.description}</td>
+                      <td>{pkg.stock}</td>
+                      <td>{pkg.amount}</td>
+                      <td>{pkg.packageStatus}</td>
                       <td>
                         <Button
                           variant="link"
                           className="p-0 me-2"
                           style={{ color: "#5a9f68" }}
                           onClick={() => {
-                            setSelectedCategory(category);
-                            setFormData(category);
+                            setSelectedPackage(pkg);
+                            setFormData(pkg);
                             setShowEditModal(true);
                           }}
                         >
@@ -360,7 +362,7 @@ const CategoryManager = () => {
                           className="p-0"
                           style={{ color: "#dc143c" }}
                           onClick={() => {
-                            setSelectedCategory(category);
+                            setSelectedPackage(pkg);
                             setShowDeleteModal(true);
                           }}
                         >
@@ -457,10 +459,10 @@ const CategoryManager = () => {
         </Container>
       </Row>
 
-      {/* Add Category Modal */}
+      {/* Add Package Modal */}
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
         <Modal.Header closeButton style={{ background: "#4169e1" }}>
-          <Modal.Title>Add New Category</Modal.Title>
+          <Modal.Title>Add New Package</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p
@@ -471,7 +473,7 @@ const CategoryManager = () => {
               fontSize: "20px",
             }}
           >
-            Add New Category
+            Add New Package
           </p>
           {formErrors.general && (
             <Alert variant="danger">{formErrors.general}</Alert>
@@ -480,29 +482,88 @@ const CategoryManager = () => {
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
-                placeholder="Category Name"
-                value={formData.categoryName || ""}
+                placeholder="Package Name"
+                value={formData.packageName || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, categoryName: e.target.value })
+                  setFormData({ ...formData, packageName: e.target.value })
                 }
-                isInvalid={!!formErrors.categoryName}
+                isInvalid={!!formErrors.packageName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.categoryName}
+                {formErrors.packageName}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Package Price"
+                value={formData.packagePrice || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    packagePrice: e.target.value,
+                  })
+                }
+                isInvalid={!!formErrors.packagePrice}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.packagePrice}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                as="textarea"
+                placeholder="Description"
+                value={formData.description || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                isInvalid={!!formErrors.description}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.description}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Stock"
+                value={formData.stock || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock: e.target.value })
+                }
+                isInvalid={!!formErrors.stock}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.stock}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Amount"
+                value={formData.amount || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+                isInvalid={!!formErrors.amount}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.amount}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
-                placeholder="Image URL"
-                value={formData.categoryImage || ""}
+                placeholder="Package Status"
+                value={formData.packageStatus || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, categoryImage: e.target.value })
+                  setFormData({ ...formData, packageStatus: e.target.value })
                 }
-                isInvalid={!!formErrors.categoryImage}
+                isInvalid={!!formErrors.packageStatus}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.categoryImage}
+                {formErrors.packageStatus}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
@@ -517,7 +578,7 @@ const CategoryManager = () => {
           </Button>
           <Button
             style={{ background: "#4169e1", padding: "6px 12px" }}
-            onClick={handleAddCategory}
+            onClick={handleAddPackage}
             disabled={actionLoading}
           >
             {actionLoading ? <Spinner animation="border" size="sm" /> : "Add"}
@@ -525,14 +586,14 @@ const CategoryManager = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Edit Category Modal */}
+      {/* Edit Package Modal */}
       <Modal
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         centered
       >
         <Modal.Header closeButton style={{ background: "#5a9f68" }}>
-          <Modal.Title>Edit Category</Modal.Title>
+          <Modal.Title>Edit Package</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {formErrors.general && (
@@ -540,27 +601,90 @@ const CategoryManager = () => {
           )}
           <Form>
             <Form.Group className="mb-3">
-              <p
-                style={{
-                  background: "linear-gradient(to right, #ff8153, #ffa98f)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  fontSize: "20px",
-                }}
-              >
-                Change Category Name
-              </p>
               <Form.Control
                 type="text"
-                placeholder="Category Name"
-                value={formData.categoryName || ""}
+                placeholder="Package Name"
+                value={formData.packageName || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, categoryName: e.target.value })
+                  setFormData({ ...formData, packageName: e.target.value })
                 }
-                isInvalid={!!formErrors.categoryName}
+                isInvalid={!!formErrors.packageName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.categoryName}
+                {formErrors.packageName}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Package Price"
+                value={formData.packagePrice || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    packagePrice: e.target.value,
+                  })
+                }
+                isInvalid={!!formErrors.packagePrice}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.packagePrice}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                as="textarea"
+                placeholder="Description"
+                value={formData.description || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                isInvalid={!!formErrors.description}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.description}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Stock"
+                value={formData.stock || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock: e.target.value })
+                }
+                isInvalid={!!formErrors.stock}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.stock}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="number"
+                placeholder="Amount"
+                value={formData.amount || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+                isInvalid={!!formErrors.amount}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.amount}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Package Status"
+                value={formData.packageStatus || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, packageStatus: e.target.value })
+                }
+                isInvalid={!!formErrors.packageStatus}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.packageStatus}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
@@ -579,7 +703,7 @@ const CategoryManager = () => {
               background: "#5a9f68",
               padding: "6px 12px",
             }}
-            onClick={handleEditCategory}
+            onClick={handleEditPackage}
             disabled={actionLoading}
           >
             {actionLoading ? (
@@ -602,7 +726,7 @@ const CategoryManager = () => {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete "{selectedCategory?.categoryName}"?
+            Are you sure you want to delete "{selectedPackage?.packageName}"?
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -619,7 +743,7 @@ const CategoryManager = () => {
               background: "#dc143c",
               padding: "6px 12px",
             }}
-            onClick={handleDeleteCategory}
+            onClick={handleDeletePackage}
             disabled={actionLoading}
           >
             {actionLoading ? (
@@ -633,4 +757,5 @@ const CategoryManager = () => {
     </Container>
   );
 };
-export default CategoryManager;
+
+export default PackageManager;

@@ -20,7 +20,7 @@ import RevenueManagement from "./Components/Admin/Admin_Managerment/RevenueManag
 import CategoryManager from "./Components/Admin/Admin_Managerment/CategoryManagement";
 import UserManagement from "./Components/Admin/Admin_Managerment/UserManagement";
 import VoucherManagement from "./Components/Admin/Admin_Managerment/VoucherManagement";
-import ProductManagement from "./Components/Admin/Admin_Managerment/ProductManagement";
+import PackageManagement from "./Components/Admin/Admin_Managerment/PackageManagement";
 
 function App() {
   return (
@@ -58,8 +58,8 @@ function App() {
               element={<VoucherManagement />}
             ></Route>
             <Route
-              path="/admin/product"
-              element={<ProductManagement />}
+              path="/admin/package"
+              element={<PackageManagement />}
             ></Route>
           </Route>
         </Routes>

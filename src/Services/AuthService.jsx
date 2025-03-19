@@ -6,9 +6,9 @@ const handleError = (error, message) => {
   return { success: false, message: error.response?.data?.message || message };
 };
 
-// const storeToken = (token) => {
-//   if (token) localStorage.setItem("token", token);
-// };
+const storeToken = (token) => {
+  if (token) localStorage.setItem("token", token);
+};
 export const storeUserInfo = (user, token) => {
   if (!user || !token) return;
 
@@ -71,10 +71,11 @@ export const registerUser = async (userInfo) => {
 export const login = async (email, password) => {
   try {
     const data = await authController.loginUser(email, password);
-    if (!data?.token) throw new Error("Invalid login response: Token missing");
+    if (!data?.accessToken)
+      throw new Error("Invalid login response: Token missing");
 
-    // storeToken(data.token);
-    const role = storeUserInfo(data, data.token);
+    storeToken(data.accessToken);
+    const role = storeUserInfo(data, data.accessToken);
 
     return { success: true, data, role };
   } catch (error) {

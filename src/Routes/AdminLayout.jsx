@@ -5,12 +5,16 @@ import AdminSidebarLayout from "./AdminSidebarLayout";
 const AdminLayout = () => {
   return (
     <>
-      <div className="header-admin" style={{ margin: "0px 50px" }}>
+      <div
+        className="header-admin"
+        style={{
+          margin: "0px 50px",
+        }}
+      >
         <HeaderAdmin />
       </div>
       <div className="my-4">
         <AdminSidebarLayout />
-        
       </div>
     </>
   );

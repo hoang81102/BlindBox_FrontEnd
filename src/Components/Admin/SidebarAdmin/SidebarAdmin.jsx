@@ -27,14 +27,14 @@ const SidebarAdmin = () => {
       path: "/admin/category",
     },
     {
+      name: "Package Manager",
+      icon: <FaBriefcase />,
+      path: "/admin/package",
+    },
+    {
       name: "Voucher Manager",
       icon: <FaSwatchbook />,
       path: "/admin/voucher",
-    },
-    {
-      name: "Product Manager",
-      icon: <FaBriefcase />,
-      path: "/admin/product",
     },
   ];
 

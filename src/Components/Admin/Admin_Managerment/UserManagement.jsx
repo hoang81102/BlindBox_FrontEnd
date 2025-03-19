@@ -1,11 +1,11 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   FiEdit2,
   FiTrash2,
   FiPlus,
   FiSearch,
-  FiChevronUp,
-  FiChevronDown,
+  FiArrowUp,
+  FiArrowDown,
 } from "react-icons/fi";
 import { format } from "date-fns";
 import {
@@ -17,37 +17,120 @@ import {
   Table,
   Modal,
   InputGroup,
+  Pagination,
+  Spinner,
+  Alert,
 } from "react-bootstrap";
+import UserService from "../../../Services/UserService";
 
 const UserManagement = () => {
-  // Trạng thái cho các modal
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: "createdAt",
+    direction: "descending",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [formData, setFormData] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
-  // Giả sử bạn có một mảng các tài khoản
-  const accounts = [
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      email: "a@example.com",
-      phone: "0123456789",
-      address: "Hà Nội",
-      dateCreated: new Date(),
-    },
-    
-  ];
+  const userService = new UserService(
+    setAccounts,
+    setTotalPages,
+    setLoading,
+    setError,
+    setActionLoading
+  );
+
+  useEffect(() => {
+    userService.fetchAccounts(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
+
+  const filteredAccounts = useMemo(
+    () => userService.filterAccounts(accounts, searchTerm),
+    [accounts, searchTerm]
+  );
+
+  const handleSortButton = useCallback(() => {
+    setSortConfig((prev) => {
+      if (prev.key !== "createdAt") {
+        return { key: "createdAt", direction: "descending" };
+      }
+      return {
+        key: "createdAt",
+        direction: prev.direction === "ascending" ? "descending" : "ascending",
+      };
+    });
+    setCurrentPage(1);
+  }, []);
+
+  const sortedAccounts = useMemo(() => {
+    return userService.sortAccounts(filteredAccounts, sortConfig.direction);
+  }, [filteredAccounts, sortConfig]);
+
+  const gradientStyle = {
+    background: "linear-gradient(to right, #ff8153, #ffa98f)",
+    border: "none",
+    color: "white",
+  };
+
+
+  const handleEditAccount = useCallback(async () => {
+    const { isValid, errors } = userService.validateForm(formData);
+    setFormErrors(errors);
+    if (!isValid) return;
+    await userService.handleEditAccount(
+      selectedAccount,
+      formData,
+      currentPage,
+      itemsPerPage,
+      setShowEditModal,
+      setFormData
+    );
+    setFormErrors({});
+  }, [formData, selectedAccount, currentPage, itemsPerPage, userService]);
+
+  const renderPaginationItems = () => {
+    const maxPagesToShow = 5;
+    const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    return [...Array(endPage - startPage + 1)].map((_, idx) => {
+      const pageNum = startPage + idx;
+      const isActive = pageNum === currentPage;
+      return (
+        <Pagination.Item
+          key={pageNum}
+          active={isActive}
+          onClick={() => setCurrentPage(pageNum)}
+          style={{
+            margin: "0 2px",
+            padding: "5px 10px",
+            borderRadius: "8px",
+          }}
+        >
+          {pageNum}
+        </Pagination.Item>
+      );
+    });
+  };
 
   return (
     <Container
       fluid
-      className="min-vh-100 pt-lg-5 px-5 "
+      className="min-vh-100 pt-lg-5 px-5"
       style={{ backgroundColor: "#FAFAFB" }}
     >
       <Row>
         <Container>
-          <Row className="mb-4 align-items-center ">
+          <Row className="mb-4 align-items-center">
             <Col>
               <h1
                 style={{
@@ -61,134 +144,213 @@ const UserManagement = () => {
                 Account Management
               </h1>
             </Col>
-            <Col xs="auto">
+          </Row>
+
+          <Row className="mb-4 align-items-center">
+            <Col md={10}>
+              <InputGroup>
+                <InputGroup.Text style={gradientStyle}>
+                  <FiSearch />
+                </InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </InputGroup>
+            </Col>
+            <Col md={2}>
               <Button
-                variant="primary"
-                style={{ backgroundColor: "#FB6F92", borderColor: "#FFAFCC" }}
-                onClick={() => setShowAddModal(true)}
+                style={gradientStyle}
+                onClick={handleSortButton}
+                className="w-100"
               >
-                <FiPlus className="me-2" /> Add Account
+                Sort by Date{" "}
+                {sortConfig.direction === "descending" ? (
+                  <FiArrowUp />
+                ) : (
+                  <FiArrowDown />
+                )}
               </Button>
             </Col>
           </Row>
 
-          <Row className="mb-4">
-            <Col>
-              <InputGroup>
-                <InputGroup.Text>
-                  <FiSearch />
-                </InputGroup.Text>
-                <Form.Control type="text" placeholder="Search accounts..." />
-              </InputGroup>
-            </Col>
-          </Row>
+          {error && <Alert variant="danger">{error}</Alert>}
 
-          <Table responsive bordered hover className="shadow-sm text-center">
-            <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Created</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((account) => (
-                <tr key={account.id}>
-                  <td>{account.name}</td>
-                  <td>{account.email}</td>
-                  <td>{account.phone}</td>
-                  <td>{account.address}</td>
-                  <td>{format(account.dateCreated, "MMM dd, yyyy")}</td>
-                  <td>
-                    <Button
-                      variant="link"
-                      className="p-0 me-2"
-                      style={{ color: "#33FF00" }}
-                      onClick={() => {
-                        setSelectedAccount(account);
-                        setShowEditModal(true);
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" />
+            </div>
+          ) : sortedAccounts.length === 0 ? (
+            <Alert variant="info">No accounts found.</Alert>
+          ) : (
+            <>
+              <Table
+                responsive
+                bordered
+                hover
+                className="shadow-sm text-center"
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Created</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedAccounts.map((account) => (
+                    <tr key={account.id}>
+                      <td>{account.fullName}</td>
+                      <td>{account.email}</td>
+                      <td>{account.phoneNumber}</td>
+                      <td>{account.address}</td>
+                      <td>
+                        {account.createAt
+                          ? format(new Date(account.createAt), "MMM dd, yyyy")
+                          : "N/A"}
+                      </td>
+                      <td>{account.role}</td>
+                      <td>
+                        <Button
+                          variant="link"
+                          className="p-0 me-2"
+                          style={{ color: "#5a9f68" }}
+                          onClick={() => {
+                            setSelectedAccount(account);
+                            setFormData(account);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <FiEdit2 />
+                        </Button>
+                        <Button
+                          variant="link"
+                          className="p-0"
+                          style={{ color: "#dc143c" }}
+                          onClick={() => {
+                            setSelectedAccount(account);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Row className="mt-4">
+                <Col className="d-flex justify-content-center">
+                  <Pagination>
+                    <Pagination.Prev
+                      disabled={currentPage === 1}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      style={{
+                        padding: "5px 10px",
+                        marginRight: "5px",
                       }}
-                    >
-                      <FiEdit2 />
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="p-0"
-                      style={{ color: "#FF0000" }}
-                      onClick={() => {
-                        setSelectedAccount(account);
-                        setShowDeleteModal(true);
+                    />
+                    {renderPaginationItems()}
+                    <Pagination.Next
+                      disabled={currentPage === totalPages}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      style={{
+                        padding: "5px 10px",
+                        marginLeft: "5px",
                       }}
-                    >
-                      <FiTrash2 />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+                    />
+                  </Pagination>
+                </Col>
+              </Row>
+            </>
+          )}
         </Container>
       </Row>
-
-      {/* Add Account Modal */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Account</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Control type="text" placeholder="Name" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control type="email" placeholder="Email" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control type="tel" placeholder="Phone" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control type="text" placeholder="Address" />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            style={{ backgroundColor: "#FB6F92", borderColor: "#FFAFCC" }}
-          >
-            Add Account
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       {/* Edit Account Modal */}
       <Modal
         show={showEditModal}
-        onClick={() => setShowEditModal(false)}
+        onHide={() => setShowEditModal(false)}
         centered
       >
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={gradientStyle}>
           <Modal.Title>Edit Account</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {formErrors.general && (
+            <Alert variant="danger">{formErrors.general}</Alert>
+          )}
           <Form>
             <Form.Group className="mb-3">
-              <Form.Control type="text" />
+              <Form.Control
+                type="text"
+                placeholder="Full Name"
+                value={formData.fullName || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                isInvalid={!!formErrors.fullName}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.fullName}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control type="email" />
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                value={formData.email || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                isInvalid={!!formErrors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.email}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control type="tel" />
+              <Form.Control
+                type="tel"
+                placeholder="Phone"
+                value={formData.phoneNumber || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, phoneNumber: e.target.value })
+                }
+                isInvalid={!!formErrors.phoneNumber}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.phoneNumber}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control type="text" />
+              <Form.Control
+                type="text"
+                placeholder="Address"
+                value={formData.address || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+                isInvalid={!!formErrors.address}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.address}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control.Feedback type="invalid">
+                {formErrors.role}
+              </Form.Control.Feedback>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -197,10 +359,15 @@ const UserManagement = () => {
             Cancel
           </Button>
           <Button
-            variant="primary"
-            style={{ backgroundColor: "#33FF00", borderColor: "#33FF00" }}
+            style={{ background: "#5a9f68" }}
+            onClick={handleEditAccount}
+            disabled={actionLoading}
           >
-            Save Changes
+            {actionLoading ? (
+              <Spinner animation="border" size="sm" />
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -208,25 +375,29 @@ const UserManagement = () => {
       {/* Delete Confirmation Modal */}
       <Modal
         show={showDeleteModal}
-        onClick={() => setShowDeleteModal(false)}
+        onHide={() => setShowDeleteModal(false)}
         centered
       >
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{ background: "#dc143c" }}>
           <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete the account for{" "}
-          {selectedAccount?.name}?
+          <p>Are you sure you want to delete this account?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
           <Button
-            variant="danger"
-            style={{ backgroundColor: "#FF0000", borderColor: "#FF0000" }}
+            style={{ background: "#dc143c" }}
+            
+            disabled={actionLoading}
           >
-            Delete
+            {actionLoading ? (
+              <Spinner animation="border" size="sm" />
+            ) : (
+              "Delete"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
