@@ -31,8 +31,8 @@ import {
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: "createdAt",
-    direction: "descending",
+    key: "categoryName",
+    direction: "ascending",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,11 +71,11 @@ const CategoryManager = () => {
 
   const handleSortButton = useCallback(() => {
     setSortConfig((prev) => {
-      if (prev.key !== "createdAt") {
-        return { key: "createdAt", direction: "descending" };
+      if (prev.key !== "categoryName") {
+        return { key: "categoryName", direction: "ascending" };
       }
       return {
-        key: "createdAt",
+        key: "categoryName",
         direction: prev.direction === "ascending" ? "descending" : "ascending",
       };
     });
@@ -84,13 +84,13 @@ const CategoryManager = () => {
 
   const sortedCategories = useMemo(() => {
     let sortableCategories = [...categories];
-    if (sortConfig.key === "createdAt") {
+    if (sortConfig.key === "categoryName") {
       sortableCategories.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-        return sortConfig.direction === "ascending"
-          ? dateA - dateB
-          : dateB - dateA;
+        const nameA = a.categoryName.toLowerCase();
+        const nameB = b.categoryName.toLowerCase();
+        if (nameA < nameB) return sortConfig.direction === "ascending" ? -1 : 1;
+        if (nameA > nameB) return sortConfig.direction === "ascending" ? 1 : -1;
+        return 0;
       });
     }
     return sortableCategories;
@@ -107,7 +107,7 @@ const CategoryManager = () => {
   const currentItems = filteredCategories;
 
   const renderSortIcon = () =>
-    sortConfig.key === "createdAt" ? (
+    sortConfig.key === "categoryName" ? (
       sortConfig.direction === "ascending" ? (
         <FiArrowUp style={{ marginLeft: "5px" }} />
       ) : (
@@ -122,6 +122,9 @@ const CategoryManager = () => {
     }
     if (!data.categoryImage || data.categoryImage.trim() === "") {
       errors.categoryImage = "Image URL is required";
+    }
+    if (!data.typeSell || data.typeSell.trim() === "") {
+      errors.typeSell = "Type Sell is required";
     }
     return {
       isValid: Object.keys(errors).length === 0,
@@ -281,7 +284,7 @@ const CategoryManager = () => {
                 }}
                 onClick={handleSortButton}
               >
-                Sort by Date {renderSortIcon()}
+                Sort by name{renderSortIcon()}
               </Button>
             </Col>
           </Row>
@@ -307,6 +310,7 @@ const CategoryManager = () => {
                   <tr>
                     <th>Image</th>
                     <th>Name</th>
+                    <th>Type Sell</th>
                     <th>Create Date</th>
                     <th>Update Date</th>
                     <th>Actions</th>
@@ -332,6 +336,7 @@ const CategoryManager = () => {
                         />
                       </td>
                       <td>{category.categoryName}</td>
+                      <td>{category.typeSell}</td>
                       <td>
                         {category.createdAt
                           ? format(new Date(category.createdAt), "MM, dd, yyyy")
@@ -505,6 +510,20 @@ const CategoryManager = () => {
                 {formErrors.categoryImage}
               </Form.Control.Feedback>
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Type Sell"
+                value={formData.typeSell || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, typeSell: e.target.value })
+                }
+                isInvalid={!!formErrors.typeSell}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.typeSell}
+              </Form.Control.Feedback>
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -561,6 +580,34 @@ const CategoryManager = () => {
               />
               <Form.Control.Feedback type="invalid">
                 {formErrors.categoryName}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Image URL"
+                value={formData.categoryImage || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, categoryImage: e.target.value })
+                }
+                isInvalid={!!formErrors.categoryImage}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.categoryImage}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Type Sell"
+                value={formData.typeSell || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, typeSell: e.target.value })
+                }
+                isInvalid={!!formErrors.typeSell}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.typeSell}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>

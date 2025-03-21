@@ -14,6 +14,18 @@ const getAuthHeaders = () => {
   };
 };
 
+export const getAllCategories = async () => {
+  try {
+    const response = await axios.get(rootCategory, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error.message || error);
+    return null; 
+  }
+};
+
 export const getAllCategory = async (pageNumber, pageSize) => {
   try {
     const response = await axios.get(`${rootCategory}/paged`, {

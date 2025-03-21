@@ -26,7 +26,7 @@ import {
   updatePackageById,
   deletePackageById,
 } from "../../../APIHandler/PackageManagementAPIHanlder";
-
+import { getAllCategories } from "../../../APIHandler/CategoryManagerAPIHandler";
 const PackageManager = () => {
   const [packages, setPackages] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -46,13 +46,15 @@ const PackageManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const itemsPerPage = 6;
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const fetchPackages = async (page = currentPage) => {
     setLoading(true);
     try {
       const data = await getAllPackages(page, itemsPerPage);
       const packageData = data.items || data || [];
-      console.log("Fetched packages:", packageData); // Log để kiểm tra dữ liệu
+      console.log("Fetched packages:", packageData);
       setPackages(packageData);
       setTotalPages(
         data.totalPages || Math.ceil(data.totalCount / itemsPerPage) || 1
@@ -66,10 +68,22 @@ const PackageManager = () => {
     }
   };
 
-  
   useEffect(() => {
     fetchPackages();
   }, [currentPage]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getAllCategories();
+        setCategories(data || []);
+        console.log("Fetched categories:", data);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSortButton = useCallback(() => {
     setSortConfig((prev) => {
@@ -153,17 +167,29 @@ const PackageManager = () => {
     setFormErrors(errors);
     if (!isValid) return;
 
+    if (!selectedCategory) {
+      setFormErrors((prev) => ({
+        ...prev,
+        category: "Category is required",
+      }));
+      return;
+    }
+
     setActionLoading(true);
     try {
       const updatedFormData = {
         ...formData,
+        categoryId: selectedCategory,
+        categoryImage: categories.find(
+          (category) => category.categoryId === selectedCategory
+        ).categoryImage,
         packagePrice: Number(formData.packagePrice),
         stock: Number(formData.stock),
         amount: Number(formData.amount),
         createdAt: new Date().toISOString(),
       };
       await createPackage(updatedFormData);
-      await fetchPackages(currentPage); 
+      await fetchPackages(currentPage);
       setShowAddModal(false);
       setFormData({});
       setFormErrors({});
@@ -174,7 +200,7 @@ const PackageManager = () => {
     } finally {
       setActionLoading(false);
     }
-  }, [formData, currentPage]);
+  }, [formData, currentPage, selectedCategory]);
 
   const handleEditPackage = async () => {
     const { isValid, errors } = validateForm(formData);
@@ -191,7 +217,7 @@ const PackageManager = () => {
         updatedAt: new Date().toISOString(),
       };
       await updatePackageById(selectedPackage.packageId, updatedFormData);
-      await fetchPackages(currentPage); 
+      await fetchPackages(currentPage);
       setShowEditModal(false);
       setFormData({});
       setFormErrors({});
@@ -214,7 +240,7 @@ const PackageManager = () => {
       if (newPackages.length === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else {
-        await fetchPackages(currentPage); 
+        await fetchPackages(currentPage);
         setShowDeleteModal(false);
       }
     } catch (err) {
@@ -317,7 +343,9 @@ const PackageManager = () => {
               >
                 <thead>
                   <tr>
+                    <th>Image</th>
                     <th>Name</th>
+                    <th>Category</th>
                     <th>Price</th>
                     <th>Description</th>
                     <th>Stock</th>
@@ -327,50 +355,63 @@ const PackageManager = () => {
                   </tr>
                 </thead>
                 <tbody style={{ backgroundColor: "#fff", color: "#333" }}>
-                  {currentItems.map((pkg) => (
-                    <tr
-                      key={pkg.packageId}
-                      style={{ transition: "background-color 0.3s" }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#fff5f2")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#fff")
-                      }
-                    >
-                      <td>{pkg.packageName}</td>
-                      <td>{pkg.packagePrice}</td>
-                      <td>{pkg.description}</td>
-                      <td>{pkg.stock}</td>
-                      <td>{pkg.amount}</td>
-                      <td>{pkg.packageStatus}</td>
-                      <td>
-                        <Button
-                          variant="link"
-                          className="p-0 me-2"
-                          style={{ color: "#5a9f68" }}
-                          onClick={() => {
-                            setSelectedPackage(pkg);
-                            setFormData(pkg);
-                            setShowEditModal(true);
-                          }}
-                        >
-                          <FiEdit2 />
-                        </Button>
-                        <Button
-                          variant="link"
-                          className="p-0"
-                          style={{ color: "#dc143c" }}
-                          onClick={() => {
-                            setSelectedPackage(pkg);
-                            setShowDeleteModal(true);
-                          }}
-                        >
-                          <FiTrash2 />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {currentItems.map((pkg) => {
+                    const category = categories.find(
+                      (cat) => cat.categoryId === pkg.categoryId
+                    );
+                    return (
+                      <tr
+                        key={pkg.packageId}
+                        style={{ transition: "background-color 0.3s" }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#fff5f2")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#fff")
+                        }
+                      >
+                        <td>
+                          <img
+                            src={category?.categoryImage}
+                            alt={category?.categoryName}
+                            style={{ width: "100px", height: "auto" }}
+                          />
+                        </td>
+                        <td>{pkg.packageName}</td>
+                        <td>{category?.categoryName}</td>
+                        <td>{pkg.packagePrice}</td>
+                        <td>{pkg.description}</td>
+                        <td>{pkg.stock}</td>
+                        <td>{pkg.amount}</td>
+                        <td>{pkg.packageStatus}</td>
+                        <td>
+                          <Button
+                            variant="link"
+                            className="p-0 me-2"
+                            style={{ color: "#5a9f68" }}
+                            onClick={() => {
+                              setSelectedPackage(pkg);
+                              setFormData(pkg);
+                              setShowEditModal(true);
+                            }}
+                          >
+                            <FiEdit2 />
+                          </Button>
+                          <Button
+                            variant="link"
+                            className="p-0"
+                            style={{ color: "#dc143c" }}
+                            onClick={() => {
+                              setSelectedPackage(pkg);
+                              setShowDeleteModal(true);
+                            }}
+                          >
+                            <FiTrash2 />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
               <Row className="mt-4">
@@ -465,20 +506,29 @@ const PackageManager = () => {
           <Modal.Title>Add New Package</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p
-            style={{
-              background: "linear-gradient(to right, #ff8153, #ffa98f)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: "20px",
-            }}
-          >
-            Add New Package
-          </p>
           {formErrors.general && (
             <Alert variant="danger">{formErrors.general}</Alert>
           )}
           <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                isInvalid={!!formErrors.category}
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category.categoryId} value={category.categoryId}>
+                    {category.categoryName}
+                  </option>
+                ))}
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {formErrors.category}
+              </Form.Control.Feedback>
+            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
