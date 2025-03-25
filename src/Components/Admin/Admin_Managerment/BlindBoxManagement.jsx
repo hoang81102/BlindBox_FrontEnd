@@ -21,16 +21,17 @@ import {
   Alert,
 } from "react-bootstrap";
 import {
-  getAllPackages,
-  createPackage,
-  updatePackageById,
-  deletePackageById,
-} from "../../../APIHandler/PackageManagementAPIHanlder";
-import { getAllCategories } from "../../../APIHandler/CategoryManagerAPIHandler";
-const PackageManager = () => {
-  const [packages, setPackages] = useState([]);
+  getAllBlindBox,
+  createBlindBox,
+  updateBlindBoxbyId,
+  deleteBlindBoxbyId,
+} from "../../../APIHandler/BlindBoxAPIHandler";
+import { getAllPackage } from "../../../APIHandler/PackageManagementAPIHanlder";
+
+const BlindBoxManager = () => {
+  const [blindBoxes, setBlindBoxes] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: "packageName",
+    key: "blindBoxName",
     direction: "ascending",
   });
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,92 +40,89 @@ const PackageManager = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [selectedBlindBox, setSelectedBlindBox] = useState(null);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [actionLoading, setActionLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const itemsPerPage = 6;
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [packages, setPackages] = useState([]);
+  const [selectedPackage, setSelectedPackage] = useState("");
 
-  const fetchPackages = async (page = currentPage) => {
+  const fetchBlindBoxes = async (page = currentPage) => {
     setLoading(true);
     try {
-      const data = await getAllPackages(page, itemsPerPage);
-      const packageData = data.items || data || [];
-      console.log("Fetched packages:", packageData);
-      setPackages(packageData);
+      const data = await getAllBlindBox(page, itemsPerPage);
+      const blindBoxData = data.items || data || [];
+      setBlindBoxes(blindBoxData);
       setTotalPages(
         data.totalPages || Math.ceil(data.totalCount / itemsPerPage) || 1
       );
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch packages");
-      console.error("Error fetching packages:", err);
+      setError(err.response?.data?.message || "Failed to fetch blind boxes");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPackages();
+    fetchBlindBoxes();
   }, [currentPage]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchPackages = async () => {
       try {
-        const data = await getAllCategories();
-        setCategories(data || []);
-        console.log("Fetched categories:", data);
+        const data = await getAllPackage();
+        setPackages(data || []);
       } catch (err) {
-        console.error("Error fetching categories:", err);
+        console.error("Error fetching packages:", err);
       }
     };
-    fetchCategories();
+    fetchPackages();
   }, []);
 
   const handleSortButton = useCallback(() => {
     setSortConfig((prev) => {
-      if (prev.key !== "packageName") {
-        return { key: "packageName", direction: "ascending" };
+      if (prev.key !== "blindBoxName") {
+        return { key: "blindBoxName", direction: "ascending" };
       }
       return {
-        key: "packageName",
+        key: "blindBoxName",
         direction: prev.direction === "ascending" ? "descending" : "ascending",
       };
     });
     setCurrentPage(1);
   }, []);
 
-  const sortedPackages = useMemo(() => {
-    let sortablePackages = [...packages];
-    if (sortConfig.key === "packageName") {
-      sortablePackages.sort((a, b) => {
-        const nameA = a.packageName.toLowerCase();
-        const nameB = b.packageName.toLowerCase();
+  const sortedBlindBoxes = useMemo(() => {
+    let sortableBlindBoxes = [...blindBoxes];
+    if (sortConfig.key === "blindBoxName") {
+      sortableBlindBoxes.sort((a, b) => {
+        const nameA = a.blindBoxName.toLowerCase();
+        const nameB = b.blindBoxName.toLowerCase();
         if (sortConfig.direction === "ascending") {
           return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
         }
         return nameA > nameB ? -1 : nameA < nameB ? 1 : 0;
       });
     }
-    return sortablePackages;
-  }, [packages, sortConfig]);
+    return sortableBlindBoxes;
+  }, [blindBoxes, sortConfig]);
 
-  const filteredPackages = useMemo(() => {
-    return sortedPackages.filter((pkg) =>
-      Object.values(pkg).some((value) =>
+  const filteredBlindBoxes = useMemo(() => {
+    return sortedBlindBoxes.filter((box) =>
+      Object.values(box).some((value) =>
         value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-  }, [sortedPackages, searchTerm]);
+  }, [sortedBlindBoxes, searchTerm]);
 
-  const currentItems = filteredPackages;
+  const currentItems = filteredBlindBoxes;
 
   const renderSortIcon = () =>
-    sortConfig.key === "packageName" ? (
+    sortConfig.key === "blindBoxName" ? (
       sortConfig.direction === "ascending" ? (
         <FiArrowUp style={{ marginLeft: "5px" }} />
       ) : (
@@ -134,43 +132,25 @@ const PackageManager = () => {
 
   const validateForm = (data) => {
     const errors = {};
-    if (!data.packageName || data.packageName.trim() === "") {
-      errors.packageName = "Package name is required";
+    if (!data.blindBoxName || data.blindBoxName.trim() === "") {
+      errors.blindBoxName = "Blind box name is required";
     }
-    if (
-      !data.packagePrice ||
-      isNaN(data.packagePrice) ||
-      data.packagePrice < 0
-    ) {
-      errors.packagePrice = "Valid non-negative package price is required";
-    }
-    if (!data.description || data.description.trim() === "") {
-      errors.description = "Description is required";
-    }
-    if (!data.stock || isNaN(data.stock) || data.stock < 0) {
-      errors.stock = "Valid non-negative stock is required";
-    }
-    if (!data.amount || isNaN(data.amount) || data.amount < 0) {
-      errors.amount = "Valid non-negative amount is required";
-    }
-    if (!data.packageStatus || data.packageStatus.trim() === "") {
-      errors.packageStatus = "Package status is required";
-    }
+    // Add more validation as needed
     return {
       isValid: Object.keys(errors).length === 0,
       errors,
     };
   };
 
-  const handleAddPackage = useCallback(async () => {
+  const handleAddBlindBox = useCallback(async () => {
     const { isValid, errors } = validateForm(formData);
     setFormErrors(errors);
     if (!isValid) return;
 
-    if (!selectedCategory) {
+    if (!selectedPackage) {
       setFormErrors((prev) => ({
         ...prev,
-        category: "Category is required",
+        package: "Package is required",
       }));
       return;
     }
@@ -179,73 +159,66 @@ const PackageManager = () => {
     try {
       const updatedFormData = {
         ...formData,
-        categoryId: selectedCategory,
-        categoryImage: categories.find(
-          (category) => category.categoryId === selectedCategory
-        ).categoryImage,
-        packagePrice: Number(formData.packagePrice),
+        packageId: selectedPackage,
+        blindBoxImages: formData.blindBoxImages,
+        typeSell: formData.typeSell,
+        size: formData.size,
+        description: formData.description,
+        price: Number(formData.price),
         stock: Number(formData.stock),
-        amount: Number(formData.amount),
-        packageStatus: formData.packageStatus,
+        blindBoxStatus: formData.blindBoxStatus,
       };
       console.log("Sending data:", updatedFormData);
-      await createPackage(updatedFormData);
-      await fetchPackages(currentPage);
+      await createBlindBox(updatedFormData);
+      await fetchBlindBoxes(currentPage);
       setShowAddModal(false);
       setFormData({});
       setFormErrors({});
     } catch (err) {
       setFormErrors({
-        general: err.response?.data?.message || "Failed to create package",
+        general: err.response?.data?.message || "Failed to create blind box",
       });
     } finally {
       setActionLoading(false);
     }
-  }, [formData, currentPage, selectedCategory]);
+  }, [formData, currentPage, selectedPackage]);
 
-  const handleEditPackage = async () => {
+  const handleEditBlindBox = async () => {
     const { isValid, errors } = validateForm(formData);
     setFormErrors(errors);
     if (!isValid) return;
 
     setActionLoading(true);
     try {
-      const updatedFormData = {
-        ...formData,
-        packagePrice: Number(formData.packagePrice),
-        stock: Number(formData.stock),
-        amount: Number(formData.amount),
-        updatedAt: new Date().toISOString(),
-      };
-      await updatePackageById(selectedPackage.packageId, updatedFormData);
-      await fetchPackages(currentPage);
+      await updateBlindBoxbyId(selectedBlindBox.blindBoxId, formData);
+      await fetchBlindBoxes(currentPage);
       setShowEditModal(false);
       setFormData({});
       setFormErrors({});
     } catch (err) {
       setFormErrors({
-        general: err.response?.data?.message || "Failed to update package",
+        general: err.response?.data?.message || "Failed to update blind box",
       });
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleDeletePackage = async () => {
+  const handleDeleteBlindBox = async () => {
     setActionLoading(true);
     try {
-      await deletePackageById(selectedPackage.packageId);
-      const newPackages = packages.filter(
-        (pkg) => pkg.packageId !== selectedPackage.packageId
+      await deleteBlindBoxbyId(selectedBlindBox.blindBoxId);
+      const newBlindBoxes = blindBoxes.filter(
+        (box) => box.blindBoxId !== selectedBlindBox.blindBoxId
       );
-      if (newPackages.length === 0 && currentPage > 1) {
+      if (newBlindBoxes.length === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else {
-        await fetchPackages(currentPage);
+        await fetchBlindBoxes(currentPage);
         setShowDeleteModal(false);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete package");
+      setError(err.response?.data?.message || "Failed to delete blind box");
     } finally {
       setActionLoading(false);
     }
@@ -276,7 +249,7 @@ const PackageManager = () => {
                   padding: "5px",
                 }}
               >
-                Package Management
+                Blind Box Management
               </h1>
             </Col>
             <Col xs="auto">
@@ -284,7 +257,7 @@ const PackageManager = () => {
                 style={{ background: "#4169e1", padding: "6px 12px" }}
                 onClick={() => setShowAddModal(true)}
               >
-                <FiPlus /> Add Package
+                <FiPlus /> Add Blind Box
               </Button>
             </Col>
           </Row>
@@ -301,7 +274,7 @@ const PackageManager = () => {
                 </InputGroup.Text>
                 <Form.Control
                   type="text"
-                  placeholder="Search packages..."
+                  placeholder="Search blind boxes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -332,7 +305,7 @@ const PackageManager = () => {
               <Spinner animation="border" />
             </div>
           ) : currentItems.length === 0 ? (
-            <Alert variant="info">No packages found.</Alert>
+            <Alert variant="info">No blind boxes found.</Alert>
           ) : (
             <>
               <Table
@@ -346,75 +319,76 @@ const PackageManager = () => {
                   <tr>
                     <th>Image</th>
                     <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
+                    <th>Package</th>
                     <th>Type</th>
+                    <th>Size</th>
                     <th>Description</th>
+                    <th>Price</th>
                     <th>Stock</th>
-                    <th>Amount</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody style={{ backgroundColor: "#fff", color: "#333" }}>
-                  {currentItems.map((pkg) => {
-                    const category = categories.find(
-                      (cat) => cat.categoryId === pkg.categoryId
-                    );
-                    return (
-                      <tr
-                        key={pkg.packageId}
-                        style={{ transition: "background-color 0.3s" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#fff5f2")
+                  {currentItems.map((box) => (
+                    <tr
+                      key={box.blindBoxId}
+                      style={{ transition: "background-color 0.3s" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#fff5f2")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#fff")
+                      }
+                    >
+                      <td>
+                        <img
+                          src={box.blindBoxImages}
+                          alt={box.blindBoxName}
+                          style={{ width: "50px", height: "50px" }}
+                        />
+                      </td>
+                      <td>{box.blindBoxName}</td>
+                      <td>
+                        {
+                          packages.find(
+                            (pkg) => pkg.packageId === box.packageId
+                          )?.packageName
                         }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#fff")
-                        }
-                      >
-                        <td>
-                          <img
-                            src={category?.categoryImage}
-                            alt={category?.categoryName}
-                            style={{ width: "100px", height: "auto" }}
-                          />
-                        </td>
-                        <td>{pkg.packageName}</td>
-                        <td>{category?.categoryName}</td>
-                        <td>{pkg.packagePrice}</td>
-                        <td>{pkg.typeSell}</td>
-                        <td>{pkg.description}</td>
-                        <td>{pkg.stock}</td>
-                        <td>{pkg.amount}</td>
-                        <td>{pkg.packageStatus}</td>
-                        <td>
-                          <Button
-                            variant="link"
-                            className="p-0 me-2"
-                            style={{ color: "#5a9f68" }}
-                            onClick={() => {
-                              setSelectedPackage(pkg);
-                              setFormData(pkg);
-                              setShowEditModal(true);
-                            }}
-                          >
-                            <FiEdit2 />
-                          </Button>
-                          <Button
-                            variant="link"
-                            className="p-0"
-                            style={{ color: "#dc143c" }}
-                            onClick={() => {
-                              setSelectedPackage(pkg);
-                              setShowDeleteModal(true);
-                            }}
-                          >
-                            <FiTrash2 />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                      </td>
+                      <td>{box.typeSell}</td>
+                      <td>{box.size}</td>
+                      <td>{box.description}</td>
+                      <td>{box.price}</td>
+                      <td>{box.stock}</td>
+                      <td>{box.blindBoxStatus}</td>
+                      <td>
+                        <Button
+                          variant="link"
+                          className="p-0 me-2"
+                          style={{ color: "#5a9f68" }}
+                          onClick={() => {
+                            setSelectedBlindBox(box);
+                            setFormData(box);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          <FiEdit2 />
+                        </Button>
+                        <Button
+                          variant="link"
+                          className="p-0"
+                          style={{ color: "#dc143c" }}
+                          onClick={() => {
+                            setSelectedBlindBox(box);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
               <Row className="mt-4">
@@ -503,10 +477,10 @@ const PackageManager = () => {
         </Container>
       </Row>
 
-      {/* Add Package Modal */}
+      {/* Add Blind Box Modal */}
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
         <Modal.Header closeButton style={{ background: "#4169e1" }}>
-          <Modal.Title>Add New Package</Modal.Title>
+          <Modal.Title>Add New Blind Box</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {formErrors.general && (
@@ -514,74 +488,88 @@ const PackageManager = () => {
           )}
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Category</Form.Label>
+              <Form.Label>Package</Form.Label>
               <Form.Control
                 as="select"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                isInvalid={!!formErrors.category}
+                value={selectedPackage}
+                onChange={(e) => setSelectedPackage(e.target.value)}
+                isInvalid={!!formErrors.package}
               >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.categoryId} value={category.categoryId}>
-                    {category.categoryName}
-                  </option>
-                ))}
+                <option value="">Select a package</option>
+                {packages
+                  .filter((pkg) => pkg.typeSell === "BlindBox")
+                  .map((pkg) => (
+                    <option key={pkg.packageId} value={pkg.packageId}>
+                      {pkg.packageName}
+                    </option>
+                  ))}
               </Form.Control>
               <Form.Control.Feedback type="invalid">
-                {formErrors.category}
+                {formErrors.package}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
-                placeholder="Package Name"
-                value={formData.packageName || ""}
+                placeholder="Blind Box Name"
+                value={formData.blindBoxName || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, packageName: e.target.value })
+                  setFormData({ ...formData, blindBoxName: e.target.value })
                 }
-                isInvalid={!!formErrors.packageName}
+                isInvalid={!!formErrors.blindBoxName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.packageName}
+                {formErrors.blindBoxName}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
-                placeholder="Package Price"
-                value={formData.packagePrice || ""}
+                type="text"
+                placeholder="Image URL"
+                value={formData.blindBoxImages || ""}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    packagePrice: e.target.value,
-                  })
+                  setFormData({ ...formData, blindBoxImages: e.target.value })
                 }
-                isInvalid={!!formErrors.packagePrice}
+                isInvalid={!!formErrors.blindBoxImages}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.packagePrice}
+                {formErrors.blindBoxImages}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
                 as="select"
+                placeholder="Type"
                 value={formData.typeSell || ""}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    typeSell: e.target.value,
-                  })
+                  setFormData({ ...formData, typeSell: e.target.value })
                 }
                 isInvalid={!!formErrors.typeSell}
               >
                 <option value="">Select Type</option>
-                <option value="Package">Package</option>
                 <option value="BlindBox">BlindBox</option>
                 <option value="LuckyWheel">LuckyWheel</option>
               </Form.Control>
               <Form.Control.Feedback type="invalid">
                 {formErrors.typeSell}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                as="select"
+                value={formData.size || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, size: e.target.value })
+                }
+                isInvalid={!!formErrors.size}
+              >
+                <option value="">Select Size</option>
+                <option value="Medium">Medium</option>
+                <option value="Small">Small</option>
+                <option value="Large">Large</option>
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {formErrors.size}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -600,7 +588,21 @@ const PackageManager = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
+                type="text"
+                placeholder="Price"
+                value={formData.price || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
+                isInvalid={!!formErrors.price}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.price}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
                 placeholder="Stock"
                 value={formData.stock || ""}
                 onChange={(e) =>
@@ -614,33 +616,19 @@ const PackageManager = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
-                placeholder="Amount"
-                value={formData.amount || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
-                isInvalid={!!formErrors.amount}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.amount}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
                 as="select"
-                value={formData.packageStatus || ""}
+                value={formData.blindBoxStatus || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, packageStatus: e.target.value })
+                  setFormData({ ...formData, blindBoxStatus: e.target.value })
                 }
-                isInvalid={!!formErrors.packageStatus}
+                isInvalid={!!formErrors.blindBoxStatus}
               >
                 <option value="">Select Status</option>
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </Form.Control>
               <Form.Control.Feedback type="invalid">
-                {formErrors.packageStatus}
+                {formErrors.blindBoxStatus}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
@@ -655,7 +643,7 @@ const PackageManager = () => {
           </Button>
           <Button
             style={{ background: "#4169e1", padding: "6px 12px" }}
-            onClick={handleAddPackage}
+            onClick={handleAddBlindBox}
             disabled={actionLoading}
           >
             {actionLoading ? <Spinner animation="border" size="sm" /> : "Add"}
@@ -663,14 +651,14 @@ const PackageManager = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Edit Package Modal */}
+      {/* Edit Blind Box Modal */}
       <Modal
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         centered
       >
         <Modal.Header closeButton style={{ background: "#5a9f68" }}>
-          <Modal.Title>Edit Package</Modal.Title>
+          <Modal.Title>Edit Blind Box</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {formErrors.general && (
@@ -678,55 +666,91 @@ const PackageManager = () => {
           )}
           <Form>
             <Form.Group className="mb-3">
+              <Form.Label>Package</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Package Name"
-                value={formData.packageName || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, packageName: e.target.value })
-                }
-                isInvalid={!!formErrors.packageName}
-              />
+                as="select"
+                value={selectedPackage}
+                onChange={(e) => setSelectedPackage(e.target.value)}
+                isInvalid={!!formErrors.package}
+              >
+                <option value="">Select a package</option>
+                {packages
+                  .filter((pkg) => pkg.typeSell === "BlindBox")
+                  .map((pkg) => (
+                    <option key={pkg.packageId} value={pkg.packageId}>
+                      {pkg.packageName}
+                    </option>
+                  ))}
+              </Form.Control>
               <Form.Control.Feedback type="invalid">
-                {formErrors.packageName}
+                {formErrors.package}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
-                placeholder="Package Price"
-                value={formData.packagePrice || ""}
+                type="text"
+                placeholder="Blind Box Name"
+                value={formData.blindBoxName || ""}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    packagePrice: e.target.value,
-                  })
+                  setFormData({ ...formData, blindBoxName: e.target.value })
                 }
-                isInvalid={!!formErrors.packagePrice}
+                isInvalid={!!formErrors.blindBoxName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.packagePrice}
+                {formErrors.blindBoxName}
               </Form.Control.Feedback>
             </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Image URL"
+                value={formData.blindBoxImages || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, blindBoxImages: e.target.value })
+                }
+                isInvalid={!!formErrors.blindBoxImages}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.blindBoxImages}
+              </Form.Control.Feedback>
+            </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Control
                 as="select"
+                placeholder="Type"
                 value={formData.typeSell || ""}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    typeSell: e.target.value,
-                  })
+                  setFormData({ ...formData, typeSell: e.target.value })
                 }
                 isInvalid={!!formErrors.typeSell}
               >
                 <option value="">Select Type</option>
-                <option value="Package">Package</option>
                 <option value="BlindBox">BlindBox</option>
                 <option value="LuckyWheel">LuckyWheel</option>
               </Form.Control>
               <Form.Control.Feedback type="invalid">
                 {formErrors.typeSell}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                as="select"
+                placeholder="Size"
+                value={formData.size || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, size: e.target.value })
+                }
+                isInvalid={!!formErrors.size}
+              >
+                <option value="">Select Size</option>
+                <option value="Medium">Medium</option>
+                <option value="Small">Small</option>
+                <option value="Large">Large</option>
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {formErrors.size}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -745,7 +769,21 @@ const PackageManager = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
+                type="text"
+                placeholder="Price"
+                value={formData.price || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
+                isInvalid={!!formErrors.price}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.price}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
                 placeholder="Stock"
                 value={formData.stock || ""}
                 onChange={(e) =>
@@ -759,33 +797,20 @@ const PackageManager = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="number"
-                placeholder="Amount"
-                value={formData.amount || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
-                isInvalid={!!formErrors.amount}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.amount}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
                 as="select"
-                value={formData.packageStatus || ""}
+                placeholder="Status"
+                value={formData.blindBoxStatus || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, packageStatus: e.target.value })
+                  setFormData({ ...formData, blindBoxStatus: e.target.value })
                 }
-                isInvalid={!!formErrors.packageStatus}
+                isInvalid={!!formErrors.blindBoxStatus}
               >
                 <option value="">Select Status</option>
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </Form.Control>
               <Form.Control.Feedback type="invalid">
-                {formErrors.packageStatus}
+                {formErrors.blindBoxStatus}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
@@ -804,7 +829,7 @@ const PackageManager = () => {
               background: "#5a9f68",
               padding: "6px 12px",
             }}
-            onClick={handleEditPackage}
+            onClick={handleEditBlindBox}
             disabled={actionLoading}
           >
             {actionLoading ? (
@@ -827,7 +852,7 @@ const PackageManager = () => {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete "{selectedPackage?.packageName}"?
+            Are you sure you want to delete "{selectedBlindBox?.blindBoxName}"?
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -844,7 +869,7 @@ const PackageManager = () => {
               background: "#dc143c",
               padding: "6px 12px",
             }}
-            onClick={handleDeletePackage}
+            onClick={handleDeleteBlindBox}
             disabled={actionLoading}
           >
             {actionLoading ? (
@@ -859,4 +884,4 @@ const PackageManager = () => {
   );
 };
 
-export default PackageManager;
+export default BlindBoxManager;

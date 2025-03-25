@@ -38,15 +38,12 @@ export const updateAccountById = async (id, data) => {
       headers: getAuthHeaders(),
     });
     toast.success("Account updated successfully!");
+    console.log(response.data.role);
+    console.log(response.data.address);
     return response.data;
   } catch (error) {
-    if (error.response?.status === 401) {
-      toast.error("Unauthorized: Please log in again.");
-    } else {
-      toast.error("Failed to update account.");
-    }
+    toast.error("Failed to update account.");
     console.error("Error updating account:", error);
     throw error;
   }
 };
-

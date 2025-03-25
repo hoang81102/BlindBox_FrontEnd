@@ -21,7 +21,11 @@ import CategoryManager from "./Components/Admin/Admin_Managerment/CategoryManage
 import UserManagement from "./Components/Admin/Admin_Managerment/UserManagement";
 import VoucherManagement from "./Components/Admin/Admin_Managerment/VoucherManagement";
 import PackageManagement from "./Components/Admin/Admin_Managerment/PackageManagement";
-
+import BlindBoxManagement from "./Components/Admin/Admin_Managerment/BlindBoxManagement";
+import OrderListManagerment from "./Components/Admin/Admin_Managerment/OrderListManagerment";
+import OrderConfirmManagerment from "./Components/Admin/Admin_Managerment/OrderConfirmManagerment";
+import OrderDeliveryManagerment from "./Components/Admin/Admin_Managerment/OrderDeliveryManagerment";
+import OrderCompleteManagerment from "./Components/Admin/Admin_Managerment/OrderCompleteManagerment";
 function App() {
   return (
     <CartProvider>
@@ -47,9 +51,27 @@ function App() {
           {/*AdminRoute*/}
 
           <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<UserManagement />} />
+
             <Route
               path="/admin/revenue"
               element={<RevenueManagement />}
+            ></Route>
+            <Route
+              path="/admin/order/order-list"
+              element={<OrderListManagerment />}
+            ></Route>
+            <Route
+              path="/admin/order/order-confirm"
+              element={<OrderConfirmManagerment />}
+            ></Route>
+            <Route
+              path="/admin/order/order-delivered"
+              element={<OrderDeliveryManagerment />}
+            ></Route>
+            <Route
+              path="/admin/order/order-completed"
+              element={<OrderCompleteManagerment />}
             ></Route>
             <Route path="/admin/category" element={<CategoryManager />}></Route>
             <Route path="/admin/user" element={<UserManagement />}></Route>
@@ -60,6 +82,10 @@ function App() {
             <Route
               path="/admin/package"
               element={<PackageManagement />}
+            ></Route>
+            <Route
+              path="/admin/blindbox"
+              element={<BlindBoxManagement />}
             ></Route>
           </Route>
         </Routes>

@@ -2,12 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   FiEdit2,
   FiTrash2,
-  FiPlus,
   FiSearch,
   FiArrowUp,
   FiArrowDown,
 } from "react-icons/fi";
-import { format } from "date-fns";
 import {
   Container,
   Row,
@@ -22,6 +20,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import UserService from "../../../Services/UserService";
+import { updateAccountById } from "../../../APIHandler/UserManagerAPIHandler";
 
 const UserManagement = () => {
   const [accounts, setAccounts] = useState([]);
@@ -30,7 +29,6 @@ const UserManagement = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -47,7 +45,9 @@ const UserManagement = () => {
     setTotalPages,
     setLoading,
     setError,
-    setActionLoading
+    setActionLoading,
+    setFormErrors,
+    setFormData
   );
 
   useEffect(() => {
@@ -82,21 +82,35 @@ const UserManagement = () => {
     color: "white",
   };
 
-
-  const handleEditAccount = useCallback(async () => {
+  const handleEditAccount = async () => {
     const { isValid, errors } = userService.validateForm(formData);
     setFormErrors(errors);
     if (!isValid) return;
-    await userService.handleEditAccount(
-      selectedAccount,
-      formData,
-      currentPage,
-      itemsPerPage,
-      setShowEditModal,
-      setFormData
-    );
-    setFormErrors({});
-  }, [formData, selectedAccount, currentPage, itemsPerPage, userService]);
+    setActionLoading(true);
+    try {
+      const updatedFormData = {
+        ...formData, 
+      };
+      const response = await updateAccountById(
+        selectedAccount.id,
+        updatedFormData
+      );
+      const updatedAccount = response || updatedFormData;
+      console.log(updatedAccount);
+      setAccounts((prev) =>
+        prev.map((account) =>
+          account.id === updatedAccount.id ? updatedAccount : account
+        )
+      );
+      setShowEditModal(false);
+      setFormData({});
+      setFormErrors({});
+    } catch (err) {
+      setFormErrors(err.errors || {});
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const renderPaginationItems = () => {
     const maxPagesToShow = 5;
@@ -195,10 +209,10 @@ const UserManagement = () => {
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Gender</th>
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Address</th>
-                    <th>Created</th>
                     <th>Role</th>
                     <th>Actions</th>
                   </tr>
@@ -206,15 +220,13 @@ const UserManagement = () => {
                 <tbody>
                   {sortedAccounts.map((account) => (
                     <tr key={account.id}>
-                      <td>{account.fullName}</td>
+                      <td>
+                        {account.firstName} {account.lastName}
+                      </td>
+                      <td>{account.gender}</td>
                       <td>{account.email}</td>
                       <td>{account.phoneNumber}</td>
                       <td>{account.address}</td>
-                      <td>
-                        {account.createAt
-                          ? format(new Date(account.createAt), "MMM dd, yyyy")
-                          : "N/A"}
-                      </td>
                       <td>{account.role}</td>
                       <td>
                         <Button
@@ -294,29 +306,29 @@ const UserManagement = () => {
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
-                placeholder="Full Name"
-                value={formData.fullName || ""}
+                placeholder="First Name"
+                value={formData.firstName || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
+                  setFormData({ ...formData, firstName: e.target.value })
                 }
-                isInvalid={!!formErrors.fullName}
+                isInvalid={!!formErrors.firstName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.fullName}
+                {formErrors.firstName}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Control
-                type="email"
-                placeholder="Email"
-                value={formData.email || ""}
+                type="text"
+                placeholder="Last Name"
+                value={formData.lastName || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({ ...formData, lastName: e.target.value })
                 }
-                isInvalid={!!formErrors.email}
+                isInvalid={!!formErrors.lastName}
               />
               <Form.Control.Feedback type="invalid">
-                {formErrors.email}
+                {formErrors.lastName}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -336,6 +348,20 @@ const UserManagement = () => {
             <Form.Group className="mb-3">
               <Form.Control
                 type="text"
+                placeholder="Gender"
+                value={formData.gender || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+                isInvalid={!!formErrors.gender}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.gender}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
                 placeholder="Address"
                 value={formData.address || ""}
                 onChange={(e) =>
@@ -348,6 +374,15 @@ const UserManagement = () => {
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Role"
+                value={formData.role || "User"}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value })
+                }
+                isInvalid={!!formErrors.role}
+              />
               <Form.Control.Feedback type="invalid">
                 {formErrors.role}
               </Form.Control.Feedback>
@@ -367,36 +402,6 @@ const UserManagement = () => {
               <Spinner animation="border" size="sm" />
             ) : (
               "Save Changes"
-            )}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        centered
-      >
-        <Modal.Header closeButton style={{ background: "#dc143c" }}>
-          <Modal.Title>Confirm Deletion</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to delete this account?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button
-            style={{ background: "#dc143c" }}
-            
-            disabled={actionLoading}
-          >
-            {actionLoading ? (
-              <Spinner animation="border" size="sm" />
-            ) : (
-              "Delete"
             )}
           </Button>
         </Modal.Footer>

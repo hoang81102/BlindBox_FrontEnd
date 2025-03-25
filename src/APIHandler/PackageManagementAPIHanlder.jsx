@@ -1,6 +1,5 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const rootPackage = `${API_URL}/api/packages`;
@@ -13,6 +12,17 @@ const getAuthHeaders = () => {
   };
 };
 
+export const getAllPackage = async () => {
+  try {
+    const response = await axios.get(rootPackage, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error.message || error);
+    return null;
+  }
+};
 // Lấy danh sách các gói sản phẩm (có phân trang)
 export const getAllPackages = async (pageNumber, pageSize) => {
   try {

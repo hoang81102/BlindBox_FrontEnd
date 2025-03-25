@@ -2,7 +2,6 @@ import {
   getAllAccounts,
   updateAccountById,
 } from "../APIHandler/UserManagerAPIHandler";
-
 class UserService {
   constructor(
     setAccounts,
@@ -58,6 +57,7 @@ class UserService {
     try {
       this.setActionLoading(true);
       this.setError(null);
+      console.log("Form Data:", formData);
       await updateAccountById(selectedAccount.id, formData);
       await this.fetchAccounts(currentPage, itemsPerPage);
       setShowEditModal(false);
@@ -73,25 +73,27 @@ class UserService {
 
   validateForm = (formData) => {
     const errors = {};
-    if (!formData.fullName?.trim()) errors.fullName = "Full name is required";
-    if (!formData.email?.trim()) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      errors.email = "Invalid email format";
+    if (!formData.firstName?.trim())
+      errors.firstName = "First name is required";
+    if (!formData.lastName?.trim()) errors.lastName = "Last name is required";
+    if (!formData.gender?.trim()) errors.gender = "Gender is required";
+    if (!formData.address?.trim()) errors.address = "Address is required";
     if (!formData.phoneNumber?.trim())
       errors.phoneNumber = "Phone number is required";
     else if (!/^\d{10}$/.test(formData.phoneNumber))
       errors.phoneNumber = "Phone number must be 10 digits";
-    if (!formData.address?.trim()) errors.address = "Address is required";
     return { isValid: Object.keys(errors).length === 0, errors };
   };
 
   filterAccounts = (accounts, searchTerm) => {
     return accounts.filter(
       (account) =>
-        account.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        account.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        account.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        account.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         account.phoneNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        account.address?.toLowerCase().includes(searchTerm.toLowerCase())
+        account.gender?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        account.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        account.role?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 

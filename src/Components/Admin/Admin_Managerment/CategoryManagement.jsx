@@ -123,9 +123,6 @@ const CategoryManager = () => {
     if (!data.categoryImage || data.categoryImage.trim() === "") {
       errors.categoryImage = "Image URL is required";
     }
-    if (!data.typeSell || data.typeSell.trim() === "") {
-      errors.typeSell = "Type Sell is required";
-    }
     return {
       isValid: Object.keys(errors).length === 0,
       errors,
@@ -310,7 +307,7 @@ const CategoryManager = () => {
                   <tr>
                     <th>Image</th>
                     <th>Name</th>
-                    <th>Type Sell</th>
+
                     <th>Create Date</th>
                     <th>Update Date</th>
                     <th>Actions</th>
@@ -336,15 +333,15 @@ const CategoryManager = () => {
                         />
                       </td>
                       <td>{category.categoryName}</td>
-                      <td>{category.typeSell}</td>
+
                       <td>
                         {category.createdAt
-                          ? format(new Date(category.createdAt), "MM, dd, yyyy")
+                          ? format(new Date(category.createdAt), "dd/MM/yyyy")
                           : "N/A"}
                       </td>
                       <td>
                         {category.updatedAt
-                          ? format(new Date(category.updatedAt), "MM, dd, yyyy")
+                          ? format(new Date(category.updatedAt), "dd/MM/yyyy")
                           : "N/A"}
                       </td>
                       <td>
@@ -510,20 +507,6 @@ const CategoryManager = () => {
                 {formErrors.categoryImage}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
-                type="text"
-                placeholder="Type Sell"
-                value={formData.typeSell || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, typeSell: e.target.value })
-                }
-                isInvalid={!!formErrors.typeSell}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.typeSell}
-              </Form.Control.Feedback>
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -594,20 +577,6 @@ const CategoryManager = () => {
               />
               <Form.Control.Feedback type="invalid">
                 {formErrors.categoryImage}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
-                type="text"
-                placeholder="Type Sell"
-                value={formData.typeSell || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, typeSell: e.target.value })
-                }
-                isInvalid={!!formErrors.typeSell}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.typeSell}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_API_URL;
 const rootBlindBox = `${API_URL}/api/blindboxes`;
 const getAuthHeaders = () => {
@@ -23,4 +23,45 @@ export const getBlindBoxbyId = async (id) => {
     headers: getAuthHeaders(),
   });
   return response.data;
+};
+
+export const createBlindBox = async (data) => {
+  try {
+    const response = await axios.post(rootBlindBox, data, {
+      headers: getAuthHeaders(),
+    });
+    toast.success("BlindBox created successfully!");
+    return response.data;
+  } catch (error) {
+    toast.error("Failed to create BlindBox.");
+    console.error("Error creating BlindBox:", error);
+    throw error;
+  }
+};
+export const updateBlindBoxbyId = async (id, data) => {
+  try {
+    const response = await axios.put(`${rootBlindBox}/${id}`, data, {
+      headers: getAuthHeaders(),
+    });
+    toast.success("BlindBox updated successfully!");
+    return response.data;
+  } catch (error) {
+    toast.error("Failed to update BlindBox.");
+    console.error("Error updating BlindBox:", error);
+    throw error;
+  }
+};
+
+export const deleteBlindBoxbyId   = async (id) => {   
+  try {
+    const response = await axios.delete(`${rootBlindBox}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    toast.success("BlindBox deleted successfully!");
+    return response.data;
+  } catch (error) {
+    toast.error("Failed to delete BlindBox.");
+    console.error("Error deleting BlindBox:", error);
+    throw error;
+  }
 };

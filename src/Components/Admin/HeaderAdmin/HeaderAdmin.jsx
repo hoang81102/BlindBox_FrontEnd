@@ -17,7 +17,7 @@ function HeaderAdmin() {
       </div>
       <div className="course-info">
         <p className="course-title animate__heartBeat animate__animated">
-          WellCome Adminitrator
+          WellCome
         </p>
         <h1 className="course-heading">
           Powering Productivity, One Task at a Time!
