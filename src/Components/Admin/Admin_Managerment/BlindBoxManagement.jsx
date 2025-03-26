@@ -27,6 +27,11 @@ import {
   deleteBlindBoxbyId,
 } from "../../../APIHandler/BlindBoxAPIHandler";
 import { getAllPackage } from "../../../APIHandler/PackageManagementAPIHanlder";
+import {
+  getAllBlindBoxImages,
+  createBlindBoxImage,
+  updateBlindBoxImage,
+} from "../../../APIHandler/BlindBoxImageAPIHandler";
 
 const BlindBoxManager = () => {
   const [blindBoxes, setBlindBoxes] = useState([]);
@@ -49,6 +54,7 @@ const BlindBoxManager = () => {
   const itemsPerPage = 6;
   const [packages, setPackages] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState("");
+  const [blindBoxImagesList, setBlindBoxImagesList] = useState({});
 
   const fetchBlindBoxes = async (page = currentPage) => {
     setLoading(true);
@@ -82,6 +88,26 @@ const BlindBoxManager = () => {
     };
     fetchPackages();
   }, []);
+
+  const fetchBlindBoxImages = async (blindBoxId) => {
+    try {
+      const images = await getAllBlindBoxImages(blindBoxId);
+      setBlindBoxImagesList((prev) => ({
+        ...prev,
+        [blindBoxId]: images,
+      }));
+    } catch (error) {
+      console.error("Error fetching blind box images:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (blindBoxes.length > 0) {
+      blindBoxes.forEach((box) => {
+        fetchBlindBoxImages(box.blindBoxId);
+      });
+    }
+  }, [blindBoxes]);
 
   const handleSortButton = useCallback(() => {
     setSortConfig((prev) => {
@@ -342,11 +368,24 @@ const BlindBoxManager = () => {
                       }
                     >
                       <td>
-                        <img
-                          src={box.blindBoxImages}
-                          alt={box.blindBoxName}
-                          style={{ width: "50px", height: "50px" }}
-                        />
+                        {blindBoxImagesList[box.blindBoxId] &&
+                        blindBoxImagesList[box.blindBoxId].length > 0 ? (
+                          <img
+                            src={blindBoxImagesList[box.blindBoxId][0].imageUrl}
+                            alt={`${box.blindBoxName} - 1`}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={box.blindBoxImages}
+                            alt={box.blindBoxName}
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        )}
                       </td>
                       <td>{box.blindBoxName}</td>
                       <td>
@@ -399,17 +438,6 @@ const BlindBoxManager = () => {
                       onClick={() =>
                         setCurrentPage((prev) => Math.max(prev - 1, 1))
                       }
-                      style={{
-                        background:
-                          "linear-gradient(to right, #ff8153, #ffa98f) !important",
-                        border: "none !important",
-                        color: "white !important",
-                        opacity: currentPage === 1 ? 0.5 : 1,
-                        transition: "opacity 0.3s",
-                        padding: "5px 10px",
-                        marginRight: "5px",
-                        borderRadius: "8px !important",
-                      }}
                     />
                     {[...Array(totalPages)].map((_, index) => {
                       const pageNum = index + 1;
@@ -419,21 +447,6 @@ const BlindBoxManager = () => {
                           key={pageNum}
                           active={isActive}
                           onClick={() => setCurrentPage(pageNum)}
-                          style={{
-                            background: isActive
-                              ? "linear-gradient(to right, #ff8153, #ffa98f) !important"
-                              : "#fff !important",
-                            color: isActive
-                              ? "white !important"
-                              : "#ff8153 !important",
-                            border: isActive
-                              ? "none !important"
-                              : "1px solid #ff8153 !important",
-                            transition: "all 0.3s",
-                            margin: "0 2px",
-                            padding: "5px 10px",
-                            borderRadius: "8px !important",
-                          }}
                           onMouseEnter={(e) => {
                             if (!isActive) {
                               e.target.style.background =
@@ -457,17 +470,6 @@ const BlindBoxManager = () => {
                       onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                       }
-                      style={{
-                        background:
-                          "linear-gradient(to right, #ff8153, #ffa98f) !important",
-                        border: "none !important",
-                        color: "white !important",
-                        opacity: currentPage === totalPages ? 0.5 : 1,
-                        transition: "opacity 0.3s",
-                        padding: "5px 10px",
-                        marginLeft: "5px",
-                        borderRadius: "8px !important",
-                      }}
                     />
                   </Pagination>
                 </Col>

@@ -161,7 +161,7 @@ const SidebarAdmin = () => {
           <button
             onClick={() => {
               localStorage.removeItem("token");
-              window.location.href = "/";
+              window.location.href = "/login";
             }}
             className={`nav-link d-flex align-items-center btn btn-link text-dark`}
             style={{
